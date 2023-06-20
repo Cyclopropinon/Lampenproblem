@@ -1,6 +1,8 @@
 // Lampenproblem.cpp : Diese Datei enthält die Funktion "main". Hier beginnt und endet die Ausführung des Programms.
 //
 // TODO 1kb
+// TODO Terminal width
+//
 
 // Uncomment to enable big ints
 #define _ENABLEBIGINTS_
@@ -35,6 +37,11 @@
 #include <thread>
 #include <vector>
 
+//#include <stdio.h>
+//#include <sys/ioctl.h>
+//#include <unistd.h>
+
+
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;
@@ -45,6 +52,24 @@ using namespace boost::multiprecision;
 
 void Nix()
 {}
+
+int getConsoleWidth()
+{
+	return 100;
+}
+
+void PrintProgressBar(double progress,int barWidth)
+{
+	std::cout << "[";
+	int pos = barWidth * progress;
+	for (int i = 0; i < barWidth; ++i) {
+		if (i < pos) std::cout << "=";
+		else if (i == pos) std::cout << ">";
+		else std::cout << " ";
+	}
+	std::cout << "] " << int(progress * 100.0) << " %\r";
+	std::cout.flush();
+}
 
 string VectorenZuString(unsigned long long n, vector<vector<unsigned long long>> v)
 {
@@ -1661,6 +1686,8 @@ int main()
 		auto								berechnungsStart = steady_clock::now();
 		auto								berechnungsEnde = steady_clock::now();
 
+		double								diffN;
+
 
 
 		//	vector<vector<unsigned long long>>	Vectorliste;
@@ -2265,7 +2292,7 @@ int main()
 
 					berechnungsStart = steady_clock::now();
 
-
+					diffN = maxN - minN;
 					for (size_t i = minN; i <= maxN; i += AnzThreads4 * delN)
 					{
 						vector<future<string>>	t(AnzThreads4);
@@ -2285,8 +2312,9 @@ int main()
 							}
 						}
 						maxNecht = i + AnzThreads4 * delN - 1;
+						PrintProgressBar((i - minN) / diffN, getConsoleWidth());
 					}
-
+					PrintProgressBar(1, getConsoleWidth()); cout << endl;
 					berechnungsEnde = steady_clock::now();
 					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
 					break;
