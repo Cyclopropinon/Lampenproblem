@@ -2,9 +2,29 @@
 //
 // TODO 1kb
 
+// Uncomment to enable big ints
+#define _ENABLEBIGINTS_
+
+//check if correct boost installed
+#ifdef _ENABLEBIGINTS_
+	#if __has_include(<boost/multiprecision/cpp_int/add.hpp>)
+		#if __has_include(<boost_1_79_0/boost/multiprecision/cpp_int.hpp>)
+			#include <boost_1_79_0/boost/multiprecision/cpp_int.hpp>
+		#elif __has_include("cpp_int.hpp")
+			#include "cpp_int.hpp"
+		#else
+			#undef _ENABLEBIGINTS_
+		#endif
+	#else
+		#undef _ENABLEBIGINTS_
+	#endif
+	#ifndef _LARGEINTS_ARE_INCLUDED_ //check wether boost got modified correctly
+		#undef _ENABLEBIGINTS_
+	#endif
+#endif
+
 #include <algorithm>
 #include <chrono>
-#include <boost_1_79_0/boost/multiprecision/cpp_int.hpp>
 #include <future>
 #include <fstream>
 #include <iostream>
