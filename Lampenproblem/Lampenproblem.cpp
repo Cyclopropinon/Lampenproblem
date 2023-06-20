@@ -3,7 +3,7 @@
 // TODO 1kb
 
 // Uncomment to enable big ints
-#define _ENABLEBIGINTS_
+//#define _ENABLEBIGINTS_
 
 //check if correct boost installed
 #ifdef _ENABLEBIGINTS_
@@ -36,9 +36,12 @@
 #include <vector>
 
 using namespace std;
-using namespace boost::multiprecision;
 using namespace chrono;
 using namespace chrono_literals;
+
+#ifdef _ENABLEBIGINTS_
+using namespace boost::multiprecision;
+#endif
 
 void Nix()
 {}
@@ -490,56 +493,6 @@ vector<unsigned long long> OptimierteForm2(unsigned long long n, unsigned long l
 	}
 }
 
-vector<uint1024_t> LampenSimulieren1024(unsigned long long n, uint1024_t k, bool einsenAnzeigen)
-{
-	uint1024_t				AnzRunden = 2;				// Aktuelle Runde
-	vector<bool>			Lampen;
-	vector<uint1024_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
-	uint1024_t				Schritte = n;				// Anzahl der Schritte, die schon gelaufen sind
-	unsigned long long		Lampejetzt;
-
-	vector<bool>	AlleLampenAn;
-	vector<bool>	AlleLampenAus;
-
-	//ostringstream			osa;
-	//ostringstream			osk; osk << k;
-	//ostringstream			oss;
-
-	for (size_t i = 0; i < n; i++)						// n Lampen, die aus sind erstellen
-	{
-		Lampen.push_back(true);
-		AlleLampenAn.push_back(true);
-		AlleLampenAus.push_back(false);
-	}
-	if (einsenAnzeigen)
-	{
-		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
-	}
-
-	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
-
-	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
-	{
-		Schritte += AnzRunden;
-		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
-		{
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden);	// Runde vermerken
-			}
-
-			AnzRunden = 1 + Schritte / n;
-			//osa.str(""); osa.clear(); oss.str(""); oss.clear();
-			//osa << AnzRunden; oss << Schritte;
-			bool nonsense = Lampen[1];
-		}
-		Lampejetzt = (unsigned long long)(Schritte % n);
-		Lampen[Lampejetzt] = !Lampen[Lampejetzt];		// Lampe umschalten
-	}
-
-	return PositiveRunden;
-}
-
 vector<unsigned long long> OptimierteForm3(unsigned long long n, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)	// maxK >= n
 {
 	{
@@ -671,50 +624,6 @@ vector<unsigned long long> OptimierteForm3(unsigned long long n, unsigned long l
 	
 		return PositiveRunden;
 	}
-}
-
-vector<uint1KB_t> LampenSimulieren1KB(unsigned long long n, uint1KB_t k, bool einsenAnzeigen)
-{
-	uint1KB_t				AnzRunden = 2;				// Aktuelle Runde
-	vector<bool>			Lampen;
-	vector<uint1KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
-	uint1KB_t				Schritte = n;				// Anzahl der Schritte, die schon gelaufen sind
-	unsigned long long		Lampejetzt;
-
-	vector<bool>	AlleLampenAn;
-	vector<bool>	AlleLampenAus;
-
-	for (size_t i = 0; i < n; i++)						// n Lampen, die aus sind erstellen
-	{
-		Lampen.push_back(true);
-		AlleLampenAn.push_back(true);
-		AlleLampenAus.push_back(false);
-	}
-	if (einsenAnzeigen)
-	{
-		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
-	}
-
-	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
-
-	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
-	{
-		Schritte += AnzRunden;
-		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
-		{
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden);	// Runde vermerken
-			}
-
-			AnzRunden = 1 + Schritte / n;
-			bool nonsense = Lampen[1];
-		}
-		Lampejetzt = (unsigned long long)(Schritte % n);
-		Lampen[Lampejetzt] = !Lampen[Lampejetzt];		// Lampe umschalten
-	}
-
-	return PositiveRunden;
 }
 
 vector<unsigned long long> OptimierteForm4(unsigned long long n, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)	// maxK >= n
@@ -896,553 +805,6 @@ vector<unsigned long long> OptimierteForm5(unsigned long long n, unsigned long l
 	}
 }
 
-vector<uint1KB_t> OP7LampenSimulieren1KB(unsigned long long n, uint1KB_t maxK, bool einsenAnzeigen)
-{
-	/*unsigned long long		max64 = 18'446'744'073'709'551'615;
-	uint256_t				max256 = (uint256_t)"115792089237316195423570985008687907853269984665640564039457584007913129639935";
-	uint1024_t				max1024 = (uint1024_t)max256 * max256; max1024 *= max1024;
-	uint1KB_t				max1KB = (uint1KB_t)max1024 * max1024; max1KB *= max1KB; max1KB *= max1KB;*/
-
-	double					Doppel = log(2) / (log(n + 1) - log(n));
-	vector<unsigned int>	Wechsel(3);
-
-	Wechsel[0] = (unsigned int)(63 * Doppel);
-	Wechsel[1] = (unsigned int)(255 * Doppel);
-	Wechsel[2] = (unsigned int)(1023 * Doppel);
-
-	unsigned long long		AnzRunden64 = 2;			// Aktuelle Runde
-	checked_uint256_t		AnzRunden256;
-	checked_uint1024_t		AnzRunden1024;
-	checked_uint1KB_t		AnzRunden1KB;
-	vector<bool>			Lampen(n, true);
-	vector<uint1KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
-	unsigned long long		Lampejetzt64 = 0;			//Schritte64 = n;				// Anzahl der Schritte, die schon gelaufen sind
-	checked_uint256_t		Lampejetzt256;				//Schritte256;
-	checked_uint1024_t		Lampejetzt1024;				//Schritte1024;
-	checked_uint1KB_t		Lampejetzt1KB;				//Schritte1KB;
-//	unsigned long long		Lampejetzt = 0;
-	unsigned int			Betaetigen = 0;
-
-
-	vector<bool>	AlleLampenAn(n, true);
-	vector<bool>	AlleLampenAus(n, false);
-
-	if (einsenAnzeigen)
-	{
-		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
-	}
-
-	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
-
-/*	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
-	{
-		Schritte += AnzRunden;
-		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
-		{
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden);	// Runde vermerken
-			}
-
-			AnzRunden = 1 + Schritte / n;
-		}
-		Lampejetzt = (unsigned long long)(Schritte % n);
-		Lampen[Lampejetzt] = !Lampen[Lampejetzt];		// Lampe umschalten
-	}*/
-
-//	try
-	{
-		while (AnzRunden64 <= n + 1)
-		{
-			Lampejetzt64 += AnzRunden64;
-			if (Lampejetzt64>=n)
-			{
-				if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-				{
-					PositiveRunden.push_back(AnzRunden64);
-				}
-			}
-			AnzRunden64 += Lampejetzt64 / n;
-			Lampejetzt64 %= n;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		while (Betaetigen < Wechsel[0])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden64);
-			}
-
-			Lampejetzt64 += AnzRunden64;
-			AnzRunden64 += Lampejetzt64 / n;
-			Lampejetzt64 %= n;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt256 = Lampejetzt64;
-		AnzRunden256 = AnzRunden64;
-
-		while (Betaetigen < Wechsel[1])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden256);
-			}
-
-			Lampejetzt256 += AnzRunden256;
-			AnzRunden256 += Lampejetzt256 / n;
-			Lampejetzt256 %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt256;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt1024 = Lampejetzt256;
-		AnzRunden1024 = AnzRunden256;
-
-		while (Betaetigen < Wechsel[2])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden1024);
-			}
-
-			Lampejetzt1024 += AnzRunden1024;
-			AnzRunden1024 += Lampejetzt1024 / n;
-			Lampejetzt1024 %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt1024;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt1KB = Lampejetzt1024;
-		AnzRunden1KB = AnzRunden1024;
-
-		while (AnzRunden1KB <= maxK)								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden1KB);
-			}
-
-			Lampejetzt1KB += AnzRunden1KB;
-			AnzRunden1KB += Lampejetzt1KB / n;
-			Lampejetzt1KB %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt1KB;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-	//		Betätigen++;
-		}
-
-	}
-/*	catch (const std::exception& e)
-	{
-		cout << "Fehler:\n" << e.what() << endl;
-//		PositiveRunden.clear();
-	}*/
-
-	return PositiveRunden;
-}
-
-vector<uint16KB_t> OP8LampenSimulieren16KB(unsigned long long n, uint16KB_t maxK, bool einsenAnzeigen)
-{
-	double					Doppel = log(2) / (log(n + 1) - log(n));
-	vector<unsigned int>	Wechsel(5);
-
-	Wechsel[0] = (unsigned int)(63 * Doppel);
-	Wechsel[1] = (unsigned int)(255 * Doppel);
-	Wechsel[2] = (unsigned int)(1023 * Doppel);
-	Wechsel[3] = (unsigned int)(8191 * Doppel);
-	Wechsel[4] = (unsigned int)(32767 * Doppel);
-//	Wechsel[5] = (unsigned int)(131071 * Doppel);
-
-	unsigned long long		AnzRunden64 = 2;			// Aktuelle Runde
-	checked_uint256_t		AnzRunden256;
-	checked_uint1024_t		AnzRunden1024;
-	checked_uint1KB_t		AnzRunden1KB;
-	checked_uint4KB_t		AnzRunden4KB;
-	checked_uint16KB_t		AnzRunden16KB;
-	vector<bool>			Lampen(n, true);
-	vector<uint16KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
-	unsigned long long		Lampejetzt64 = 0;			//Schritte64 = n;				// Anzahl der Schritte, die schon gelaufen sind
-	checked_uint256_t		Lampejetzt256;				//Schritte256;
-	checked_uint1024_t		Lampejetzt1024;				//Schritte1024;
-	checked_uint1KB_t		Lampejetzt1KB;				//Schritte1KB;
-	checked_uint4KB_t		Lampejetzt4KB;				//Schritte1KB;
-	checked_uint16KB_t		Lampejetzt16KB;				//Schritte1KB;
-//	unsigned long long		Lampejetzt = 0;
-	unsigned int			Betaetigen = 0;
-
-
-	vector<bool>	AlleLampenAn(n, true);
-	vector<bool>	AlleLampenAus(n, false);
-
-	if (einsenAnzeigen)
-	{
-		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
-	}
-
-	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
-
-/*	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
-	{
-		Schritte += AnzRunden;
-		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
-		{
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden);	// Runde vermerken
-			}
-
-			AnzRunden = 1 + Schritte / n;
-		}
-		Lampejetzt = (unsigned long long)(Schritte % n);
-		Lampen[Lampejetzt] = !Lampen[Lampejetzt];		// Lampe umschalten
-	}*/
-
-//	try
-	{
-		while (AnzRunden64 <= n + 1)
-		{
-			Lampejetzt64 += AnzRunden64;
-			if (Lampejetzt64>=n)
-			{
-				if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-				{
-					PositiveRunden.push_back(AnzRunden64);
-				}
-			}
-			AnzRunden64 += Lampejetzt64 / n;
-			Lampejetzt64 %= n;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		while (Betaetigen < Wechsel[0])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden64);
-			}
-
-			Lampejetzt64 += AnzRunden64;
-			AnzRunden64 += Lampejetzt64 / n;
-			Lampejetzt64 %= n;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt256 = Lampejetzt64;
-		AnzRunden256 = AnzRunden64;
-
-		while (Betaetigen < Wechsel[1])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden256);
-			}
-
-			Lampejetzt256 += AnzRunden256;
-			AnzRunden256 += Lampejetzt256 / n;
-			Lampejetzt256 %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt256;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt1024 = Lampejetzt256;
-		AnzRunden1024 = AnzRunden256;
-
-		while (Betaetigen < Wechsel[2])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden1024);
-			}
-
-			Lampejetzt1024 += AnzRunden1024;
-			AnzRunden1024 += Lampejetzt1024 / n;
-			Lampejetzt1024 %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt1024;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt1KB = Lampejetzt1024;
-		AnzRunden1KB = AnzRunden1024;
-
-
-		while (Betaetigen < Wechsel[3])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden1KB);
-			}
-
-			Lampejetzt1KB += AnzRunden1KB;
-			AnzRunden1KB += Lampejetzt1KB / n;
-			Lampejetzt1KB %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt1KB;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt4KB = Lampejetzt1KB;
-		AnzRunden4KB = AnzRunden1KB;
-
-		while (Betaetigen < Wechsel[4])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden4KB);
-			}
-
-			Lampejetzt4KB += AnzRunden4KB;
-			AnzRunden4KB += Lampejetzt4KB / n;
-			Lampejetzt4KB %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt4KB;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt16KB = Lampejetzt4KB;
-		AnzRunden16KB = AnzRunden4KB;
-
-		while (AnzRunden16KB <= maxK)								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden16KB);
-			}
-
-			Lampejetzt16KB += AnzRunden16KB;
-			AnzRunden16KB += Lampejetzt16KB / n;
-			Lampejetzt16KB %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt16KB;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-	//		Betätigen++;
-		}
-
-	}
-/*	catch (const std::exception& e)
-	{
-		cout << "Fehler:\n" << e.what() << endl;
-//		PositiveRunden.clear();
-	}*/
-
-	return PositiveRunden;
-}
-
-vector<uint16KB_t> OP9LampenSimulieren16KB(unsigned long long n, bool einsenAnzeigen)
-{
-	double					Doppel = log(2) / (log(n + 1) - log(n));
-	vector<unsigned int>	Wechsel(5);
-
-	Wechsel[0] = (unsigned int)(63 * Doppel);
-	Wechsel[1] = (unsigned int)(255 * Doppel);
-	Wechsel[2] = (unsigned int)(1023 * Doppel);
-	Wechsel[3] = (unsigned int)(8191 * Doppel);
-	Wechsel[4] = (unsigned int)(32767 * Doppel);
-	Wechsel[5] = (unsigned int)(131071 * Doppel);
-
-	unsigned long long		AnzRunden64 = 2;			// Aktuelle Runde
-	checked_uint256_t		AnzRunden256;
-	checked_uint1024_t		AnzRunden1024;
-	checked_uint1KB_t		AnzRunden1KB;
-	checked_uint4KB_t		AnzRunden4KB;
-	checked_uint16KB_t		AnzRunden16KB;
-	vector<bool>			Lampen(n, true);
-	vector<uint16KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
-	unsigned long long		Lampejetzt64 = 0;			//Schritte64 = n;				// Anzahl der Schritte, die schon gelaufen sind
-	checked_uint256_t		Lampejetzt256;				//Schritte256;
-	checked_uint1024_t		Lampejetzt1024;				//Schritte1024;
-	checked_uint1KB_t		Lampejetzt1KB;				//Schritte1KB;
-	checked_uint4KB_t		Lampejetzt4KB;				//Schritte1KB;
-	checked_uint16KB_t		Lampejetzt16KB;				//Schritte1KB;
-//	unsigned long long		Lampejetzt = 0;
-	unsigned int			Betaetigen = 0;
-
-
-	vector<bool>	AlleLampenAn(n, true);
-	vector<bool>	AlleLampenAus(n, false);
-
-	if (einsenAnzeigen)
-	{
-		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
-	}
-
-	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
-
-//	try
-	{
-		while (AnzRunden64 <= n + 1)
-		{
-			Lampejetzt64 += AnzRunden64;
-			if (Lampejetzt64>=n)
-			{
-				if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-				{
-					PositiveRunden.push_back(AnzRunden64);
-				}
-			}
-			AnzRunden64 += Lampejetzt64 / n;
-			Lampejetzt64 %= n;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		while (Betaetigen < Wechsel[0])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden64);
-			}
-
-			Lampejetzt64 += AnzRunden64;
-			AnzRunden64 += Lampejetzt64 / n;
-			Lampejetzt64 %= n;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt256 = Lampejetzt64;
-		AnzRunden256 = AnzRunden64;
-
-		while (Betaetigen < Wechsel[1])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden256);
-			}
-
-			Lampejetzt256 += AnzRunden256;
-			AnzRunden256 += Lampejetzt256 / n;
-			Lampejetzt256 %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt256;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt1024 = Lampejetzt256;
-		AnzRunden1024 = AnzRunden256;
-
-		while (Betaetigen < Wechsel[2])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden1024);
-			}
-
-			Lampejetzt1024 += AnzRunden1024;
-			AnzRunden1024 += Lampejetzt1024 / n;
-			Lampejetzt1024 %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt1024;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt1KB = Lampejetzt1024;
-		AnzRunden1KB = AnzRunden1024;
-
-
-		while (Betaetigen < Wechsel[3])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden1KB);
-			}
-
-			Lampejetzt1KB += AnzRunden1KB;
-			AnzRunden1KB += Lampejetzt1KB / n;
-			Lampejetzt1KB %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt1KB;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt4KB = Lampejetzt1KB;
-		AnzRunden4KB = AnzRunden1KB;
-
-		while (Betaetigen < Wechsel[4])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden4KB);
-			}
-
-			Lampejetzt4KB += AnzRunden4KB;
-			AnzRunden4KB += Lampejetzt4KB / n;
-			Lampejetzt4KB %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt4KB;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-		Lampejetzt16KB = Lampejetzt4KB;
-		AnzRunden16KB = AnzRunden4KB;
-
-		while (Betaetigen < Wechsel[5])								// bis Rundenanzahl erreicht
-		{
-
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden16KB);
-			}
-
-			Lampejetzt16KB += AnzRunden16KB;
-			AnzRunden16KB += Lampejetzt16KB / n;
-			Lampejetzt16KB %= n;
-			Lampejetzt64 = (unsigned long long)Lampejetzt16KB;
-
-			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
-			Betaetigen++;
-		}
-
-	}
-/*	catch (const std::exception& e)
-	{
-		cout << "Fehler:\n" << e.what() << endl;
-//		PositiveRunden.clear();
-	}*/
-
-	return PositiveRunden;
-}
-
 //vector<vector<unsigned long long>> OptimierteForm2Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)
 string OptimierteForm2Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)
 {
@@ -1612,6 +974,651 @@ string OptimierteForm6Pack(unsigned long long minN, unsigned long long maxN, uns
 	return VectorenZuString(minN, output);
 }
 
+#ifdef _ENABLEBIGINTS_
+
+vector<uint1024_t> LampenSimulieren1024(unsigned long long n, uint1024_t k, bool einsenAnzeigen)
+{
+	uint1024_t				AnzRunden = 2;				// Aktuelle Runde
+	vector<bool>			Lampen;
+	vector<uint1024_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
+	uint1024_t				Schritte = n;				// Anzahl der Schritte, die schon gelaufen sind
+	unsigned long long		Lampejetzt;
+
+	vector<bool>	AlleLampenAn;
+	vector<bool>	AlleLampenAus;
+
+	//ostringstream			osa;
+	//ostringstream			osk; osk << k;
+	//ostringstream			oss;
+
+	for (size_t i = 0; i < n; i++)						// n Lampen, die aus sind erstellen
+	{
+		Lampen.push_back(true);
+		AlleLampenAn.push_back(true);
+		AlleLampenAus.push_back(false);
+	}
+	if (einsenAnzeigen)
+	{
+		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
+	}
+
+	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
+
+	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
+	{
+		Schritte += AnzRunden;
+		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
+		{
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden);	// Runde vermerken
+			}
+
+			AnzRunden = 1 + Schritte / n;
+			//osa.str(""); osa.clear(); oss.str(""); oss.clear();
+			//osa << AnzRunden; oss << Schritte;
+			bool nonsense = Lampen[1];
+		}
+		Lampejetzt = (unsigned long long)(Schritte % n);
+		Lampen[Lampejetzt] = !Lampen[Lampejetzt];		// Lampe umschalten
+	}
+
+	return PositiveRunden;
+}
+
+vector<uint1KB_t> LampenSimulieren1KB(unsigned long long n, uint1KB_t k, bool einsenAnzeigen)
+{
+	uint1KB_t				AnzRunden = 2;				// Aktuelle Runde
+	vector<bool>			Lampen;
+	vector<uint1KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
+	uint1KB_t				Schritte = n;				// Anzahl der Schritte, die schon gelaufen sind
+	unsigned long long		Lampejetzt;
+
+	vector<bool>	AlleLampenAn;
+	vector<bool>	AlleLampenAus;
+
+	for (size_t i = 0; i < n; i++)						// n Lampen, die aus sind erstellen
+	{
+		Lampen.push_back(true);
+		AlleLampenAn.push_back(true);
+		AlleLampenAus.push_back(false);
+	}
+	if (einsenAnzeigen)
+	{
+		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
+	}
+
+	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
+
+	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
+	{
+		Schritte += AnzRunden;
+		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
+		{
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden);	// Runde vermerken
+			}
+
+			AnzRunden = 1 + Schritte / n;
+			bool nonsense = Lampen[1];
+		}
+		Lampejetzt = (unsigned long long)(Schritte % n);
+		Lampen[Lampejetzt] = !Lampen[Lampejetzt];		// Lampe umschalten
+	}
+
+	return PositiveRunden;
+}
+
+vector<uint1KB_t> OP7LampenSimulieren1KB(unsigned long long n, uint1KB_t maxK, bool einsenAnzeigen)
+{
+	/*unsigned long long		max64 = 18'446'744'073'709'551'615;
+	uint256_t				max256 = (uint256_t)"115792089237316195423570985008687907853269984665640564039457584007913129639935";
+	uint1024_t				max1024 = (uint1024_t)max256 * max256; max1024 *= max1024;
+	uint1KB_t				max1KB = (uint1KB_t)max1024 * max1024; max1KB *= max1KB; max1KB *= max1KB;*/
+
+	double					Doppel = log(2) / (log(n + 1) - log(n));
+	vector<unsigned int>	Wechsel(3);
+
+	Wechsel[0] = (unsigned int)(63 * Doppel);
+	Wechsel[1] = (unsigned int)(255 * Doppel);
+	Wechsel[2] = (unsigned int)(1023 * Doppel);
+
+	unsigned long long		AnzRunden64 = 2;			// Aktuelle Runde
+	checked_uint256_t		AnzRunden256;
+	checked_uint1024_t		AnzRunden1024;
+	checked_uint1KB_t		AnzRunden1KB;
+	vector<bool>			Lampen(n, true);
+	vector<uint1KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
+	unsigned long long		Lampejetzt64 = 0;			//Schritte64 = n;				// Anzahl der Schritte, die schon gelaufen sind
+	checked_uint256_t		Lampejetzt256;				//Schritte256;
+	checked_uint1024_t		Lampejetzt1024;				//Schritte1024;
+	checked_uint1KB_t		Lampejetzt1KB;				//Schritte1KB;
+	//	unsigned long long		Lampejetzt = 0;
+	unsigned int			Betaetigen = 0;
+
+
+	vector<bool>	AlleLampenAn(n, true);
+	vector<bool>	AlleLampenAus(n, false);
+
+	if (einsenAnzeigen)
+	{
+		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
+	}
+
+	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
+
+	/*	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
+		{
+			Schritte += AnzRunden;
+			if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
+			{
+				if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+				{
+					PositiveRunden.push_back(AnzRunden);	// Runde vermerken
+				}
+
+				AnzRunden = 1 + Schritte / n;
+			}
+			Lampejetzt = (unsigned long long)(Schritte % n);
+			Lampen[Lampejetzt] = !Lampen[Lampejetzt];		// Lampe umschalten
+		}*/
+
+		//	try
+	{
+		while (AnzRunden64 <= n + 1)
+		{
+			Lampejetzt64 += AnzRunden64;
+			if (Lampejetzt64 >= n)
+			{
+				if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+				{
+					PositiveRunden.push_back(AnzRunden64);
+				}
+			}
+			AnzRunden64 += Lampejetzt64 / n;
+			Lampejetzt64 %= n;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		while (Betaetigen < Wechsel[0])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden64);
+			}
+
+			Lampejetzt64 += AnzRunden64;
+			AnzRunden64 += Lampejetzt64 / n;
+			Lampejetzt64 %= n;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt256 = Lampejetzt64;
+		AnzRunden256 = AnzRunden64;
+
+		while (Betaetigen < Wechsel[1])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden256);
+			}
+
+			Lampejetzt256 += AnzRunden256;
+			AnzRunden256 += Lampejetzt256 / n;
+			Lampejetzt256 %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt256;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt1024 = Lampejetzt256;
+		AnzRunden1024 = AnzRunden256;
+
+		while (Betaetigen < Wechsel[2])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden1024);
+			}
+
+			Lampejetzt1024 += AnzRunden1024;
+			AnzRunden1024 += Lampejetzt1024 / n;
+			Lampejetzt1024 %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt1024;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt1KB = Lampejetzt1024;
+		AnzRunden1KB = AnzRunden1024;
+
+		while (AnzRunden1KB <= maxK)								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden1KB);
+			}
+
+			Lampejetzt1KB += AnzRunden1KB;
+			AnzRunden1KB += Lampejetzt1KB / n;
+			Lampejetzt1KB %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt1KB;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			//		Betätigen++;
+		}
+
+	}
+	/*	catch (const std::exception& e)
+		{
+			cout << "Fehler:\n" << e.what() << endl;
+	//		PositiveRunden.clear();
+		}*/
+
+	return PositiveRunden;
+}
+
+vector<uint16KB_t> OP8LampenSimulieren16KB(unsigned long long n, uint16KB_t maxK, bool einsenAnzeigen)
+{
+	double					Doppel = log(2) / (log(n + 1) - log(n));
+	vector<unsigned int>	Wechsel(5);
+
+	Wechsel[0] = (unsigned int)(63 * Doppel);
+	Wechsel[1] = (unsigned int)(255 * Doppel);
+	Wechsel[2] = (unsigned int)(1023 * Doppel);
+	Wechsel[3] = (unsigned int)(8191 * Doppel);
+	Wechsel[4] = (unsigned int)(32767 * Doppel);
+	//	Wechsel[5] = (unsigned int)(131071 * Doppel);
+
+	unsigned long long		AnzRunden64 = 2;			// Aktuelle Runde
+	checked_uint256_t		AnzRunden256;
+	checked_uint1024_t		AnzRunden1024;
+	checked_uint1KB_t		AnzRunden1KB;
+	checked_uint4KB_t		AnzRunden4KB;
+	checked_uint16KB_t		AnzRunden16KB;
+	vector<bool>			Lampen(n, true);
+	vector<uint16KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
+	unsigned long long		Lampejetzt64 = 0;			//Schritte64 = n;				// Anzahl der Schritte, die schon gelaufen sind
+	checked_uint256_t		Lampejetzt256;				//Schritte256;
+	checked_uint1024_t		Lampejetzt1024;				//Schritte1024;
+	checked_uint1KB_t		Lampejetzt1KB;				//Schritte1KB;
+	checked_uint4KB_t		Lampejetzt4KB;				//Schritte1KB;
+	checked_uint16KB_t		Lampejetzt16KB;				//Schritte1KB;
+	//	unsigned long long		Lampejetzt = 0;
+	unsigned int			Betaetigen = 0;
+
+
+	vector<bool>	AlleLampenAn(n, true);
+	vector<bool>	AlleLampenAus(n, false);
+
+	if (einsenAnzeigen)
+	{
+		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
+	}
+
+	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
+
+	/*	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
+		{
+			Schritte += AnzRunden;
+			if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
+			{
+				if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+				{
+					PositiveRunden.push_back(AnzRunden);	// Runde vermerken
+				}
+
+				AnzRunden = 1 + Schritte / n;
+			}
+			Lampejetzt = (unsigned long long)(Schritte % n);
+			Lampen[Lampejetzt] = !Lampen[Lampejetzt];		// Lampe umschalten
+		}*/
+
+		//	try
+	{
+		while (AnzRunden64 <= n + 1)
+		{
+			Lampejetzt64 += AnzRunden64;
+			if (Lampejetzt64 >= n)
+			{
+				if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+				{
+					PositiveRunden.push_back(AnzRunden64);
+				}
+			}
+			AnzRunden64 += Lampejetzt64 / n;
+			Lampejetzt64 %= n;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		while (Betaetigen < Wechsel[0])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden64);
+			}
+
+			Lampejetzt64 += AnzRunden64;
+			AnzRunden64 += Lampejetzt64 / n;
+			Lampejetzt64 %= n;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt256 = Lampejetzt64;
+		AnzRunden256 = AnzRunden64;
+
+		while (Betaetigen < Wechsel[1])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden256);
+			}
+
+			Lampejetzt256 += AnzRunden256;
+			AnzRunden256 += Lampejetzt256 / n;
+			Lampejetzt256 %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt256;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt1024 = Lampejetzt256;
+		AnzRunden1024 = AnzRunden256;
+
+		while (Betaetigen < Wechsel[2])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden1024);
+			}
+
+			Lampejetzt1024 += AnzRunden1024;
+			AnzRunden1024 += Lampejetzt1024 / n;
+			Lampejetzt1024 %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt1024;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt1KB = Lampejetzt1024;
+		AnzRunden1KB = AnzRunden1024;
+
+
+		while (Betaetigen < Wechsel[3])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden1KB);
+			}
+
+			Lampejetzt1KB += AnzRunden1KB;
+			AnzRunden1KB += Lampejetzt1KB / n;
+			Lampejetzt1KB %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt1KB;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt4KB = Lampejetzt1KB;
+		AnzRunden4KB = AnzRunden1KB;
+
+		while (Betaetigen < Wechsel[4])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden4KB);
+			}
+
+			Lampejetzt4KB += AnzRunden4KB;
+			AnzRunden4KB += Lampejetzt4KB / n;
+			Lampejetzt4KB %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt4KB;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt16KB = Lampejetzt4KB;
+		AnzRunden16KB = AnzRunden4KB;
+
+		while (AnzRunden16KB <= maxK)								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden16KB);
+			}
+
+			Lampejetzt16KB += AnzRunden16KB;
+			AnzRunden16KB += Lampejetzt16KB / n;
+			Lampejetzt16KB %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt16KB;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			//		Betätigen++;
+		}
+
+	}
+	/*	catch (const std::exception& e)
+		{
+			cout << "Fehler:\n" << e.what() << endl;
+	//		PositiveRunden.clear();
+		}*/
+
+	return PositiveRunden;
+}
+
+vector<uint16KB_t> OP9LampenSimulieren16KB(unsigned long long n, bool einsenAnzeigen)
+{
+	double					Doppel = log(2) / (log(n + 1) - log(n));
+	vector<unsigned int>	Wechsel(5);
+
+	Wechsel[0] = (unsigned int)(63 * Doppel);
+	Wechsel[1] = (unsigned int)(255 * Doppel);
+	Wechsel[2] = (unsigned int)(1023 * Doppel);
+	Wechsel[3] = (unsigned int)(8191 * Doppel);
+	Wechsel[4] = (unsigned int)(32767 * Doppel);
+	Wechsel[5] = (unsigned int)(131071 * Doppel);
+
+	unsigned long long		AnzRunden64 = 2;			// Aktuelle Runde
+	checked_uint256_t		AnzRunden256;
+	checked_uint1024_t		AnzRunden1024;
+	checked_uint1KB_t		AnzRunden1KB;
+	checked_uint4KB_t		AnzRunden4KB;
+	checked_uint16KB_t		AnzRunden16KB;
+	vector<bool>			Lampen(n, true);
+	vector<uint16KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
+	unsigned long long		Lampejetzt64 = 0;			//Schritte64 = n;				// Anzahl der Schritte, die schon gelaufen sind
+	checked_uint256_t		Lampejetzt256;				//Schritte256;
+	checked_uint1024_t		Lampejetzt1024;				//Schritte1024;
+	checked_uint1KB_t		Lampejetzt1KB;				//Schritte1KB;
+	checked_uint4KB_t		Lampejetzt4KB;				//Schritte1KB;
+	checked_uint16KB_t		Lampejetzt16KB;				//Schritte1KB;
+	//	unsigned long long		Lampejetzt = 0;
+	unsigned int			Betaetigen = 0;
+
+
+	vector<bool>	AlleLampenAn(n, true);
+	vector<bool>	AlleLampenAus(n, false);
+
+	if (einsenAnzeigen)
+	{
+		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
+	}
+
+	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
+
+	//	try
+	{
+		while (AnzRunden64 <= n + 1)
+		{
+			Lampejetzt64 += AnzRunden64;
+			if (Lampejetzt64 >= n)
+			{
+				if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+				{
+					PositiveRunden.push_back(AnzRunden64);
+				}
+			}
+			AnzRunden64 += Lampejetzt64 / n;
+			Lampejetzt64 %= n;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		while (Betaetigen < Wechsel[0])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden64);
+			}
+
+			Lampejetzt64 += AnzRunden64;
+			AnzRunden64 += Lampejetzt64 / n;
+			Lampejetzt64 %= n;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt256 = Lampejetzt64;
+		AnzRunden256 = AnzRunden64;
+
+		while (Betaetigen < Wechsel[1])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden256);
+			}
+
+			Lampejetzt256 += AnzRunden256;
+			AnzRunden256 += Lampejetzt256 / n;
+			Lampejetzt256 %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt256;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt1024 = Lampejetzt256;
+		AnzRunden1024 = AnzRunden256;
+
+		while (Betaetigen < Wechsel[2])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden1024);
+			}
+
+			Lampejetzt1024 += AnzRunden1024;
+			AnzRunden1024 += Lampejetzt1024 / n;
+			Lampejetzt1024 %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt1024;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt1KB = Lampejetzt1024;
+		AnzRunden1KB = AnzRunden1024;
+
+
+		while (Betaetigen < Wechsel[3])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden1KB);
+			}
+
+			Lampejetzt1KB += AnzRunden1KB;
+			AnzRunden1KB += Lampejetzt1KB / n;
+			Lampejetzt1KB %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt1KB;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt4KB = Lampejetzt1KB;
+		AnzRunden4KB = AnzRunden1KB;
+
+		while (Betaetigen < Wechsel[4])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden4KB);
+			}
+
+			Lampejetzt4KB += AnzRunden4KB;
+			AnzRunden4KB += Lampejetzt4KB / n;
+			Lampejetzt4KB %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt4KB;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+		Lampejetzt16KB = Lampejetzt4KB;
+		AnzRunden16KB = AnzRunden4KB;
+
+		while (Betaetigen < Wechsel[5])								// bis Rundenanzahl erreicht
+		{
+
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden16KB);
+			}
+
+			Lampejetzt16KB += AnzRunden16KB;
+			AnzRunden16KB += Lampejetzt16KB / n;
+			Lampejetzt16KB %= n;
+			Lampejetzt64 = (unsigned long long)Lampejetzt16KB;
+
+			Lampen[Lampejetzt64] = !Lampen[Lampejetzt64];	// Lampe umschalten
+			Betaetigen++;
+		}
+
+	}
+	/*	catch (const std::exception& e)
+		{
+			cout << "Fehler:\n" << e.what() << endl;
+	//		PositiveRunden.clear();
+		}*/
+
+	return PositiveRunden;
+}
+
+#endif
+
 int main()
 {
 	ostringstream						Dateiausgabe;
@@ -1635,12 +1642,14 @@ int main()
 		unsigned long long					maxNecht;
 		unsigned long long					delN;
 		unsigned long long					maxK;
+#ifdef _ENABLEBIGINTS_
 		//	uint1024_t							minN1024;
 		//	uint1024_t							maxN1024;
 		uint1024_t							maxK1024;
 		uint1KB_t							maxK1KB;
 		uint16KB_t							maxK16KB;
 		//	uint1MB_t							maxK1MB;
+#endif
 		vector<vector<unsigned long long>>	vPositiveRunden(AnzThreads3);
 		int									prüfart;
 		double								wechselfaktorN;
@@ -1906,6 +1915,7 @@ int main()
 					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
 					break;
 				case 5:
+#ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
 					cin >> minN;
 					cout << "max n eingeben: ";
@@ -1938,6 +1948,9 @@ int main()
 
 					berechnungsEnde = steady_clock::now();
 					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+#else
+					cout << "[Error] big ints not enabled while compiling!" << endl;
+#endif // _ENABLEBIGINTS_
 					break;
 				case 6:
 					cout << "min n eingeben: ";
@@ -2006,6 +2019,7 @@ int main()
 					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
 					break;
 				case 7:
+#ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
 					cin >> minN;
 					cout << "max n eingeben: ";
@@ -2038,6 +2052,9 @@ int main()
 
 					berechnungsEnde = steady_clock::now();
 					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+#else
+					cout << "[Error] big ints not enabled while compiling!" << endl;
+#endif // _ENABLEBIGINTS_
 					break;
 				case 8:
 					cout << "min n eingeben: ";
@@ -2171,6 +2188,7 @@ int main()
 					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
 					break;
 				case 11:
+#ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
 					cin >> minN;
 					cout << "max n eingeben: ";
@@ -2218,7 +2236,9 @@ int main()
 
 					berechnungsEnde = steady_clock::now();
 					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
-
+#else
+					cout << "[Error] big ints not enabled while compiling!" << endl;
+#endif // _ENABLEBIGINTS_
 					break;
 				case 12:
 					cout << "min n eingeben: ";
@@ -2272,6 +2292,7 @@ int main()
 					break;
 
 				case 13:
+#ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
 					cin >> minN;
 					cout << "max n eingeben: ";
@@ -2318,10 +2339,13 @@ int main()
 
 					berechnungsEnde = steady_clock::now();
 					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
-
+#else
+					cout << "[Error] big ints not enabled while compiling!" << endl;
+#endif // _ENABLEBIGINTS_
 					break;
 
 				case 14:
+#ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
 					cin >> minN;
 					cout << "max n eingeben: ";
@@ -2362,7 +2386,9 @@ int main()
 
 					berechnungsEnde = steady_clock::now();
 					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
-
+#else
+					cout << "[Error] big ints not enabled while compiling!" << endl;
+#endif // _ENABLEBIGINTS_
 					break;
 
 				default:
@@ -2385,12 +2411,14 @@ int main()
 	unsigned long long					maxNecht;
 	unsigned long long					delN;
 	unsigned long long					maxK;
+#ifdef _ENABLEBIGINTS_
 	//	uint1024_t							minN1024;
 	//	uint1024_t							maxN1024;
 	uint1024_t							maxK1024;
 	uint1KB_t							maxK1KB;
 	uint16KB_t							maxK16KB;
 	//	uint1MB_t							maxK1MB;
+#endif
 	vector<vector<unsigned long long>>	vPositiveRunden(AnzThreads3);
 	int									prüfart;
 	double								wechselfaktorN;
@@ -2482,6 +2510,7 @@ int main()
 				cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
 				break;
 			case 2:
+#ifdef _ENABLEBIGINTS_
 				cout << "min n eingeben: ";
 				cin >> minN;
 				cout << "max n eingeben: ";
@@ -2529,10 +2558,13 @@ int main()
 
 				berechnungsEnde = steady_clock::now();
 				cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
-
+#else
+				cout << "[Error] big ints not enabled while compiling!" << endl;
+#endif // _ENABLEBIGINTS_
 				break;
 
 			case 3:
+#ifdef _ENABLEBIGINTS_
 				cout << "min n eingeben: ";
 				cin >> minN;
 				cout << "max n eingeben: ";
@@ -2573,7 +2605,9 @@ int main()
 
 				berechnungsEnde = steady_clock::now();
 				cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
-
+#else
+				cout << "[Error] big ints not enabled while compiling!" << endl;
+#endif // _ENABLEBIGINTS_
 				break;
 
 
