@@ -3,7 +3,7 @@
 // TODO 1kb
 
 // Uncomment to enable big ints
-//#define _ENABLEBIGINTS_
+#define _ENABLEBIGINTS_
 
 //check if correct boost installed
 #ifdef _ENABLEBIGINTS_
