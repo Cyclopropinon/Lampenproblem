@@ -9,7 +9,7 @@ Alle Lampen können nur entweder an oder aus sein.
 Du läufst nur im Uhrzeigersinn
 
 Startbedingungen:
--> Rundenzahl k=0
+-> Rundenzahl k=1
 -> Lampenzahl m=1
 -> Du stehst bei Lampe 1
 -> Alle Lampen sind aus
