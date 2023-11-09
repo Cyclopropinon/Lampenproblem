@@ -1727,8 +1727,8 @@ int main()
 		uint16KB_t							maxK16KB;
 		//	uint1MB_t							maxK1MB;
 #endif
-	    mpz_class							maxKGMPLIB;			// Verwende mpz_class für GMP-Bibliothek
-
+	    mpz_class							maxK_GMPLIB;			// Verwende mpz_class für GMP-Bibliothek
+	    uint64_t							mkb, mke;				// Basis und Exponent von max k
 
 		vector<vector<unsigned long long>>	vPositiveRunden(AnzThreads3);
 		int									prüfart;
@@ -1760,7 +1760,7 @@ int main()
 
 			try
 			{
-				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n";
+				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\n";
 				cin >> prüfart;
 
 				unsigned long long testLampen;
@@ -2478,26 +2478,47 @@ int main()
 					cin >> minN;
 					cout << "max n eingeben: ";
 					cin >> maxN;
-				    cout << "max k eingeben: ";
-					cin >> maxKGMPLIB;
-					cout << maxKGMPLIB << '\n';
+				    cout << "Basis von max k eingeben: ";
+					cin >> mkb;
+				    cout << "Exponent von max k eingeben (" << mkb << "te Potenz): ";
+					cin >> mke;
+//				    cout << "max k eingeben: ";
+//					cin >> maxK_GMPLIB;
+					maxK_GMPLIB = mkb;
+					mpz_ui_pow_ui(maxK_GMPLIB.get_mpz_t(), mkb, mke);
+
+					cout << "max k = " << maxK_GMPLIB << '\n';
+					cout << "Datei speichern unter: ";
+					cin >> filename;
 
 					berechnungsStart = steady_clock::now();
 
 					for (size_t i = minN; i <= maxN; i++)
 					{
 						string Ausgabe;
-						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIB(i, maxKGMPLIB, false);
+						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIB(i, maxK_GMPLIB, false);
 
-						ostringstream oss;
+						ostringstream oss2;
 
-						if (!PositiveRunden.empty())
+						if (!PositiveRunden.empty())					//vetor to string
 						{
-							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss, ","));
-							oss << PositiveRunden.back();
+							// Convert all but the last element to avoid a trailing ","
+							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
 
-							cout << "Lampenanzahl: " << i << "; positive Runde(n) :" << oss.str() << "\n";
+							// Now add the last element with no delimiter
+							oss2 << PositiveRunden.back();
+
+							Dateiausgabe << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n";
 						}
+					}
+					
+					output_fstream.open(filename, ios_base::out);
+					if (!output_fstream.is_open()) {
+						cout << "Failed to open " << filename << '\n';
+					}
+					else {
+						output_fstream << Dateiausgabe.str() << endl;
+						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
 
 					berechnungsEnde = steady_clock::now();
