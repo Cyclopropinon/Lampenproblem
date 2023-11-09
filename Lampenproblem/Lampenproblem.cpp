@@ -5,7 +5,7 @@
 //
 
 // Uncomment to enable big ints
-#define _ENABLEBIGINTS_
+//#define _ENABLEBIGINTS_
 
 //check if correct boost installed
 #ifdef _ENABLEBIGINTS_
@@ -29,6 +29,8 @@
 #include <chrono>
 #include <future>
 #include <fstream>
+#include <gmp.h>
+#include <gmpxx.h>
 #include <iostream>
 #include <iterator>
 #include <math.h>
@@ -1644,6 +1646,56 @@ vector<uint16KB_t> OP9LampenSimulieren16KB(unsigned long long n, bool einsenAnze
 
 #endif
 
+vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool einsenAnzeigen)
+{
+    mpz_class				AnzRunden = 2;
+	vector<bool>			Lampen(n, true);
+    vector<mpz_class>		PositiveRunden;
+	mpz_t					tmp_n_gmplib;
+	mpz_init_set_ui			(tmp_n_gmplib, n);
+	mpz_class				Schritte(tmp_n_gmplib);
+	mpz_class				n_gmplib(tmp_n_gmplib);
+    unsigned long long		Lampejetzt;
+
+//	mpz_init(Schritte);
+//	mpz_set(Schritte.get_mpz_t(), n_gmplib);
+
+	vector<bool>	AlleLampenAn(n, true);
+	vector<bool>	AlleLampenAus(n, false);
+
+    for (size_t i = 0; i < n; i++)
+    {
+        Lampen.push_back(true);
+        AlleLampenAn.push_back(true);
+        AlleLampenAus.push_back(false);
+    }
+    if (einsenAnzeigen)
+    {
+        PositiveRunden.push_back(1);
+    }
+
+    Lampen[0] = false;
+
+    while (1 + Schritte / n_gmplib <= k)
+    {
+        Schritte += AnzRunden;
+        if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
+        {
+            if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+            {
+                PositiveRunden.push_back(AnzRunden);
+            }
+
+            AnzRunden = 1 + Schritte / n_gmplib;
+            bool nonsense = Lampen[1];
+        }
+		Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
+        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+    }
+
+    return PositiveRunden;
+}
+
 int main()
 {
 	ostringstream						Dateiausgabe;
@@ -1675,6 +1727,9 @@ int main()
 		uint16KB_t							maxK16KB;
 		//	uint1MB_t							maxK1MB;
 #endif
+	    mpz_class							maxKGMPLIB;			// Verwende mpz_class für GMP-Bibliothek
+
+
 		vector<vector<unsigned long long>>	vPositiveRunden(AnzThreads3);
 		int									prüfart;
 		double								wechselfaktorN;
@@ -2418,7 +2473,36 @@ int main()
 					cout << "[Error] big ints not enabled while compiling!" << endl;
 #endif // _ENABLEBIGINTS_
 					break;
+				case 15:
+					cout << "min n eingeben: ";
+					cin >> minN;
+					cout << "max n eingeben: ";
+					cin >> maxN;
+				    cout << "max k eingeben: ";
+					cin >> maxKGMPLIB;
+					cout << maxKGMPLIB << '\n';
 
+					berechnungsStart = steady_clock::now();
+
+					for (size_t i = minN; i <= maxN; i++)
+					{
+						string Ausgabe;
+						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIB(i, maxKGMPLIB, false);
+
+						ostringstream oss;
+
+						if (!PositiveRunden.empty())
+						{
+							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss, ","));
+							oss << PositiveRunden.back();
+
+							cout << "Lampenanzahl: " << i << "; positive Runde(n) :" << oss.str() << "\n";
+						}
+					}
+
+					berechnungsEnde = steady_clock::now();
+					cout << "Laufzeit: " << duration<double>{berechnungsEnde - berechnungsStart}.count() << "s\n\n";
+					break;
 				default:
 					cout << "\aFehlerhafte Eingabe!\n\n";
 					break;
