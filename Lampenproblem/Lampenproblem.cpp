@@ -46,6 +46,8 @@
 //#include <sys/ioctl.h>
 //#include <unistd.h>
 
+// if using a progressBar
+#include "progBar.h"
 
 using namespace std;
 using namespace chrono;
@@ -58,10 +60,12 @@ using namespace boost::multiprecision;
 void Nix()
 {}
 
+#ifndef __defProgBar__
 int getConsoleWidth()
 {
 	return 100;
 }
+#endif
 
 void PrintProgressBar(double progress,int barWidth)
 {
@@ -1783,6 +1787,9 @@ int main()
 
 		auto								berechnungsStart = steady_clock::now();
 		auto								berechnungsEnde = steady_clock::now();
+		auto								berechnungsStartHR = std::chrono::high_resolution_clock::now();
+		auto								berechnungsEndeHR = std::chrono::high_resolution_clock::now();
+		string								durHR;
 
 		double								diffN;
 
@@ -1803,7 +1810,7 @@ int main()
 
 			try
 			{
-				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n";
+				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n";
 				cin >> prüfart;
 
 				unsigned long long testLampen;
@@ -2578,7 +2585,9 @@ int main()
 					cout << "Datei speichern unter: ";
 					cin >> filename;
 
-					berechnungsStart = steady_clock::now();
+					berechnungsStartHR = std::chrono::high_resolution_clock::now();
+
+					delN = maxN - minN + 1;
 
 					for (size_t i = minN; i <= maxN; i++)
 					{
@@ -2587,16 +2596,16 @@ int main()
 
 						ostringstream oss2;
 
-						if (!PositiveRunden.empty())					//vetor to string
-						{
-							// Convert all but the last element to avoid a trailing ","
-							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
+						// Convert all but the last element to avoid a trailing ","
+						copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
 
-							// Now add the last element with no delimiter
-							oss2 << PositiveRunden.back();
+						// Now add the last element with no delimiter
+						oss2 << PositiveRunden.back();
 
-							Dateiausgabe << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n";
-						}
+						Dateiausgabe << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n";
+
+						auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+						printProgressBar(minN, i, delN, delN, elapsed, 'k');
 					}
 					
 					output_fstream.open(filename, ios_base::out);
@@ -2607,9 +2616,16 @@ int main()
 						output_fstream << Dateiausgabe.str() << endl;
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-
-					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{berechnungsEnde - berechnungsStart}.count() << "s\n\n";
+					{
+            			char buffer[50];
+						berechnungsEndeHR = std::chrono::high_resolution_clock::now();
+						auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - berechnungsStartHR);
+						auto total_seconds = duration.count() / 1'000'000'000;
+						auto remaining_ns = duration.count() % 1'000'000'000;
+						sprintf(buffer, "%lld,%09llds", total_seconds, remaining_ns);
+						durHR = buffer;
+					}
+					cout << "Laufzeit: " << durHR << "s\n\n";
 					break;
 				case -16:
 					cout << "min n eingeben: ";
@@ -2631,7 +2647,6 @@ int main()
 						{
 							// Convert all but the last element to avoid a trailing ","
 							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
-
 							// Now add the last element with no delimiter
 							oss2 << PositiveRunden.back();
 
