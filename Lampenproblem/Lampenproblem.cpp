@@ -4,6 +4,9 @@
 // TODO Terminal width
 //
 
+// Version:
+#define _V "NaN"  // idk rn
+
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
 
@@ -1663,12 +1666,6 @@ vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool
 	vector<bool>	AlleLampenAn(n, true);
 	vector<bool>	AlleLampenAus(n, false);
 
-    for (size_t i = 0; i < n; i++)
-    {
-        Lampen.push_back(true);
-        AlleLampenAn.push_back(true);
-        AlleLampenAus.push_back(false);
-    }
     if (einsenAnzeigen)
     {
         PositiveRunden.push_back(1);
@@ -1677,6 +1674,51 @@ vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool
     Lampen[0] = false;
 
     while (1 + Schritte / n_gmplib <= k)
+    {
+        Schritte += AnzRunden;
+        if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
+        {
+            if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+            {
+                PositiveRunden.push_back(AnzRunden);
+            }
+
+            AnzRunden = 1 + Schritte / n_gmplib;
+            bool nonsense = Lampen[1];
+        }
+		Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
+        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+    }
+
+    return PositiveRunden;
+}
+
+vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, bool einsenAnzeigen)
+{
+    mpz_class				AnzRunden = 2;
+	vector<bool>			Lampen(n, true);
+    vector<mpz_class>		PositiveRunden;
+	mpz_t					tmp_n_gmplib;
+	mpz_init_set_ui			(tmp_n_gmplib, n);
+	mpz_class				Schritte(tmp_n_gmplib);
+	mpz_class				n_gmplib(tmp_n_gmplib);
+    unsigned long long		Lampejetzt;
+
+//	mpz_init(Schritte);
+//	mpz_set(Schritte.get_mpz_t(), n_gmplib);
+
+	vector<bool>	AlleLampenAn(n, true);
+	vector<bool>	AlleLampenAus(n, false);
+
+	PositiveRunden.reserve(anz);
+    if (einsenAnzeigen)
+    {
+        PositiveRunden.push_back(1);
+    }
+
+    Lampen[0] = false;
+
+    while (PositiveRunden.size() < anz)
     {
         Schritte += AnzRunden;
         if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
@@ -1705,7 +1747,7 @@ int main()
 //	unsigned long long					AnzThreads4;												// Anzahl der Threads für case 4+
 	unsigned int						AnzThreads4;												// Anzahl der Threads für case 4+
 
-	cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads für Prüfmethode Nr.3 eingeben: ";
+	cout << "Version " << _V << " Compiled on: " << __DATE__ << ' ' << __TIME__ << '\n' << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads für Prüfmethode Nr.3 eingeben: ";
 	cin >> AnzThreads3;
 
 	if (AnzThreads3 == -1)
@@ -1729,6 +1771,7 @@ int main()
 #endif
 	    mpz_class							maxK_GMPLIB;			// Verwende mpz_class für GMP-Bibliothek
 	    uint64_t							mkb, mke;				// Basis und Exponent von max k
+		uint64_t							anz;					// Anzahl der gesuchten PR je Lampenanzahl
 
 		vector<vector<unsigned long long>>	vPositiveRunden(AnzThreads3);
 		int									prüfart;
@@ -1760,7 +1803,7 @@ int main()
 
 			try
 			{
-				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\n";
+				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n";
 				cin >> prüfart;
 
 				unsigned long long testLampen;
@@ -2521,6 +2564,81 @@ int main()
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
 
+					berechnungsEnde = steady_clock::now();
+					cout << "Laufzeit: " << duration<double>{berechnungsEnde - berechnungsStart}.count() << "s\n\n";
+					break;
+				case 16:
+					cout << "min n eingeben: ";
+					cin >> minN;
+					cout << "max n eingeben: ";
+					cin >> maxN;
+				    cout << "Anzahl der PR je Lampenanzahl: ";
+					cin >> anz;
+
+					cout << "Datei speichern unter: ";
+					cin >> filename;
+
+					berechnungsStart = steady_clock::now();
+
+					for (size_t i = minN; i <= maxN; i++)
+					{
+						string Ausgabe;
+						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false);
+
+						ostringstream oss2;
+
+						if (!PositiveRunden.empty())					//vetor to string
+						{
+							// Convert all but the last element to avoid a trailing ","
+							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
+
+							// Now add the last element with no delimiter
+							oss2 << PositiveRunden.back();
+
+							Dateiausgabe << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n";
+						}
+					}
+					
+					output_fstream.open(filename, ios_base::out);
+					if (!output_fstream.is_open()) {
+						cout << "Failed to open " << filename << '\n';
+					}
+					else {
+						output_fstream << Dateiausgabe.str() << endl;
+						cout << "Datei gespeichert als " << filename << '!' << endl;
+					}
+
+					berechnungsEnde = steady_clock::now();
+					cout << "Laufzeit: " << duration<double>{berechnungsEnde - berechnungsStart}.count() << "s\n\n";
+					break;
+				case -16:
+					cout << "min n eingeben: ";
+					cin >> minN;
+					cout << "max n eingeben: ";
+					cin >> maxN;
+				    cout << "Anzahl der PR je Lampenanzahl: ";
+					cin >> anz;
+
+					berechnungsStart = steady_clock::now();
+
+					for (size_t i = minN; i <= maxN; i++)
+					{
+						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false);
+
+						ostringstream oss2;
+
+						if (!PositiveRunden.empty())					//vetor to string
+						{
+							// Convert all but the last element to avoid a trailing ","
+							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
+
+							// Now add the last element with no delimiter
+							oss2 << PositiveRunden.back();
+
+							cout << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << endl;
+						}
+					}
+					
 					berechnungsEnde = steady_clock::now();
 					cout << "Laufzeit: " << duration<double>{berechnungsEnde - berechnungsStart}.count() << "s\n\n";
 					break;
