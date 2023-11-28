@@ -1707,9 +1707,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 	mpz_class				Schritte(tmp_n_gmplib);
 	mpz_class				n_gmplib(tmp_n_gmplib);
     unsigned long long		Lampejetzt;
-
-//	mpz_init(Schritte);
-//	mpz_set(Schritte.get_mpz_t(), n_gmplib);
+	int						print = 0;
 
 	vector<bool>	AlleLampenAn(n, true);
 	vector<bool>	AlleLampenAus(n, false);
@@ -1721,6 +1719,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
     }
 
     Lampen[0] = false;
+
+	cout << "Size of k: ";
 
     while (PositiveRunden.size() < anz)
     {
@@ -1737,8 +1737,13 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
         }
 		Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
         Lampen[Lampejetzt] = !Lampen[Lampejetzt];
-    }
 
+		print++;
+		if (print % 65536 == 0)
+			cout << "    Mem:" << giveRAM('k') << "  Iteration: " << to_string(print) << "  Schritte: " << sizeof(Schritte) << " Bytes        \r";
+//			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
+    }
+	cout << endl;
     return PositiveRunden;
 }
 
@@ -2591,6 +2596,9 @@ int main()
 
 					for (size_t i = minN; i <= maxN; i++)
 					{
+						auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+						printProgressBar(minN, i, delN, delN, elapsed, 'k');
+
 						string Ausgabe;
 						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false);
 
@@ -2603,9 +2611,6 @@ int main()
 						oss2 << PositiveRunden.back();
 
 						Dateiausgabe << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n";
-
-						auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-						printProgressBar(minN, i, delN, delN, elapsed, 'k');
 					}
 					
 					output_fstream.open(filename, ios_base::out);
@@ -2650,7 +2655,7 @@ int main()
 							// Now add the last element with no delimiter
 							oss2 << PositiveRunden.back();
 
-							cout << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << endl;
+							cout << "\rLampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << endl << "size: ";
 						}
 					}
 					

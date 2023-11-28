@@ -51,6 +51,7 @@ std::string giveRAM(char unit)
     case 'B':
         os << totalKB * 1024 << " Bytes";
         break;
+    case 'K':
     case 'k':
         os << totalKB << " KB";
         break;
@@ -125,4 +126,16 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
         out << std::string(remainingSpaces, ' ');
 
     std::cout << out.str() << std::flush;
+}
+
+void pnarc(std::string msg)  // printNumberAndResetCursor
+{
+    // Speichern der aktuellen Position des Cursors
+    std::streampos currentPosition = std::cout.tellp();
+
+    // Ausgabe der Zahl
+    std::cout << msg << std::flush;
+
+    // Zurücksetzen des Cursors auf die gespeicherte Position
+    std::cout.seekp(currentPosition);
 }
