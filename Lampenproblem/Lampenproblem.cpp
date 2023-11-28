@@ -1723,7 +1723,6 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 
     Lampen[0] = false;
 
-	cout << "Size of k: ";
 
     while (PositiveRunden.size() < anz)
     {

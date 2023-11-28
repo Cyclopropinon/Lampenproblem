@@ -79,8 +79,12 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
     double progress = static_cast<double>(current - shift) / total;
     int pos = static_cast<int>(barWidth * progress) + ((current - shift) > 0);
 
-    double factor = std::pow(static_cast<double>(total) / (current - shift), 2.5);  //TODO adjust
-    std::chrono::nanoseconds estTotalTime = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed * factor);
+    constexpr double B   = 3.68065;
+    constexpr double lnB = 1.30309; // = ln(B)
+    //double factor = std::pow(static_cast<double>(total) / (current - shift), 2.5);  //TODO adjust
+    double baseshift = std::log(std::chrono::duration_cast<std::chrono::duration<double>>(elapsed).count()) / lnB - current;
+    std::chrono::duration<double> dd(std::pow(B, (baseshift + total + shift)));
+    std::chrono::nanoseconds estTotalTime = std::chrono::duration_cast<std::chrono::nanoseconds>(dd);
     auto remaining = estTotalTime - elapsed;
 
     auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
