@@ -90,7 +90,7 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
     std::ostringstream out;
     out << "\r[";
 
-    std::string currentStr = "\033[96m" + std::to_string(current) + "\033[0m"; 
+    std::string currentStr = "\033[96m" + std::to_string(current) + "\033[0m"; // blue color
     bool currentDisplayed = false;
 
     if (pos >= static_cast<int>(currentStr.length()) - 9) // 9 accounts for added escape characters
@@ -112,9 +112,9 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
             out << " ";
     }
 
-    out << "] \033[92m" << std::fixed << std::setprecision(2) << progress * 100.0 << "%\033[0m "
-        << "\033[93m" << remainingSeconds << "s [" << elapsedSeconds << "s/" << totalSeconds << "s]\033[0m "
-        << "\033[91mRAM: " << giveRAM(ramUnit) << "\033[0m";
+    out << "] \033[92m" << std::fixed << std::setprecision(2) << progress * 100.0 << "%\033[0m "    // green
+        << "\033[93m" << remainingSeconds << "s [" << elapsedSeconds << "s/" << totalSeconds << "s]\033[0m "    // yellow
+        << "\033[91mRAM: " << giveRAM(ramUnit) << "\033[0m";    //red
 
     int escapeCodeLength = 4 * 9; // 9 characters for each of the 4 color escape codes
     int currentLength = currentDisplayed ? static_cast<int>(std::to_string(current).length()) : 0;

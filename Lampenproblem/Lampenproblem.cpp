@@ -1708,6 +1708,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 	mpz_class				n_gmplib(tmp_n_gmplib);
     unsigned long long		Lampejetzt;
 	int						print = 0;
+	auto					berechnungsStartHR = std::chrono::high_resolution_clock::now();
+	auto					berechnungsEndeHR  = std::chrono::high_resolution_clock::now();
+	string					durHR;
 
 	vector<bool>	AlleLampenAn(n, true);
 	vector<bool>	AlleLampenAus(n, false);
@@ -1739,9 +1742,19 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
         Lampen[Lampejetzt] = !Lampen[Lampejetzt];
 
 		print++;
-		if (print % 65536 == 0)
-			cout << "    Mem:" << giveRAM('k') << "  Iteration: " << to_string(print) << "  Schritte: " << sizeof(Schritte) << " Bytes        \r";
+//		if (print % 65536 == 0)
+		if (print % 1048576 == 0)
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
+		{
+			char buffer[50];
+			berechnungsEndeHR = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - berechnungsStartHR);
+			auto total_seconds = duration.count() / 1'000'000'000;
+			auto remaining_ns = duration.count() % 1'000'000'000;
+			sprintf(buffer, "%lld,%09llds", total_seconds, remaining_ns);
+			durHR = buffer;
+			cout << "    \033[91mMem: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m             \r" << flush;
+		}
     }
 	cout << endl;
     return PositiveRunden;
@@ -1790,10 +1803,10 @@ int main()
 		unsigned int						maxG;
 		unsigned int						MaxAbweichung;
 
-		auto								berechnungsStart = steady_clock::now();
-		auto								berechnungsEnde = steady_clock::now();
+		auto								berechnungsStart   = steady_clock::now();
+		auto								berechnungsEnde    = steady_clock::now();
 		auto								berechnungsStartHR = std::chrono::high_resolution_clock::now();
-		auto								berechnungsEndeHR = std::chrono::high_resolution_clock::now();
+		auto								berechnungsEndeHR  = std::chrono::high_resolution_clock::now();
 		string								durHR;
 
 		double								diffN;
@@ -2630,7 +2643,7 @@ int main()
 						sprintf(buffer, "%lld,%09llds", total_seconds, remaining_ns);
 						durHR = buffer;
 					}
-					cout << "Laufzeit: " << durHR << "s\n\n";
+					cout << "Laufzeit: " << durHR << "\n\n";
 					break;
 				case -16:
 					cout << "min n eingeben: ";
