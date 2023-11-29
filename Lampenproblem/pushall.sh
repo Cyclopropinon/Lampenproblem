@@ -1,5 +1,5 @@
 git pull
-git add PR*
+git add *.lpr
 git status
 git commit
 git push
