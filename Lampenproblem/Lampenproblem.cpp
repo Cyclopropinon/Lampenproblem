@@ -1752,7 +1752,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 			auto remaining_ns = duration.count() % 1'000'000'000;
 			sprintf(buffer, "%lld,%09llds", total_seconds, remaining_ns);
 			durHR = buffer;
-			cout << "    \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m             \r" << flush;
+			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m             \r" << flush;
 		}
     }
 	cout << endl;
