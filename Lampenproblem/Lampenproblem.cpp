@@ -2606,31 +2606,29 @@ int main()
 
 					delN = maxN - minN + 1;
 
-					for (size_t i = minN; i <= maxN; i++)
-					{
-						auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-						printProgressBar(minN, i, delN, delN, elapsed, 'k');
-
-						string Ausgabe;
-						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false);
-
-						ostringstream oss2;
-
-						// Convert all but the last element to avoid a trailing ","
-						copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
-
-						// Now add the last element with no delimiter
-						oss2 << PositiveRunden.back();
-
-						Dateiausgabe << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n";
-					}
-					
 					output_fstream.open(filename, ios_base::out);
 					if (!output_fstream.is_open()) {
-						cout << "Failed to open " << filename << '\n';
+						cout << "Fehler: Failed to open " << filename << '\n';
 					}
 					else {
-						output_fstream << Dateiausgabe.str() << endl;
+						for (size_t i = minN; i <= maxN; i++)
+						{
+							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+							printProgressBar(minN, i, delN, delN, elapsed, 'k');
+
+							string Ausgabe;
+							vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false);
+
+							ostringstream oss2;
+
+							// Convert all but the last element to avoid a trailing ","
+							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
+
+							// Now add the last element with no delimiter
+							oss2 << PositiveRunden.back();
+
+							output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << endl;
+						}
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
 					{
