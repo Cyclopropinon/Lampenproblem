@@ -15,6 +15,16 @@
 
 #define __defProgBar__
 
+#define dt(Start, out)	{\
+                			char buffer[50];\
+			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
+			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
+			    			auto total_seconds = duration.count() / 1'000'000'000;\
+			    			auto remaining_ns = duration.count() % 1'000'000'000;\
+			    			sprintf(buffer, "%lld,%09llds", total_seconds, remaining_ns);\
+			    			out = buffer;\
+			    		}
+
 std::string giveRAM(char unit)
 {
     std::ifstream statusFile("/proc/self/status");
@@ -94,7 +104,7 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
     std::ostringstream out;
     out << "\r[";
 
-    std::string currentStr = "\033[96m" + std::to_string(current) + "\033[0m"; // blue color
+    std::string currentStr = "\033[96m" + std::to_string(current) + "\033[0m"; // cyan color
     bool currentDisplayed = false;
 
     if (pos >= static_cast<int>(currentStr.length()) - 9) // 9 accounts for added escape characters

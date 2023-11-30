@@ -1709,8 +1709,10 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
     unsigned long long		Lampejetzt;
 	int						print = 0;
 	auto					berechnungsStartHR = std::chrono::high_resolution_clock::now();
-	auto					berechnungsEndeHR  = std::chrono::high_resolution_clock::now();
+	auto					berechnungsEndeHR  = berechnungsStartHR;
+	auto					berechnungsZwCP_HR = berechnungsStartHR;
 	string					durHR;
+	string					CP_HR;
 
 	vector<bool>	AlleLampenAn(n, true);
 	vector<bool>	AlleLampenAus(n, false);
@@ -1745,14 +1747,10 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 		if (print % 1048576 == 0)
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
-			char buffer[50];
-			berechnungsEndeHR = std::chrono::high_resolution_clock::now();
-			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - berechnungsStartHR);
-			auto total_seconds = duration.count() / 1'000'000'000;
-			auto remaining_ns = duration.count() % 1'000'000'000;
-			sprintf(buffer, "%lld,%09llds", total_seconds, remaining_ns);
-			durHR = buffer;
-			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m             \r" << flush;
+			berechnungsZwCP_HR = berechnungsEndeHR;
+			dt(berechnungsStartHR, durHR);
+			dt(berechnungsZwCP_HR, CP_HR);
+			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "\033[0m             \r" << flush;
 		}
     }
 	cout << endl;
@@ -2631,15 +2629,7 @@ int main()
 						}
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					{
-            			char buffer[50];
-						berechnungsEndeHR = std::chrono::high_resolution_clock::now();
-						auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - berechnungsStartHR);
-						auto total_seconds = duration.count() / 1'000'000'000;
-						auto remaining_ns = duration.count() % 1'000'000'000;
-						sprintf(buffer, "%lld,%09llds", total_seconds, remaining_ns);
-						durHR = buffer;
-					}
+					dt(berechnungsStartHR, durHR);
 					cout << "Laufzeit: " << durHR << "\n\n";
 					break;
 				case -16:
