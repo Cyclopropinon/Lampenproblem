@@ -1713,6 +1713,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 	auto					berechnungsZwCP_HR = berechnungsStartHR;
 	string					durHR;
 	string					CP_HR;
+	string					CPdHR;
 
 	vector<bool>	AlleLampenAn(n, true);
 	vector<bool>	AlleLampenAus(n, false);
@@ -1748,9 +1749,13 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
 			berechnungsZwCP_HR = berechnungsEndeHR;
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wformat"
 			dt(berechnungsStartHR, durHR);
 			dt(berechnungsZwCP_HR, CP_HR);
-			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "\033[0m             \r" << flush;
+			ddt(berechnungsZwCP_HR, CPdHR);
+		    #pragma GCC diagnostic pop
+			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "  \033[3;93mdt/dn: " << CPdHR << "\033[0m             \r" << flush;
 		}
     }
 	cout << endl;
@@ -2629,7 +2634,10 @@ int main()
 						}
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wformat"
 					dt(berechnungsStartHR, durHR);
+				    #pragma GCC diagnostic pop
 					cout << "Laufzeit: " << durHR << "\n\n";
 					break;
 				case -16:

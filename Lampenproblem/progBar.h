@@ -19,12 +19,22 @@
                 			char buffer[50];\
 			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
-			    			auto total_seconds = duration.count() / 1'000'000'000;\
-			    			auto remaining_ns = duration.count() % 1'000'000'000;\
-			    			sprintf(buffer, "%lld,%09llds", total_seconds, remaining_ns);\
+			    			uint64_t total_seconds = duration.count() / 1'000'000'000;\
+			    			uint64_t remaining_ns = duration.count() % 1'000'000'000;\
+			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 
+#define ddt(Start, out)	{\
+                			char buffer[50];\
+			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
+			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
+			    			uint64_t total_seconds = duration.count() / 1'048'576'000'000'000;\
+			    			uint64_t remaining_ns = (duration.count() % 1'048'576'000'000'000) / 1'048'576;\
+			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			out = buffer;\
+			    		}
+                        
 std::string giveRAM(char unit)
 {
     std::ifstream statusFile("/proc/self/status");
