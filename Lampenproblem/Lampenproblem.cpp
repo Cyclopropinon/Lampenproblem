@@ -147,6 +147,7 @@ void speichereVariable(const std::string& ordner, const std::string& variablenna
         std::cerr << "Fehler beim Öffnen der Datei für Variable '" << variablenname << "'" << std::endl;
     }
 }
+#define save(vs, var) speichereVariable(ordner, vs, &var, sizeof(var))
 
 void leseVariable(const std::string& ordner, const std::string& variablenname, void* daten, size_t groesse) {
     std::ifstream file(ordner + "/" + variablenname, std::ios::binary);
@@ -158,10 +159,38 @@ void leseVariable(const std::string& ordner, const std::string& variablenname, v
         std::cerr << "Fehler beim Öffnen der Datei für Variable '" << variablenname << "'" << std::endl;
     }
 }
+#define read(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
 
 void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_t& tmp_n_gmplib, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt, int& print)
 {
-	//
+	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
+	{
+		read("n", n);
+		read("anz", anz);
+		read("einsenAnzeigen", einsenAnzeigen);
+		read("AnzRunden", AnzRunden);
+		read("Lampen", Lampen);
+		read("PositiveRunden", PositiveRunden);
+		read("tmp_n_gmplib", tmp_n_gmplib);
+		read("Schritte", Schritte);
+		read("n_gmplib", n_gmplib);
+		read("Lampejetzt", Lampejetzt);
+		read("print", print);
+	}
+	else
+	{
+		save("n", n);
+		save("anz", anz);
+		save("einsenAnzeigen", einsenAnzeigen);
+		save("AnzRunden", AnzRunden);
+		save("Lampen", Lampen);
+		save("PositiveRunden", PositiveRunden);
+		save("tmp_n_gmplib", tmp_n_gmplib);
+		save("Schritte", Schritte);
+		save("n_gmplib", n_gmplib);
+		save("Lampejetzt", Lampejetzt);
+		save("print", print);
+	}
 }
 
 vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
