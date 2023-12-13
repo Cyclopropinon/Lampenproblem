@@ -137,6 +137,33 @@ string GeeigneteThreadgroeszenBerechnen(unsigned long long dN, unsigned int AnzT
 	return GuteThreadgroeszen;
 }
 
+void speichereVariable(const std::string& ordner, const std::string& variablenname, const void* daten, size_t groesse) {
+    std::ofstream file(ordner + "/" + variablenname, std::ios::binary);
+    if (file.is_open()) {
+        file.write(reinterpret_cast<const char*>(daten), groesse);
+        file.close();
+        std::cout << "Variable '" << variablenname << "' erfolgreich gespeichert." << std::endl;
+    } else {
+        std::cerr << "Fehler beim Öffnen der Datei für Variable '" << variablenname << "'" << std::endl;
+    }
+}
+
+void leseVariable(const std::string& ordner, const std::string& variablenname, void* daten, size_t groesse) {
+    std::ifstream file(ordner + "/" + variablenname, std::ios::binary);
+    if (file.is_open()) {
+        file.read(reinterpret_cast<char*>(daten), groesse);
+        file.close();
+        std::cout << "Variable '" << variablenname << "' erfolgreich geladen." << std::endl;
+    } else {
+        std::cerr << "Fehler beim Öffnen der Datei für Variable '" << variablenname << "'" << std::endl;
+    }
+}
+
+void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_t& tmp_n_gmplib, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt, int& print)
+{
+	//
+}
+
 vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
 {
 	unsigned long long				AnzRunden = 2;				// Aktuelle Runde
@@ -1698,6 +1725,71 @@ vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool
 }
 
 vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, bool einsenAnzeigen)
+{
+    mpz_class				AnzRunden = 2;
+	vector<bool>			Lampen(n, true);
+    vector<mpz_class>		PositiveRunden;
+	mpz_t					tmp_n_gmplib;
+	mpz_init_set_ui			(tmp_n_gmplib, n);
+	mpz_class				Schritte(tmp_n_gmplib);
+	mpz_class				n_gmplib(tmp_n_gmplib);
+    unsigned long long		Lampejetzt;
+	int						print = 0;
+	auto					berechnungsStartHR = std::chrono::high_resolution_clock::now();
+	auto					berechnungsEndeHR  = berechnungsStartHR;
+	auto					berechnungsZwCP_HR = berechnungsStartHR;
+	string					durHR;
+	string					CP_HR;
+	string					CPdHR;
+
+	vector<bool>	AlleLampenAn(n, true);
+	vector<bool>	AlleLampenAus(n, false);
+
+	PositiveRunden.reserve(anz);
+    if (einsenAnzeigen)
+    {
+        PositiveRunden.push_back(1);
+    }
+
+    Lampen[0] = false;
+
+
+    while (PositiveRunden.size() < anz)
+    {
+        Schritte += AnzRunden;
+        if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
+        {
+            if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+            {
+                PositiveRunden.push_back(AnzRunden);
+            }
+
+            AnzRunden = 1 + Schritte / n_gmplib;
+            bool nonsense = Lampen[1];
+        }
+		Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
+        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+
+		print++;
+//		if (print % 65536 == 0)
+		if (print % 1048576 == 0)
+//			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
+		{
+			berechnungsZwCP_HR = berechnungsEndeHR;
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wformat"
+			dt(berechnungsStartHR, durHR);
+			dt(berechnungsZwCP_HR, CP_HR);
+			ddt(berechnungsZwCP_HR, CPdHR);
+		    #pragma GCC diagnostic pop
+			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "  \033[3;93mdt/dn: " << CPdHR << "\033[0m             \r" << flush;
+		}
+    }
+	cout << endl;
+    return PositiveRunden;
+}
+
+vector<mpz_class> LampenSimulierenGMPLIBv3(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Dateiname)
 {
     mpz_class				AnzRunden = 2;
 	vector<bool>			Lampen(n, true);
