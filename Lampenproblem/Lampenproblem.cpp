@@ -147,7 +147,7 @@ void speichereVariable(const std::string& ordner, const std::string& variablenna
         std::cerr << "Fehler beim Öffnen der Datei für Variable '" << variablenname << "'" << std::endl;
     }
 }
-#define save(vs, var) speichereVariable(ordner, vs, &var, sizeof(var))
+#define sav(vs, var) speichereVariable(ordner, vs, &var, sizeof(var))
 
 void leseVariable(const std::string& ordner, const std::string& variablenname, void* daten, size_t groesse) {
     std::ifstream file(ordner + "/" + variablenname, std::ios::binary);
@@ -159,37 +159,94 @@ void leseVariable(const std::string& ordner, const std::string& variablenname, v
         std::cerr << "Fehler beim Öffnen der Datei für Variable '" << variablenname << "'" << std::endl;
     }
 }
-#define read(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
+#define reed(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
+
+void save_mpz(mpz_class zahl, string dateiname) {
+    FILE* file = fopen(dateiname.c_str(), "wb");
+    if (!file) {
+        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
+        return;
+    }
+
+    mpz_out_raw(file, zahl.get_mpz_t());
+
+    fclose(file);
+}
+
+mpz_class load_mpz(string dateiname) {
+    mpz_class zahl;
+
+    FILE* file = fopen(dateiname.c_str(), "rb");
+    if (!file) {
+        cerr << "Fehler beim Öffnen der Datei zum Laden." << endl;
+        return 0;
+    }
+
+    mpz_inp_raw(zahl.get_mpz_t(), file);
+
+    fclose(file);
+
+    return zahl;
+}
+
+template <typename SaveType>
+void saveVariable(const string& dateiname, SaveType var) {
+    ofstream outFile(dateiname, ios::binary | ios::out);
+
+    if (outFile.is_open()) {
+        outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
+        outFile.close();
+        cout << "Variable erfolgreich gespeichert." << endl;
+    } else {
+        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
+    }
+}
+
+template <typename SaveType>
+SaveType readVariable(const string& dateiname) {
+    SaveType var;
+    ifstream inFile(dateiname, ios::binary | ios::in);
+
+    if (inFile.is_open()) {
+        inFile.read(reinterpret_cast<char*>(&var), sizeof(var));
+        inFile.close();
+        cout << "Variable erfolgreich geladen." << endl;
+    } else {
+        cerr << "Fehler beim Öffnen der Datei zum Lesen." << endl;
+    }
+
+    return var;
+}
 
 void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_t& tmp_n_gmplib, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt, int& print)
 {
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
-		read("n", n);
-		read("anz", anz);
-		read("einsenAnzeigen", einsenAnzeigen);
-		read("AnzRunden", AnzRunden);
-		read("Lampen", Lampen);
-		read("PositiveRunden", PositiveRunden);
-		read("tmp_n_gmplib", tmp_n_gmplib);
-		read("Schritte", Schritte);
-		read("n_gmplib", n_gmplib);
-		read("Lampejetzt", Lampejetzt);
-		read("print", print);
+		reed("n", n);
+		reed("anz", anz);
+		reed("einsenAnzeigen", einsenAnzeigen);
+		reed("AnzRunden", AnzRunden);
+		reed("Lampen", Lampen);
+		reed("PositiveRunden", PositiveRunden);
+		reed("tmp_n_gmplib", tmp_n_gmplib);
+		reed("Schritte", Schritte);
+		reed("n_gmplib", n_gmplib);
+		reed("Lampejetzt", Lampejetzt);
+		reed("print", print);
 	}
 	else
 	{
-		save("n", n);
-		save("anz", anz);
-		save("einsenAnzeigen", einsenAnzeigen);
-		save("AnzRunden", AnzRunden);
-		save("Lampen", Lampen);
-		save("PositiveRunden", PositiveRunden);
-		save("tmp_n_gmplib", tmp_n_gmplib);
-		save("Schritte", Schritte);
-		save("n_gmplib", n_gmplib);
-		save("Lampejetzt", Lampejetzt);
-		save("print", print);
+		sav("n", n);
+		sav("anz", anz);
+		sav("einsenAnzeigen", einsenAnzeigen);
+		sav("AnzRunden", AnzRunden);
+		sav("Lampen", Lampen);
+		sav("PositiveRunden", PositiveRunden);
+		sav("tmp_n_gmplib", tmp_n_gmplib);
+		sav("Schritte", Schritte);
+		sav("n_gmplib", n_gmplib);
+		sav("Lampejetzt", Lampejetzt);
+		sav("print", print);
 	}
 }
 
