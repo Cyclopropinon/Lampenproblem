@@ -137,6 +137,7 @@ string GeeigneteThreadgroeszenBerechnen(unsigned long long dN, unsigned int AnzT
 	return GuteThreadgroeszen;
 }
 
+/*
 void speichereVariable(const std::string& ordner, const std::string& variablenname, const void* daten, size_t groesse) {
     std::ofstream file(ordner + "/" + variablenname, std::ios::binary);
     if (file.is_open()) {
@@ -160,10 +161,19 @@ void leseVariable(const std::string& ordner, const std::string& variablenname, v
     }
 }
 #define reed(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
+*/
 
-void save_mpz(mpz_class zahl, string dateiname) {
+#define saveVar(var) saveVariable(std::string(#var), var)
+#define readVar(var) var = readVariable<decltype(var)>(std::string(#var))
+
+#define saveMpz(var) saveVariable(std::string(#var), var)
+#define readMpz(var) var(readVariable<mpz_class>(std::string(#var)))
+
+inline void save_mpz(mpz_class zahl, string dateiname)
+{
     FILE* file = fopen(dateiname.c_str(), "wb");
-    if (!file) {
+    if (!file)
+	{
         cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
         return;
     }
@@ -173,11 +183,13 @@ void save_mpz(mpz_class zahl, string dateiname) {
     fclose(file);
 }
 
-mpz_class load_mpz(string dateiname) {
+inline mpz_class load_mpz(string dateiname)
+{
     mpz_class zahl;
 
     FILE* file = fopen(dateiname.c_str(), "rb");
-    if (!file) {
+    if (!file)
+	{
         cerr << "Fehler beim Öffnen der Datei zum Laden." << endl;
         return 0;
     }
@@ -190,31 +202,42 @@ mpz_class load_mpz(string dateiname) {
 }
 
 template <typename SaveType>
-void saveVariable(const string& dateiname, SaveType var) {
-    ofstream outFile(dateiname, ios::binary | ios::out);
-
-    if (outFile.is_open()) {
-        outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
-        outFile.close();
-        cout << "Variable erfolgreich gespeichert." << endl;
-    } else {
-        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
-    }
+void saveVariable(const string dateiname, SaveType var)
+{
+	if (std::is_same<SaveType, mpz_class>::value)
+	{
+		save_mpz(var, dateiname);
+	} else {
+		ofstream outFile(dateiname, ios::binary | ios::out);
+		if (outFile.is_open())
+		{
+			outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
+			outFile.close();
+		} else {
+			cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
+		}
+	}
 }
 
 template <typename SaveType>
-SaveType readVariable(const string& dateiname) {
+SaveType readVariable(const string dateiname)
+{
     SaveType var;
-    ifstream inFile(dateiname, ios::binary | ios::in);
 
-    if (inFile.is_open()) {
-        inFile.read(reinterpret_cast<char*>(&var), sizeof(var));
-        inFile.close();
-        cout << "Variable erfolgreich geladen." << endl;
-    } else {
-        cerr << "Fehler beim Öffnen der Datei zum Lesen." << endl;
-    }
-
+	if (std::is_same<SaveType, mpz_class>::value)
+	{
+		var = load_mpz(dateiname);
+	} else {
+		ifstream inFile(dateiname, ios::binary | ios::in);
+		if (inFile.is_open())
+		{
+			inFile.read(reinterpret_cast<char*>(&var), sizeof(var));
+			inFile.close();
+			cout << "Variable erfolgreich geladen." << endl;
+		} else {
+			cerr << "Fehler beim Öffnen der Datei zum Lesen." << endl;
+		}
+	}
     return var;
 }
 
@@ -222,31 +245,31 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 {
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
-		reed("n", n);
-		reed("anz", anz);
-		reed("einsenAnzeigen", einsenAnzeigen);
-		reed("AnzRunden", AnzRunden);
-		reed("Lampen", Lampen);
-		reed("PositiveRunden", PositiveRunden);
-		reed("tmp_n_gmplib", tmp_n_gmplib);
-		reed("Schritte", Schritte);
-		reed("n_gmplib", n_gmplib);
-		reed("Lampejetzt", Lampejetzt);
-		reed("print", print);
+		readVar(n);
+		readVar(anz);
+		readVar(einsenAnzeigen);
+		readVar(AnzRunden);
+		readVar(Lampen);
+		readVar(PositiveRunden);
+		readMpz(tmp_n_gmplib);
+		readVar(Schritte);
+		readVar(n_gmplib);
+		readVar(Lampejetzt);
+		readVar(print);
 	}
 	else
 	{
-		sav("n", n);
-		sav("anz", anz);
-		sav("einsenAnzeigen", einsenAnzeigen);
-		sav("AnzRunden", AnzRunden);
-		sav("Lampen", Lampen);
-		sav("PositiveRunden", PositiveRunden);
-		sav("tmp_n_gmplib", tmp_n_gmplib);
-		sav("Schritte", Schritte);
-		sav("n_gmplib", n_gmplib);
-		sav("Lampejetzt", Lampejetzt);
-		sav("print", print);
+		saveVar(n);
+		saveVar(anz);
+		saveVar(einsenAnzeigen);
+		saveVar(AnzRunden);
+		saveVar(Lampen);
+		saveVar(PositiveRunden);
+		saveVar(tmp_n_gmplib);
+		saveVar(Schritte);
+		saveVar(n_gmplib);
+		saveVar(Lampejetzt);
+		saveVar(print);
 	}
 }
 
