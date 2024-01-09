@@ -1818,8 +1818,11 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
-vector<mpz_class> LampenSimulierenGMPLIBv3(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Dateiname)
+vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 {
+	unsigned long long		n;
+	uint64_t				anz;
+	bool					einsenAnzeigen;
     mpz_class				AnzRunden = 2;
 	vector<bool>			Lampen(n, true);
     vector<mpz_class>		PositiveRunden;
@@ -1829,6 +1832,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(unsigned long long n, uint64_t anz, b
 	mpz_class				n_gmplib(tmp_n_gmplib);
     unsigned long long		Lampejetzt;
 	int						print = 0;
+
+	CheckpointLSGv3(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, tmp_n_gmplib, Schritte, n_gmplib, Lampejetzt, print);
+
 	auto					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 	auto					berechnungsEndeHR  = berechnungsStartHR;
 	auto					berechnungsZwCP_HR = berechnungsStartHR;
