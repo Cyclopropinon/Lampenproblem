@@ -165,10 +165,12 @@ void leseVariable(const std::string& ordner, const std::string& variablenname, v
 #define reed(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
 */
 
-void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt, int& print)
+void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt_ULL, int& print)
 {
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
+		uint64_t n;
+		uint64_t Lampejetzt;
 		readVar(n);
 		readVar(anz);
 		readVar(einsenAnzeigen);
@@ -179,9 +181,13 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 		readVar(n_gmplib);
 		readVar(Lampejetzt);
 		readVar(print);
+		n_ULL = (unsigned long long)n;
+		Lampejetzt_ULL = (unsigned long long)Lampejetzt;
 	}
 	else
 	{
+		uint64_t n = (uint64_t)n_ULL;
+		uint64_t Lampejetzt = (uint64_t)Lampejetzt_ULL;
 		saveVar(n);
 		saveVar(anz);
 		saveVar(einsenAnzeigen);
