@@ -1761,7 +1761,7 @@ vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool
     return PositiveRunden;
 }
 
-vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, bool einsenAnzeigen)
+vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session)
 {
     mpz_class				AnzRunden = 2;
 	vector<bool>			Lampen(n, true);
@@ -1812,6 +1812,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 		if (print % 1048576 == 0)
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
+			CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, n_gmplib, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wformat"
@@ -1883,6 +1884,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 		if (print % 1048576 == 0)
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
+			CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, n_gmplib, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wformat"
@@ -1960,12 +1962,13 @@ int main()
 
 		while (true)
 		{
+			string Session;
 			string filename;
 			fstream output_fstream;
 
 			try
 			{
-				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n";
+				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\n";
 				cin >> prüfart;
 
 				unsigned long long testLampen;
@@ -2739,6 +2742,8 @@ int main()
 
 					cout << "Datei speichern unter: ";
 					cin >> filename;
+					cout << "Zwischenstand speichern unter: ";
+					cin >> Session;
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -2755,7 +2760,7 @@ int main()
 							printProgressBar(minN, i, delN, delN, elapsed, 'k');
 
 							string Ausgabe;
-							vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false);
+							vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false, Session);
 
 							ostringstream oss2;
 
@@ -2787,7 +2792,7 @@ int main()
 
 					for (size_t i = minN; i <= maxN; i++)
 					{
-						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false);
+						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false, string("tmp-16"));
 
 						ostringstream oss2;
 
@@ -2804,6 +2809,43 @@ int main()
 					
 					berechnungsEnde = steady_clock::now();
 					cout << "Laufzeit: " << duration<double>{berechnungsEnde - berechnungsStart}.count() << "s\n\n";
+					break;
+				case 17:
+					cout << "Zwischenstand laden: ";
+					cin >> Session;
+					cout << "Ergebnis speichern unter: ";
+					cin >> filename;
+
+					berechnungsStartHR = std::chrono::high_resolution_clock::now();
+
+					output_fstream.open(filename, ios_base::out);
+					if (!output_fstream.is_open()) {
+						cout << "Fehler: Failed to open " << filename << '\n';
+					}
+					else {
+						auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+
+						string Ausgabe;
+						vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv3(Session);
+
+						ostringstream oss2;
+
+						// Convert all but the last element to avoid a trailing ","
+						copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<mpz_class>(oss2, "\n"));
+
+						// Now add the last element with no delimiter
+						oss2 << PositiveRunden.back();
+
+						uint64_t i = readVariable(Session + "/n", (uint64_t)1729);
+
+						output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << endl;
+						cout << "Datei gespeichert als " << filename << '!' << endl;
+					}
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wformat"
+					dt(berechnungsStartHR, durHR);
+				    #pragma GCC diagnostic pop
+					cout << "Laufzeit: " << durHR << "\n\n";
 					break;
 				default:
 					cout << "\aFehlerhafte Eingabe!\n\n";

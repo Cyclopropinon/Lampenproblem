@@ -4,9 +4,29 @@
 #include <string>
 #include <vector>
 #include <gmpxx.h>
+#include <sys/stat.h>
 
-#define saveVar(var) saveVariable(std::string(#var), var)
-#define readVar(var) var = readVariable(std::string(#var), var)
+#define saveVar(var) saveVariable(ordner + "/" + #var, var)
+#define readVar(var) var = readVariable(ordner + "/" + #var, var)
+
+//#define saveVar(var) saveVariable(std::string(#var), var)
+//#define readVar(var) var = readVariable(std::string(#var), var)
+
+bool erstelleVerzeichnis(const char* path)
+{
+    // Hier wird das Verzeichnis erstellt
+    int result = mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
+/*    if (result == 0)
+    {
+        //std::cout << "Verzeichnis erfolgreich erstellt: " << path << std::endl;
+        return true;
+    } else {
+        //std::cerr << "Fehler beim Erstellen des Verzeichnisses " << path << std::endl;
+        return false;
+    }*/
+    return result == 0;
+}
 
 void saveVariable(std::string dateiname, mpz_class zahl)
 {
@@ -87,6 +107,7 @@ void saveVariable(std::string dateiname, std::vector<mpz_class> var)
 {
     const uint64_t size = var.size();
     const std::string dir = dateiname + "/";
+    erstelleVerzeichnis(dateiname.c_str());
     saveVariable(dir + "size", size);
     for (uint64_t i = 0; i < size; i++)
     {
