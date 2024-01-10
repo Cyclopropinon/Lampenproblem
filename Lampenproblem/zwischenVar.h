@@ -6,8 +6,7 @@
 #define saveVar(var) saveVariable(std::string(#var), var)
 #define readVar(var) var = readVariable<decltype(var)>(std::string(#var))
 
-
-inline void save_mpz(mpz_class zahl, string dateiname)
+inline void saveVariable(std::string dateiname, mpz_class zahl)
 {
     FILE* file = fopen(dateiname.c_str(), "wb");
     if (!file)
@@ -21,7 +20,7 @@ inline void save_mpz(mpz_class zahl, string dateiname)
     fclose(file);
 }
 
-inline mpz_class load_mpz(string dateiname)
+inline mpz_class readVariable(std::string dateiname)
 {
     mpz_class zahl;
 
@@ -39,6 +38,39 @@ inline mpz_class load_mpz(string dateiname)
     return zahl;
 }
 
+inline void saveVariable(std::string dateiname, std::string zahl)
+{
+    FILE* file = fopen(dateiname.c_str(), "wb");
+    if (!file)
+	{
+        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
+        return;
+    }
+
+    mpz_out_raw(file, zahl.get_mpz_t());
+
+    fclose(file);
+}
+
+inline std::string readVariable(std::string dateiname)
+{
+    mpz_class zahl;
+
+    FILE* file = fopen(dateiname.c_str(), "rb");
+    if (!file)
+	{
+        cerr << "Fehler beim Öffnen der Datei zum Laden." << endl;
+        return 0;
+    }
+
+    mpz_inp_raw(zahl.get_mpz_t(), file);
+
+    fclose(file);
+
+    return zahl;
+}
+
+/*
 template <typename SaveType>
 auto readVariable(const string dateiname)
 {
@@ -121,3 +153,4 @@ void saveVariable(const string dateiname, const SaveType& var)
         }
     }
 }
+*/
