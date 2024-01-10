@@ -6,14 +6,14 @@
 #include <gmpxx.h>
 
 #define saveVar(var) saveVariable(std::string(#var), var)
-#define readVar(var) var = readVariable<decltype(var)>(std::string(#var))
+#define readVar(var) var = readVariable(std::string(#var), var)
 
 inline void saveVariable(std::string dateiname, mpz_class zahl)
 {
     FILE* file = fopen(dateiname.c_str(), "wb");
     if (!file)
 	{
-        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
+        std::cerr << "Fehler beim Öffnen der Datei zum Speichern: " << dateiname << std::endl;
         return;
     }
 
@@ -22,16 +22,12 @@ inline void saveVariable(std::string dateiname, mpz_class zahl)
     fclose(file);
 }
 
-inline mpz_class readVariable(std::string dateiname)
+inline mpz_class readVariable(std::string dateiname, mpz_class useless_var)
 {
     mpz_class zahl;
 
     FILE* file = fopen(dateiname.c_str(), "rb");
-    if (!file)
-	{
-        cerr << "Fehler beim Öffnen der Datei zum Laden." << endl;
-        return 0;
-    }
+    if (!file) throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");        return 0;
 
     mpz_inp_raw(zahl.get_mpz_t(), file);
 
@@ -40,32 +36,53 @@ inline mpz_class readVariable(std::string dateiname)
     return zahl;
 }
 
-inline void saveVariable(std::string dateiname, std::string zahl)
+inline void saveVariable(std::string dateiname, std::string var)
 {
-    std::ofstream outFile(dateiname, ios::binary | ios::out);
+    std::ofstream outFile(dateiname, std::ios::trunc | std::ios::out);
+    if (outFile.is_open())
+    {
+        outFile << var << std::flush;
+        outFile.close();
+    }
+    else std::cerr << "Fehler beim Öffnen der Datei zum Speichern: " << dateiname << std::endl;
+}
+
+inline std::string readVariable(std::string dateiname, std::string useless_var)
+{
+    std::ifstream inFile(dateiname, std::ios::in);
+    if (inFile.is_open())
+    {
+        std::string var((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+        inFile.close();
+        return var;
+    }
+    else throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");
+}
+
+inline void saveVariable(std::string dateiname, uint64_t var)
+{
+    std::ofstream outFile(dateiname, std::ios::binary | std::ios::out);
     if (outFile.is_open())
     {
         outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
         outFile.close();
     }
-    else
-    {
-        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
-    }
+    else std::cerr << "Fehler beim Öffnen der Datei zum Speichern: " << dateiname << std::endl;
 }
 
-inline std::string readVariable(std::string dateiname)
+inline uint64_t readVariable(std::string dateiname, uint64_t useless_var)
 {
-    SaveType var;
-    ifstream inFile(dateiname, ios::binary | ios::in);
+    std::ifstream inFile(dateiname, std::ios::in);
     if (inFile.is_open())
     {
+        uint64_t var;
         inFile.read(reinterpret_cast<char*>(&var), sizeof(var));
         inFile.close();
         return var;
     }
     else throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");
 }
+
 
 /*
 template <typename SaveType>
