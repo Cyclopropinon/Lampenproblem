@@ -166,9 +166,6 @@ void leseVariable(const std::string& ordner, const std::string& variablenname, v
 #define saveVar(var) saveVariable(std::string(#var), var)
 #define readVar(var) var = readVariable<decltype(var)>(std::string(#var))
 
-#define saveMpz(var) saveVariable(std::string(#var), var)
-#define readMpz(var) var(readVariable<mpz_class>(std::string(#var)))
-
 inline void save_mpz(mpz_class zahl, string dateiname)
 {
     FILE* file = fopen(dateiname.c_str(), "wb");
@@ -220,28 +217,28 @@ void saveVariable(const string dateiname, SaveType var)
 }
 
 template <typename SaveType>
-SaveType readVariable(const string dateiname)
+auto readVariable(const string dateiname)
 {
-    SaveType var;
-
 	if (std::is_same<SaveType, mpz_class>::value)
 	{
-		var = load_mpz(dateiname);
+		mpz_class vara = load_mpz(dateiname);
+		return vara;
 	} else {
+    	SaveType varb; // = 0ULL;
 		ifstream inFile(dateiname, ios::binary | ios::in);
 		if (inFile.is_open())
 		{
-			inFile.read(reinterpret_cast<char*>(&var), sizeof(var));
+			inFile.read(reinterpret_cast<char*>(&varb), sizeof(varb));
 			inFile.close();
-			cout << "Variable erfolgreich geladen." << endl;
+			return varb;
 		} else {
 			cerr << "Fehler beim Öffnen der Datei zum Lesen." << endl;
 		}
+		return varb;
 	}
-    return var;
 }
 
-void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_t& tmp_n_gmplib, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt, int& print)
+void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt, int& print)
 {
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
@@ -251,7 +248,6 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 		readVar(AnzRunden);
 		readVar(Lampen);
 		readVar(PositiveRunden);
-		readMpz(tmp_n_gmplib);
 		readVar(Schritte);
 		readVar(n_gmplib);
 		readVar(Lampejetzt);
@@ -265,7 +261,6 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 		saveVar(AnzRunden);
 		saveVar(Lampen);
 		saveVar(PositiveRunden);
-		saveVar(tmp_n_gmplib);
 		saveVar(Schritte);
 		saveVar(n_gmplib);
 		saveVar(Lampejetzt);
@@ -1913,7 +1908,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
     unsigned long long		Lampejetzt;
 	int						print = 0;
 
-	CheckpointLSGv3(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, tmp_n_gmplib, Schritte, n_gmplib, Lampejetzt, print);
+	CheckpointLSGv3(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, n_gmplib, Lampejetzt, print);
 
 	auto					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 	auto					berechnungsEndeHR  = berechnungsStartHR;
