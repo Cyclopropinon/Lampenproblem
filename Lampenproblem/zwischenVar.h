@@ -1,5 +1,7 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <stdexcept>
+#include <string>
 #include <vector>
 #include <gmpxx.h>
 
@@ -40,34 +42,29 @@ inline mpz_class readVariable(std::string dateiname)
 
 inline void saveVariable(std::string dateiname, std::string zahl)
 {
-    FILE* file = fopen(dateiname.c_str(), "wb");
-    if (!file)
-	{
-        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
-        return;
+    std::ofstream outFile(dateiname, ios::binary | ios::out);
+    if (outFile.is_open())
+    {
+        outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
+        outFile.close();
     }
-
-    mpz_out_raw(file, zahl.get_mpz_t());
-
-    fclose(file);
+    else
+    {
+        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
+    }
 }
 
 inline std::string readVariable(std::string dateiname)
 {
-    mpz_class zahl;
-
-    FILE* file = fopen(dateiname.c_str(), "rb");
-    if (!file)
-	{
-        cerr << "Fehler beim Öffnen der Datei zum Laden." << endl;
-        return 0;
+    SaveType var;
+    ifstream inFile(dateiname, ios::binary | ios::in);
+    if (inFile.is_open())
+    {
+        inFile.read(reinterpret_cast<char*>(&var), sizeof(var));
+        inFile.close();
+        return var;
     }
-
-    mpz_inp_raw(zahl.get_mpz_t(), file);
-
-    fclose(file);
-
-    return zahl;
+    else throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");
 }
 
 /*
