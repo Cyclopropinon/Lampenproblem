@@ -41,6 +41,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include "zwischenVar.h"
 
 //#include <stdio.h>
 //#include <sys/ioctl.h>
@@ -162,81 +163,6 @@ void leseVariable(const std::string& ordner, const std::string& variablenname, v
 }
 #define reed(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
 */
-
-#define saveVar(var) saveVariable(std::string(#var), var)
-#define readVar(var) var = readVariable<decltype(var)>(std::string(#var))
-
-inline void save_mpz(mpz_class zahl, string dateiname)
-{
-    FILE* file = fopen(dateiname.c_str(), "wb");
-    if (!file)
-	{
-        cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
-        return;
-    }
-
-    mpz_out_raw(file, zahl.get_mpz_t());
-
-    fclose(file);
-}
-
-inline mpz_class load_mpz(string dateiname)
-{
-    mpz_class zahl;
-
-    FILE* file = fopen(dateiname.c_str(), "rb");
-    if (!file)
-	{
-        cerr << "Fehler beim Öffnen der Datei zum Laden." << endl;
-        return 0;
-    }
-
-    mpz_inp_raw(zahl.get_mpz_t(), file);
-
-    fclose(file);
-
-    return zahl;
-}
-
-template <typename SaveType>
-void saveVariable(const string dateiname, SaveType var)
-{
-	if (std::is_same<SaveType, mpz_class>::value)
-	{
-		save_mpz(var, dateiname);
-	} else {
-		ofstream outFile(dateiname, ios::binary | ios::out);
-		if (outFile.is_open())
-		{
-			outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
-			outFile.close();
-		} else {
-			cerr << "Fehler beim Öffnen der Datei zum Speichern." << endl;
-		}
-	}
-}
-
-template <typename SaveType>
-auto readVariable(const string dateiname)
-{
-	if (std::is_same<SaveType, mpz_class>::value)
-	{
-		mpz_class vara = load_mpz(dateiname);
-		return vara;
-	} else {
-    	SaveType varb; // = 0ULL;
-		ifstream inFile(dateiname, ios::binary | ios::in);
-		if (inFile.is_open())
-		{
-			inFile.read(reinterpret_cast<char*>(&varb), sizeof(varb));
-			inFile.close();
-			return varb;
-		} else {
-			cerr << "Fehler beim Öffnen der Datei zum Lesen." << endl;
-		}
-		return varb;
-	}
-}
 
 void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt, int& print)
 {
