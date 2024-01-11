@@ -1844,6 +1844,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 
 	CheckpointLSGv3(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, n_gmplib, Lampejetzt, print);
 
+	//debugausgaben
+	//std::cout << Session << '\t' << n << '\t' << anz << '\t' << einsenAnzeigen << '\t' << AnzRunden << '\t' << Schritte << '\t' << n_gmplib << '\t' << Lampejetzt << '\t' << print << std::endl;
+
 	auto					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 	auto					berechnungsEndeHR  = berechnungsStartHR;
 	auto					berechnungsZwCP_HR = berechnungsStartHR;
@@ -2854,7 +2857,7 @@ int main()
 			}
 			catch (const std::exception& e)
 			{
-				cout << "\aFehler:\n" << e.what() << endl;
+				cerr << "\aFehler:\n" << e.what() << endl;
 			}
 		}
 

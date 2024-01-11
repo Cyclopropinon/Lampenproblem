@@ -47,7 +47,7 @@ mpz_class readVariable(std::string dateiname, mpz_class useless_var)
     mpz_class zahl;
 
     FILE* file = fopen(dateiname.c_str(), "rb");
-    if (!file) throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");        return 0;
+    if (!file) {throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");}
 
     mpz_inp_raw(zahl.get_mpz_t(), file);
 
