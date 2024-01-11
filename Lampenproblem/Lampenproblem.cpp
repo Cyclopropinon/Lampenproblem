@@ -2910,14 +2910,20 @@ int main()
 							// Store the future for later retrieval
 							futures.push_back(std::move(fut));
 
-							// If the number of active threads reaches AnzThreads, wait for one to finish
-							if (futures.size() >= AnzThreads)
+							// Check if the number of active threads exceeds the limit
+							while (futures.size() >= AnzThreads)
 							{
-								for (auto& fut : futures)
+								auto it = std::find_if(futures.begin(), futures.end(), [](const std::future<void>& f)
 								{
-									fut.wait(); // Wait for the thread to finish
+									return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+								});
+
+								// Remove completed futures
+								if (it != futures.end())
+								{
+									it->wait();
+									futures.erase(it);
 								}
-								futures.clear(); // Clear the completed futures
 							}
 						}
 
@@ -2926,7 +2932,8 @@ int main()
 						{
 							fut.wait();
 						}
-					cout << "Datei gespeichert als " << filename << '!' << endl;
+
+						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
 					#pragma GCC diagnostic push
 					#pragma GCC diagnostic ignored "-Wformat"
