@@ -169,7 +169,7 @@ void leseVariable(const std::string& ordner, const std::string& variablenname, v
 #define reed(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
 */
 
-void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, mpz_class& n_gmplib, unsigned long long& Lampejetzt_ULL, int& print)
+void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, int& print)
 {
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
@@ -182,7 +182,6 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 		readVar(Lampen);
 		readVar(PositiveRunden);
 		readVar(Schritte);
-		readVar(n_gmplib);
 		readVar(Lampejetzt);
 		readVar(print);
 		n_ULL = (unsigned long long)n;
@@ -190,6 +189,7 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 	}
 	else
 	{
+		erstelleVerzeichnis(ordner.c_str());
 		uint64_t n = (uint64_t)n_ULL;
 		uint64_t Lampejetzt = (uint64_t)Lampejetzt_ULL;
 		saveVar(n);
@@ -199,7 +199,6 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 		saveVar(Lampen);
 		saveVar(PositiveRunden);
 		saveVar(Schritte);
-		saveVar(n_gmplib);
 		saveVar(Lampejetzt);
 		saveVar(print);
 	}
@@ -1773,7 +1772,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 	mpz_t					tmp_n_gmplib;
 	mpz_init_set_ui			(tmp_n_gmplib, n);
 	mpz_class				Schritte(tmp_n_gmplib);
-	mpz_class				n_gmplib(tmp_n_gmplib);
+	const mpz_class			n_gmplib(tmp_n_gmplib);
     unsigned long long		Lampejetzt;
 	int						print = 0;
 	auto					berechnungsStartHR = std::chrono::high_resolution_clock::now();
@@ -1816,7 +1815,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 		if (print % 1048576 == 0)
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
-			CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, n_gmplib, Lampejetzt, print);
+			CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wformat"
@@ -1839,14 +1838,15 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
     mpz_class				AnzRunden = 2;
 	vector<bool>			Lampen(n, true);
     vector<mpz_class>		PositiveRunden;
-	mpz_t					tmp_n_gmplib;
-	mpz_init_set_ui			(tmp_n_gmplib, n);
-	mpz_class				Schritte(tmp_n_gmplib);
-	mpz_class				n_gmplib(tmp_n_gmplib);
+	mpz_class				Schritte(1729);
     unsigned long long		Lampejetzt;
 	int						print = 0;
 
-	CheckpointLSGv3(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, n_gmplib, Lampejetzt, print);
+	CheckpointLSGv3(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
+
+	mpz_t					tmp_n_gmplib;
+	mpz_init_set_ui			(tmp_n_gmplib, n);
+	mpz_class				n_gmplib(tmp_n_gmplib);
 
 	//debugausgaben
 	//std::cout << Session << '\t' << n << '\t' << anz << '\t' << einsenAnzeigen << '\t' << AnzRunden << '\t' << Schritte << '\t' << n_gmplib << '\t' << Lampejetzt << '\t' << print << std::endl;
@@ -1891,7 +1891,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 		if (print % 1048576 == 0)
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
-			CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, n_gmplib, Lampejetzt, print);
+			CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wformat"
@@ -2878,6 +2878,9 @@ int main()
 						cout << "Fehler: Failed to open " << filename << '\n';
 					}
 					else {
+						// erstelle Ordner für die Session
+						erstelleVerzeichnis(Session.c_str());
+
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
 

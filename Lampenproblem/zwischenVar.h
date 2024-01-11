@@ -12,6 +12,9 @@
 //#define saveVar(var) saveVariable(std::string(#var), var)
 //#define readVar(var) var = readVariable(std::string(#var), var)
 
+#define lesefehler() {throw std::runtime_error("Fehler beim Laden der Variable " + dateiname + ":\tFehler beim Öffnen der Datei zum Lesen.");}
+#define schreibfehler() {std::cerr << "Fehler beim Öffnen der Datei zum Speichern: " << dateiname << std::endl; return;}
+
 bool erstelleVerzeichnis(const char* path)
 {
     // Hier wird das Verzeichnis erstellt
@@ -31,11 +34,7 @@ bool erstelleVerzeichnis(const char* path)
 void saveVariable(std::string dateiname, mpz_class zahl)
 {
     FILE* file = fopen(dateiname.c_str(), "wb");
-    if (!file)
-	{
-        std::cerr << "Fehler beim Öffnen der Datei zum Speichern: " << dateiname << std::endl;
-        return;
-    }
+    if (!file) schreibfehler();
 
     mpz_out_raw(file, zahl.get_mpz_t());
 
@@ -47,7 +46,7 @@ mpz_class readVariable(std::string dateiname, mpz_class useless_var)
     mpz_class zahl;
 
     FILE* file = fopen(dateiname.c_str(), "rb");
-    if (!file) {throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");}
+    if (!file) lesefehler();
 
     mpz_inp_raw(zahl.get_mpz_t(), file);
 
@@ -64,7 +63,7 @@ void saveVariable(std::string dateiname, std::string var)
         outFile << var << std::flush;
         outFile.close();
     }
-    else std::cerr << "Fehler beim Öffnen der Datei zum Speichern: " << dateiname << std::endl;
+    else schreibfehler();
 }
 
 std::string readVariable(std::string dateiname, std::string useless_var)
@@ -76,7 +75,7 @@ std::string readVariable(std::string dateiname, std::string useless_var)
         inFile.close();
         return var;
     }
-    else throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");
+    else lesefehler();
 }
 
 void saveVariable(std::string dateiname, uint64_t var)
@@ -87,7 +86,7 @@ void saveVariable(std::string dateiname, uint64_t var)
         outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
         outFile.close();
     }
-    else std::cerr << "Fehler beim Öffnen der Datei zum Speichern: " << dateiname << std::endl;
+    else schreibfehler();
 }
 
 uint64_t readVariable(std::string dateiname, uint64_t useless_var)
@@ -100,7 +99,7 @@ uint64_t readVariable(std::string dateiname, uint64_t useless_var)
         inFile.close();
         return var;
     }
-    else throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");
+    else lesefehler();
 }
 
 void saveVariable(std::string dateiname, std::vector<mpz_class> var)
@@ -117,6 +116,7 @@ void saveVariable(std::string dateiname, std::vector<mpz_class> var)
 
 std::vector<mpz_class> readVariable(std::string dateiname, std::vector<mpz_class> useless_var)
 {
+    erstelleVerzeichnis(dateiname.c_str());
     const std::string dir = dateiname + "/";
     uint64_t size = readVariable(dir + "size", (uint64_t)1729);
     std::vector<mpz_class> var;
@@ -142,11 +142,7 @@ void saveVariable(const std::string &dateiname, const std::vector<bool> &var)
 {
     std::ofstream outputFile(dateiname, std::ios::binary);
 
-    if (!outputFile.is_open())
-    {
-        std::cerr << "Fehler beim Öffnen der Datei: " << dateiname << std::endl;
-        return;
-    }
+    if (!outputFile.is_open()) schreibfehler();
 
     // Schreibe die Größe des Vektors in die Datei
     size_t size = var.size();
@@ -165,11 +161,7 @@ std::vector<bool> readVariable(const std::string &dateiname, const std::vector<b
 {
     std::ifstream inputFile(dateiname, std::ios::binary);
 
-    if (!inputFile.is_open())
-    {
-        std::cerr << "Fehler beim Öffnen der Datei: " << dateiname << std::endl;
-        return {};
-    }
+    if (!inputFile.is_open()) lesefehler();
 
     // Lese die Größe des Vektors aus der Datei
     size_t size;
@@ -197,7 +189,7 @@ void saveVariable(std::string dateiname, int var)
         outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
         outFile.close();
     }
-    else std::cerr << "Fehler beim Öffnen der Datei zum Speichern: " << dateiname << std::endl;
+    else schreibfehler();
 }
 
 int readVariable(std::string dateiname, int useless_var)
@@ -210,7 +202,7 @@ int readVariable(std::string dateiname, int useless_var)
         inFile.close();
         return var;
     }
-    else throw std::runtime_error("Fehler beim Laden einer Variable: Fehler beim Öffnen der Datei zum Lesen.");
+    else lesefehler();
 }
 
 
