@@ -25,6 +25,18 @@
 			    			out = buffer;\
 			    		}
 
+// wie dt(), aber ohne berechnungsEndeHR
+#define adt(Start, out)	{\
+                			char buffer[50];\
+			    			auto adt_BEHR__ = std::chrono::high_resolution_clock::now();\
+			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(adt_BEHR__ - Start);\
+			    			uint64_t total_seconds = duration.count() / 1'000'000'000;\
+			    			uint64_t remaining_ns = duration.count() % 1'000'000'000;\
+			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			out = buffer;\
+			    		}
+
+// = dt(), aber zeit ist durch 2^20 = 1'048'576 geteilt.
 #define ddt(Start, out)	{\
                 			char buffer[50];\
 			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\

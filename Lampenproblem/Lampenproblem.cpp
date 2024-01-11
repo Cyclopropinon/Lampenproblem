@@ -37,6 +37,7 @@
 #include <iostream>
 #include <iterator>
 #include <math.h>
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -54,6 +55,9 @@
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;
+
+std::mutex output_mutex;	// Mutex für den Dateizugriff
+std::mutex cout_mutex;		// Mutex für den Zugriff auf std::cout
 
 #ifdef _ENABLEBIGINTS_
 using namespace boost::multiprecision;
@@ -1953,7 +1957,7 @@ int main()
 
 		double								diffN;
 
-
+		uint64_t							AnzThreads;
 
 		//	vector<vector<unsigned long long>>	Vectorliste;
 
@@ -1971,7 +1975,7 @@ int main()
 
 			try
 			{
-				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\n";
+				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n";
 				cin >> prüfart;
 
 				unsigned long long testLampen;
@@ -2843,6 +2847,86 @@ int main()
 
 						output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << endl;
 						cout << "Datei gespeichert als " << filename << '!' << endl;
+					}
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wformat"
+					dt(berechnungsStartHR, durHR);
+				    #pragma GCC diagnostic pop
+					cout << "Laufzeit: " << durHR << "\n\n";
+					break;
+				case 18:
+					cout << "min n eingeben: ";
+					cin >> minN;
+					cout << "max n eingeben: ";
+					cin >> maxN;
+				    cout << "Anzahl der PR je Lampenanzahl: ";
+					cin >> anz;
+					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
+					cin >> AnzThreads;
+
+					cout << "Datei speichern unter: ";
+					cin >> filename;
+					cout << "Zwischenstand speichern unter: ";
+					cin >> Session;
+
+					berechnungsStartHR = std::chrono::high_resolution_clock::now();
+
+					delN = maxN - minN + 1;
+
+					output_fstream.open(filename, ios_base::out);
+					if (!output_fstream.is_open()) {
+						cout << "Fehler: Failed to open " << filename << '\n';
+					}
+					else {
+						// Vector to store futures
+						std::vector<std::future<void>> futures;
+
+						for (size_t i = minN; i <= maxN; i++) {
+							// Use async to run the function asynchronously
+							auto fut = std::async(std::launch::async, [i, anz, &output_fstream, Session, berechnungsStartHR]()
+							{
+								string elapsed;
+								#pragma GCC diagnostic push
+								#pragma GCC diagnostic ignored "-Wformat"
+								adt(berechnungsStartHR, elapsed);
+								#pragma GCC diagnostic pop
+								{
+									std::lock_guard<std::mutex> lock(cout_mutex);
+									cout << "[Thread] Launched Thread Nr. " << i << "\tTime: " << elapsed << endl;
+								}
+
+								// Perform the slow operation in the async thread
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv2(i, anz, false, Session + "/" + std::to_string(i));
+
+								std::ostringstream oss2;
+								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
+								oss2 << PositiveRunden.back();
+
+								// Synchronize file output with a mutex
+								std::lock_guard<std::mutex> lock(output_mutex);
+								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
+							});
+
+							// Store the future for later retrieval
+							futures.push_back(std::move(fut));
+
+							// If the number of active threads reaches AnzThreads, wait for one to finish
+							if (futures.size() >= AnzThreads)
+							{
+								for (auto& fut : futures)
+								{
+									fut.wait(); // Wait for the thread to finish
+								}
+								futures.clear(); // Clear the completed futures
+							}
+						}
+
+						// Wait for the remaining threads to finish
+						for (auto& fut : futures)
+						{
+							fut.wait();
+						}
+					cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
 					#pragma GCC diagnostic push
 					#pragma GCC diagnostic ignored "-Wformat"
