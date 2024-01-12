@@ -5,7 +5,7 @@
 //
 
 // Version:
-#define _V "NaN"  // idk rn
+#define _V "0.1.0"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
