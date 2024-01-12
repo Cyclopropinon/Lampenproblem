@@ -3181,15 +3181,21 @@ int main()
 						noecho();
 						curs_set(0);
 
-					// Create an array to store pointers to ncurses windows
-					WINDOW *threadWins[maxN - minN + 1];
-					for (int i = 0; i <= maxN - minN; i++) {
-						threadWins[i] = newwin(4, COLS, i * 4, 0);
-						box(threadWins[i], 0, 0);
-						mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
-						wrefresh(threadWins[i]);
-					}
+						// Erstelle ein Fenster für die Titelzeile
+						WINDOW *titleWin = newwin(1, COLS, 0, 0);
+						box(titleWin, 0, 0);
+						mvwprintw(titleWin, 0, 2, "Dein Titel hier");
+						wrefresh(titleWin);
 
+						// Create an array to store pointers to ncurses windows
+						WINDOW *threadWins[maxN - minN + 1];
+						for (int i = 0; i <= maxN - minN; i++) {
+							threadWins[i] = newwin(4, COLS, i * 4 + 1, 0);
+							box(threadWins[i], 0, 0);
+							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
+							wrefresh(threadWins[i]);
+						}
+						
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
 

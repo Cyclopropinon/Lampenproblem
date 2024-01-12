@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <chrono>
+#include <mutex>
 
 #define __defProgBar__
 
@@ -126,6 +127,65 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
     constexpr double B   = 3.68065;
     constexpr double lnB = 1.30309; // = ln(B)
     //double factor = std::pow(static_cast<double>(total) / (current - shift), 2.5);  //TODO adjust
+    double baseshift = std::log(std::chrono::duration_cast<std::chrono::duration<double>>(elapsed).count()) / lnB - current;
+    std::chrono::duration<double> dd(std::pow(B, (baseshift + total + shift)));
+    std::chrono::nanoseconds estTotalTime = std::chrono::duration_cast<std::chrono::nanoseconds>(dd);
+    auto remaining = estTotalTime - elapsed;
+
+    auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
+    auto remainingSeconds = std::chrono::duration_cast<std::chrono::seconds>(remaining).count();
+    auto totalSeconds = std::chrono::duration_cast<std::chrono::seconds>(estTotalTime).count();
+
+    std::ostringstream out;
+    out << "\r[";
+
+    std::string currentStr = "\033[96m" + std::to_string(current) + "\033[0m"; // cyan color
+    bool currentDisplayed = false;
+
+    if (pos >= static_cast<int>(currentStr.length()) - 9) // 9 accounts for added escape characters
+    {
+        out << currentStr;
+        currentDisplayed = true;
+    }
+
+    for (int i = 0; i < barWidth; ++i) 
+    {
+        if (currentDisplayed && i < static_cast<int>(currentStr.length()) - 9) 
+            continue;
+
+        if (i < pos) 
+            out << "#";
+        else if (i == pos) 
+            out << ">";
+        else 
+            out << " ";
+    }
+
+    out << "] \033[92m" << std::fixed << std::setprecision(2) << progress * 100.0 << "%\033[0m "    // green
+        << "\033[93m" << remainingSeconds << "s [" << elapsedSeconds << "s/" << totalSeconds << "s]\033[0m "    // yellow
+        << "\033[91mRAM: " << giveRAM(ramUnit) << "\033[0m";    //red
+
+    int escapeCodeLength = 4 * 9; // 9 characters for each of the 4 color escape codes
+    int currentLength = currentDisplayed ? static_cast<int>(std::to_string(current).length()) : 0;
+    int consoleWidth = getConsoleWidth();
+    int remainingSpaces = consoleWidth - out.str().length() + escapeCodeLength;
+    if (!currentDisplayed)
+        remainingSpaces += currentLength;
+    if (remainingSpaces > 0)
+        out << std::string(remainingSpaces, ' ');
+
+    std::cout << out.str() << std::flush;
+}
+
+void printProgressBarNcurses(uint64_t shift, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed, char ramUnit, WINDOW *titleWin, std::mutex pr_mutex) 
+{
+    std::lock_guard<std::mutex> lock(cout_mutex);
+
+    double progress = static_cast<double>(current - shift) / total;
+    int pos = static_cast<int>(barWidth * progress) + ((current - shift) > 0);
+
+    constexpr double B   = 3.68065;
+    constexpr double lnB = 1.30309; // = ln(B)
     double baseshift = std::log(std::chrono::duration_cast<std::chrono::duration<double>>(elapsed).count()) / lnB - current;
     std::chrono::duration<double> dd(std::pow(B, (baseshift + total + shift)));
     std::chrono::nanoseconds estTotalTime = std::chrono::duration_cast<std::chrono::nanoseconds>(dd);
