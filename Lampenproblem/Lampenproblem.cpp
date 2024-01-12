@@ -38,7 +38,7 @@
 #include <iterator>
 #include <math.h>
 #include <mutex>
-#include <ncurses.h>
+#include <ncursesw/ncurses.h>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -46,10 +46,10 @@
 #include <vector>
 #include "zwischenVar.h"
 
+//#include <ncurses.h>
 //#include <stdexcept>
 //#include <stdio.h>
 //#include <sys/ioctl.h>
-//#include <unistd.h>
 
 // if using a progressBar
 #include "progBar.h"
@@ -1968,9 +1968,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 
             // Redirect output to the ncurses window
             wclear(outputWin);
-            mvwprintw(outputWin, 0, 2, "RAM: %s Iteration: %d Schritte: %ld Bytes Zeit: %s", giveRAM('k').c_str(), print, mpz_sizeinbase(Schritte.get_mpz_t(), 265), durHR.c_str());
-            mvwprintw(outputWin, 1, 2, "Δt: %s dt/dn: %s", CP_HR.c_str(), CPdHR.c_str());
-            wrefresh(outputWin);
+            mvwprintw(outputWin, 1, 2, "\033[0m\033[91mRAM: %s  \033[96mIteration: %d  \033[95mSchritte: %ld Bytes", giveRAM('k').c_str(), print, mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+            mvwprintw(outputWin, 2, 2, "\033[0m\033[93mZeit: %s\033[0m  \033[2;93mΔt: %s  \033[3;93mdt/dn: %s", durHR.c_str(), CP_HR.c_str(), CPdHR.c_str());
+			wrefresh(outputWin);
         }
     }
 
@@ -3381,11 +3381,4 @@ int main()
 //   4. Verwenden Sie das Fenster "Fehlerliste", um Fehler anzuzeigen.
 //   5. Wechseln Sie zu "Projekt" > "Neues Element hinzufügen", um neue Codedateien zu erstellen, bzw. zu "Projekt" > "Vorhandenes Element hinzufügen", um dem Projekt vorhandene Codedateien hinzuzufügen.
 //   6. Um dieses Projekt später erneut zu öffnen, wechseln Sie zu "Datei" > "Öffnen" > "Projekt", und wählen Sie die SLN-Datei aus.
-
-
-
-
-
-
-
 
