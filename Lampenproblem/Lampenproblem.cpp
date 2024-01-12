@@ -5,7 +5,7 @@
 //
 
 // Version:
-#define _V "0.1.1"
+#define _V "0.1.2"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -38,7 +38,6 @@
 #include <iterator>
 #include <math.h>
 #include <mutex>
-#include <ncursesw/ncurses.h>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -50,6 +49,13 @@
 //#include <stdexcept>
 //#include <stdio.h>
 //#include <sys/ioctl.h>
+
+#ifdef DNCURSES_WIDECHAR
+	#include <ncursesw/ncurses.h>
+#else
+	#include <ncurses.h>
+#endif
+
 
 // if using a progressBar
 #include "progBar.h"
@@ -1935,6 +1941,13 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
         PositiveRunden.push_back(1);
     }
 
+	start_color();  // Aktiviert die Farbunterstützung
+	init_pair(0, COLOR_WHITE, COLOR_BLACK);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(2, COLOR_CYAN, COLOR_BLACK);
+	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+
     Lampen[0] = false;
 
     while (PositiveRunden.size() < anz)
@@ -1967,11 +1980,35 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 		    #pragma GCC diagnostic pop
 
             // Redirect output to the ncurses window
-            wclear(outputWin);
-            mvwprintw(outputWin, 1, 2, "\033[0m\033[91mRAM: %s  \033[96mIteration: %d  \033[95mSchritte: %ld Bytes", giveRAM('k').c_str(), print, mpz_sizeinbase(Schritte.get_mpz_t(), 265));
-            mvwprintw(outputWin, 2, 2, "\033[0m\033[93mZeit: %s\033[0m  \033[2;93mΔt: %s  \033[3;93mdt/dn: %s", durHR.c_str(), CP_HR.c_str(), CPdHR.c_str());
+            //Δt: %s  \033[3;93mdt/dn: %s", durHR.c_str(), CP_HR.c_str(), CPdHR.c_str());
+			
+			wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
+			mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+			wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
+
+			wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+			mvwprintw(outputWin, 1, 20, "Iteration: %d", print);
+			wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+			wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+			mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+			wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+
+			wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+			mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
+			wattron(outputWin, A_DIM);          // Halbdurchsichtig
+			mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
+			wattron(outputWin, A_ITALIC);       // Kursiv
+			mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
+			wattroff(outputWin, A_DIM);
+			wattroff(outputWin, A_ITALIC);
+			wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+			//wattroff(outputWin, A_BOLD);      // Fettschrift deaktivieren
+			//wattroff(outputWin, A_UNDERLINE); // Unterstrich deaktivieren
+			//wattroff(outputWin, A_BLINK);     // Blinken deaktivieren
 			wrefresh(outputWin);
-        }
+		}
     }
 
     return PositiveRunden;
@@ -3065,7 +3102,7 @@ int main()
 					for (int i = 0; i <= maxN - minN; i++) {
 						threadWins[i] = newwin(4, COLS, i * 4, 0);
 						box(threadWins[i], 0, 0);
-						mvwprintw(threadWins[i], 0, 2, "n = %lld", minN + i);
+						mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
 						wrefresh(threadWins[i]);
 					}
 
@@ -3083,7 +3120,7 @@ int main()
 								#pragma GCC diagnostic pop
 								{
 									std::lock_guard<std::mutex> lock(cout_mutex);
-									mvwprintw(threadWins[i - minN], 2, 2, "Time: %s", elapsed.c_str());
+									mvwprintw(threadWins[i - minN], 2, 2, "Startzeit: %s", elapsed.c_str());
 									wrefresh(threadWins[i - minN]);
 								}
 
