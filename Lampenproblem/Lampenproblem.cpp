@@ -5,7 +5,7 @@
 //
 
 // Version:
-#define _V "NaN"  // idk rn
+#define _V "0.1.1"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -38,9 +38,11 @@
 #include <iterator>
 #include <math.h>
 #include <mutex>
+#include <ncurses.h>
 #include <sstream>
 #include <string>
 #include <thread>
+#include <unistd.h>
 #include <vector>
 #include "zwischenVar.h"
 
@@ -1906,6 +1908,75 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
     return PositiveRunden;
 }
 
+vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin)
+{
+    mpz_class AnzRunden = 2;
+    vector<bool> Lampen(n, true);
+    vector<mpz_class> PositiveRunden;
+    mpz_t tmp_n_gmplib;
+    mpz_init_set_ui(tmp_n_gmplib, n);
+    mpz_class Schritte(tmp_n_gmplib);
+    const mpz_class n_gmplib(tmp_n_gmplib);
+    unsigned long long Lampejetzt;
+    int print = 0;
+    auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
+    auto berechnungsEndeHR = berechnungsStartHR;
+    auto berechnungsZwCP_HR = berechnungsStartHR;
+    string durHR;
+    string CP_HR;
+    string CPdHR;
+
+    vector<bool> AlleLampenAn(n, true);
+    vector<bool> AlleLampenAus(n, false);
+
+    PositiveRunden.reserve(anz);
+    if (einsenAnzeigen)
+    {
+        PositiveRunden.push_back(1);
+    }
+
+    Lampen[0] = false;
+
+    while (PositiveRunden.size() < anz)
+    {
+        Schritte += AnzRunden;
+        if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
+        {
+            if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+            {
+                PositiveRunden.push_back(AnzRunden);
+            }
+
+            AnzRunden = 1 + Schritte / n_gmplib;
+            bool nonsense = Lampen[1];
+        }
+        Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
+        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+
+        print++;
+
+        if (print % 1048576 == 0)
+        {
+            CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
+            berechnungsZwCP_HR = berechnungsEndeHR;
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wformat"
+			dt(berechnungsStartHR, durHR);
+			dt(berechnungsZwCP_HR, CP_HR);
+			ddt(berechnungsZwCP_HR, CPdHR);
+		    #pragma GCC diagnostic pop
+
+            // Redirect output to the ncurses window
+            wclear(outputWin);
+            mvwprintw(outputWin, 0, 2, "RAM: %s Iteration: %d Schritte: %ld Bytes Zeit: %s", giveRAM('k').c_str(), print, mpz_sizeinbase(Schritte.get_mpz_t(), 265), durHR.c_str());
+            mvwprintw(outputWin, 1, 2, "Δt: %s dt/dn: %s", CP_HR.c_str(), CPdHR.c_str());
+            wrefresh(outputWin);
+        }
+    }
+
+    return PositiveRunden;
+}
+
 int main()
 {
 	ostringstream						Dateiausgabe;
@@ -1975,7 +2046,19 @@ int main()
 
 			try
 			{
-				cout << "Programm von Lorenz Taschner & Lars Krabbenhöft\nLampen prüfen bis (n,k)\nWelche Prüfmethode?\n0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n";
+				const std::string menu = std::string("Programm von Lorenz Taschner & Lars Krabbenhöft\n")
+					+ "Lampen prüfen bis (n,k)\n"
+					+ "Welche Prüfmethode?\n"
+					+ "0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n"
+					+ "3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n"
+					+ "6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n"
+					+ "9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n"
+					+ "12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n"
+					+ "15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n"
+					+ "17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n"
+					+ "19 = 16, aber mit ncurses & async"
+					+ '\n';
+				cout << menu;
 				cin >> prüfart;
 
 				unsigned long long testLampen;
@@ -2908,6 +2991,115 @@ int main()
 								// Synchronize file output with a mutex
 								std::lock_guard<std::mutex> lock(output_mutex);
 								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
+							});
+
+							// Store the future for later retrieval
+							futures.push_back(std::move(fut));
+
+							// Check if the number of active threads exceeds the limit
+							while (futures.size() >= AnzThreads)
+							{
+								auto it = std::find_if(futures.begin(), futures.end(), [](const std::future<void>& f)
+								{
+									return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+								});
+
+								// Remove completed futures
+								if (it != futures.end())
+								{
+									it->wait();
+									futures.erase(it);
+								}
+							}
+						}
+
+						// Wait for the remaining threads to finish
+						for (auto& fut : futures)
+						{
+							fut.wait();
+						}
+
+						cout << "Datei gespeichert als " << filename << '!' << endl;
+					}
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wformat"
+					dt(berechnungsStartHR, durHR);
+				    #pragma GCC diagnostic pop
+					cout << "Laufzeit: " << durHR << "\n\n";
+					break;
+				case 19:
+					cout << "min n eingeben: ";
+					cin >> minN;
+					cout << "max n eingeben: ";
+					cin >> maxN;
+				    cout << "Anzahl der PR je Lampenanzahl: ";
+					cin >> anz;
+					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
+					cin >> AnzThreads;
+
+					cout << "Datei speichern unter: ";
+					cin >> filename;
+					cout << "Zwischenstand speichern unter: ";
+					cin >> Session;
+
+					berechnungsStartHR = std::chrono::high_resolution_clock::now();
+
+					delN = maxN - minN + 1;
+
+					output_fstream.open(filename, ios_base::out);
+					if (!output_fstream.is_open()) {
+						cout << "Fehler: Failed to open " << filename << '\n';
+					}
+					else {
+						// erstelle Ordner für die Session
+						erstelleVerzeichnis(Session.c_str());
+
+						initscr();
+						start_color();
+						cbreak();
+						noecho();
+						curs_set(0);
+
+					// Create an array to store pointers to ncurses windows
+					WINDOW *threadWins[maxN - minN + 1];
+					for (int i = 0; i <= maxN - minN; i++) {
+						threadWins[i] = newwin(4, COLS, i * 4, 0);
+						box(threadWins[i], 0, 0);
+						mvwprintw(threadWins[i], 0, 2, "n = %lld", minN + i);
+						wrefresh(threadWins[i]);
+					}
+
+						// Vector to store futures
+						std::vector<std::future<void>> futures;
+
+						for (size_t i = minN; i <= maxN; i++) {
+							// Use async to run the function asynchronously
+							auto fut = std::async(std::launch::async, [i, anz, &output_fstream, Session, berechnungsStartHR, &threadWins, minN]()
+							{
+								string elapsed;
+								#pragma GCC diagnostic push
+								#pragma GCC diagnostic ignored "-Wformat"
+								adt(berechnungsStartHR, elapsed);
+								#pragma GCC diagnostic pop
+								{
+									std::lock_guard<std::mutex> lock(cout_mutex);
+									mvwprintw(threadWins[i - minN], 2, 2, "Time: %s", elapsed.c_str());
+									wrefresh(threadWins[i - minN]);
+								}
+
+								// Perform the slow operation in the async thread
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv4(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN]);
+
+								std::ostringstream oss2;
+								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
+								oss2 << PositiveRunden.back();
+
+								// Synchronize file output with a mutex
+								std::lock_guard<std::mutex> lock(output_mutex);
+								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
+
+								// Close the ncurses window when the thread finishes
+								delwin(threadWins[i - minN]);
 							});
 
 							// Store the future for later retrieval
