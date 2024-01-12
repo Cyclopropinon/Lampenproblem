@@ -13,6 +13,13 @@
 #include <string>
 #include <chrono>
 #include <mutex>
+#include <unistd.h>
+
+#ifdef DNCURSES_WIDECHAR
+	#include <ncursesw/ncurses.h>
+#else
+	#include <ncurses.h>
+#endif
 
 #define __defProgBar__
 
@@ -177,10 +184,8 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
     std::cout << out.str() << std::flush;
 }
 
-void printProgressBarNcurses(uint64_t shift, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed, char ramUnit, WINDOW *titleWin, std::mutex pr_mutex) 
+void printProgressBarNcurses(uint64_t shift, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed, char ramUnit, WINDOW *outputWin, std::mutex pr_mutex) 
 {
-    std::lock_guard<std::mutex> lock(cout_mutex);
-
     double progress = static_cast<double>(current - shift) / total;
     int pos = static_cast<int>(barWidth * progress) + ((current - shift) > 0);
 
@@ -195,45 +200,63 @@ void printProgressBarNcurses(uint64_t shift, uint64_t current, uint64_t total, i
     auto remainingSeconds = std::chrono::duration_cast<std::chrono::seconds>(remaining).count();
     auto totalSeconds = std::chrono::duration_cast<std::chrono::seconds>(estTotalTime).count();
 
-    std::ostringstream out;
-    out << "\r[";
-
-    std::string currentStr = "\033[96m" + std::to_string(current) + "\033[0m"; // cyan color
-    bool currentDisplayed = false;
-
-    if (pos >= static_cast<int>(currentStr.length()) - 9) // 9 accounts for added escape characters
-    {
-        out << currentStr;
-        currentDisplayed = true;
-    }
+    std::string out = "[";
 
     for (int i = 0; i < barWidth; ++i) 
     {
-        if (currentDisplayed && i < static_cast<int>(currentStr.length()) - 9) 
-            continue;
-
         if (i < pos) 
-            out << "#";
+            out += '#';
         else if (i == pos) 
-            out << ">";
+            out += '>';
         else 
-            out << " ";
+            out += ' ';
     }
 
-    out << "] \033[92m" << std::fixed << std::setprecision(2) << progress * 100.0 << "%\033[0m "    // green
-        << "\033[93m" << remainingSeconds << "s [" << elapsedSeconds << "s/" << totalSeconds << "s]\033[0m "    // yellow
-        << "\033[91mRAM: " << giveRAM(ramUnit) << "\033[0m";    //red
+    std::string currentStr = std::to_string(current);   // cyan color
 
-    int escapeCodeLength = 4 * 9; // 9 characters for each of the 4 color escape codes
-    int currentLength = currentDisplayed ? static_cast<int>(std::to_string(current).length()) : 0;
-    int consoleWidth = getConsoleWidth();
-    int remainingSpaces = consoleWidth - out.str().length() + escapeCodeLength;
-    if (!currentDisplayed)
-        remainingSpaces += currentLength;
-    if (remainingSpaces > 0)
-        out << std::string(remainingSpaces, ' ');
+    std::lock_guard<std::mutex> lock(pr_mutex);       // Verhindert race conditions
 
-    std::cout << out.str() << std::flush;
+    start_color();  // Aktiviert die Farbunterstützung
+	init_pair(0, COLOR_WHITE, COLOR_BLACK);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(2, COLOR_CYAN, COLOR_BLACK);
+	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(5, COLOR_GREEN, COLOR_BLACK);
+
+    mvwprintw(outputWin, 0, 0, "%s", out.c_str());            // Fortschrittsbalken
+
+    if (pos >= static_cast<int>(currentStr.length()))
+    {
+        wattron(outputWin, COLOR_PAIR(2));              // Cyan auf Schwarz
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wformat"
+        mvwprintw(outputWin, 1, 0, "%llu", current);    // embed Zahl
+        #pragma GCC diagnostic pop
+        wattroff(outputWin, COLOR_PAIR(2));             // Farbe deaktivieren
+    }
+    
+    std::stringstream outper;
+    auto percent = progress * 100.0;
+    if (percent < 10) outper << '0';                    // Format: xx.xx%
+    outper << std::fixed << std::setprecision(2) << percent << '%';     // grün
+
+    wattron(outputWin, COLOR_PAIR(5));                  // Grün auf Schwarz
+    mvwprintw(outputWin, barWidth + 3, 0, "%s", outper.str().c_str());        // Prozentzahl
+    wattroff(outputWin, COLOR_PAIR(5));                 // Farbe deaktivieren
+
+    wattron(outputWin, COLOR_PAIR(4));                  // Gelb auf Schwarz
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wformat"
+    mvwprintw(outputWin, barWidth + 9, 0, "%llds [%llds/%llds]", remainingSeconds, elapsedSeconds, totalSeconds);   // Zeit
+	#pragma GCC diagnostic pop
+    wattroff(outputWin, COLOR_PAIR(4));                 // Farbe deaktivieren
+
+    wattron(outputWin, COLOR_PAIR(1));                  // Rot auf Schwarz
+    mvwprintw(outputWin, 1, 0, "RAM: %s", giveRAM(ramUnit).c_str());    // RAM verbrauch
+    wattroff(outputWin, COLOR_PAIR(1));                 // Farbe deaktivieren
+
+    wrefresh(outputWin);
 }
 
 void pnarc(std::string msg)  // printNumberAndResetCursor
