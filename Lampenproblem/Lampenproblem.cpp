@@ -212,6 +212,44 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 	}
 }
 
+void CheckpointLSGv4(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL)
+{
+	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
+	{
+		uint64_t n;
+		uint64_t Lampejetzt;
+		uint64_t print;
+		readVar(n);
+		readVar(anz);
+		readVar(einsenAnzeigen);
+		readVar(AnzRunden);
+		readVar(Lampen);
+		readVar(PositiveRunden);
+		readVar(Schritte);
+		readVar(Lampejetzt);
+		readVar(print);
+		n_ULL = (unsigned long long)n;
+		Lampejetzt_ULL = (unsigned long long)Lampejetzt;
+		print_ULL = (unsigned long long)print;
+	}
+	else
+	{
+		erstelleVerzeichnis(ordner.c_str());
+		uint64_t n = (uint64_t)n_ULL;
+		uint64_t Lampejetzt = (uint64_t)Lampejetzt_ULL;
+		uint64_t print = (uint64_t)print_ULL;
+		saveVar(n);
+		saveVar(anz);
+		saveVar(einsenAnzeigen);
+		saveVar(AnzRunden);
+		saveVar(Lampen);
+		saveVar(PositiveRunden);
+		saveVar(Schritte);
+		saveVar(Lampejetzt);
+		saveVar(print);
+	}
+}
+
 vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
 {
 	unsigned long long				AnzRunden = 2;				// Aktuelle Runde
@@ -1782,7 +1820,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 	mpz_class				Schritte(tmp_n_gmplib);
 	const mpz_class			n_gmplib(tmp_n_gmplib);
     unsigned long long		Lampejetzt;
-	int						print = 0;
+	unsigned long long		print = 0;
 	auto					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 	auto					berechnungsEndeHR  = berechnungsStartHR;
 	auto					berechnungsZwCP_HR = berechnungsStartHR;
@@ -1823,7 +1861,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 		if (print % 1048576 == 0)
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
-			CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
+			CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wformat"
@@ -1848,9 +1886,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
     vector<mpz_class>		PositiveRunden;
 	mpz_class				Schritte(1729);
     unsigned long long		Lampejetzt;
-	int						print = 0;
+	unsigned long long		print = 0;
 
-	CheckpointLSGv3(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
+	CheckpointLSGv4(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 
 	mpz_t					tmp_n_gmplib;
 	mpz_init_set_ui			(tmp_n_gmplib, n);
@@ -1899,7 +1937,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 		if (print % 1048576 == 0)
 //			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
-			CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
+			CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wformat"
@@ -1924,7 +1962,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
     mpz_class Schritte(tmp_n_gmplib);
     const mpz_class n_gmplib(tmp_n_gmplib);
     unsigned long long Lampejetzt;
-    int print = 0;
+    unsigned long long print = 0;
     auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
     auto berechnungsEndeHR = berechnungsStartHR;
     auto berechnungsZwCP_HR = berechnungsStartHR;
@@ -1947,6 +1985,12 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 	init_pair(2, COLOR_CYAN, COLOR_BLACK);
 	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
 	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(5, COLOR_GREEN, COLOR_BLACK);
+
+	wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+	mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
+	wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+	wrefresh(outputWin);
 
     Lampen[0] = false;
 
@@ -1970,7 +2014,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 
         if (print % 1048576 == 0)
         {
-            CheckpointLSGv3(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
+            CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
             berechnungsZwCP_HR = berechnungsEndeHR;
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wformat"
@@ -1980,14 +2024,13 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 		    #pragma GCC diagnostic pop
 
             // Redirect output to the ncurses window
-            //Δt: %s  \033[3;93mdt/dn: %s", durHR.c_str(), CP_HR.c_str(), CPdHR.c_str());
 			
 			wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
 			mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 			wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
 			wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
-			mvwprintw(outputWin, 1, 20, "Iteration: %d", print);
+			mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
 			wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 			wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
@@ -1997,19 +2040,49 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 			wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 			mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
 			wattron(outputWin, A_DIM);          // Halbdurchsichtig
-			mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
+			mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());
 			wattron(outputWin, A_ITALIC);       // Kursiv
 			mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
 			wattroff(outputWin, A_DIM);
 			wattroff(outputWin, A_ITALIC);
 			wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
-			//wattroff(outputWin, A_BOLD);      // Fettschrift deaktivieren
-			//wattroff(outputWin, A_UNDERLINE); // Unterstrich deaktivieren
-			//wattroff(outputWin, A_BLINK);     // Blinken deaktivieren
 			wrefresh(outputWin);
 		}
     }
+
+	berechnungsZwCP_HR = berechnungsEndeHR;
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wformat"
+	dt(berechnungsStartHR, durHR);
+	dt(berechnungsZwCP_HR, CP_HR);
+	pdt(berechnungsZwCP_HR, CPdHR);
+	#pragma GCC diagnostic pop
+
+	wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
+	mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+	mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
+	wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
+
+	wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+	mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+	wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+	wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+	mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+	wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+
+	wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+	mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
+	wattron(outputWin, A_DIM);          // Halbdurchsichtig
+	mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());
+	wattron(outputWin, A_ITALIC);       // Kursiv
+	mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
+	wattroff(outputWin, A_DIM);
+	wattroff(outputWin, A_ITALIC);
+	wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+	wrefresh(outputWin);
 
     return PositiveRunden;
 }
@@ -3120,7 +3193,7 @@ int main()
 								#pragma GCC diagnostic pop
 								{
 									std::lock_guard<std::mutex> lock(cout_mutex);
-									mvwprintw(threadWins[i - minN], 2, 2, "Startzeit: %s", elapsed.c_str());
+									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
 									wrefresh(threadWins[i - minN]);
 								}
 

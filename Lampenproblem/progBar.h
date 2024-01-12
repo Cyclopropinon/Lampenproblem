@@ -36,7 +36,7 @@
 			    			out = buffer;\
 			    		}
 
-// = dt(), aber zeit ist durch 2^20 = 1'048'576 geteilt.
+// wie dt(), aber zeit ist durch 2^20 = 1'048'576 geteilt.
 #define ddt(Start, out)	{\
                 			char buffer[50];\
 			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
@@ -47,6 +47,18 @@
 			    			out = buffer;\
 			    		}
                         
+// wie dt(), aber zeit ist durch den rest von print geteilt.
+#define pdt(Start, out)	{\
+                			char buffer[50];\
+                            auto p = print % 1'048'576;\
+			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
+			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
+			    			uint64_t total_seconds = duration.count() / (1'000'000'000 * p);\
+			    			uint64_t remaining_ns = (duration.count() % 1'000'000'000) / p;\
+			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			out = buffer;\
+			    		}
+
 std::string giveRAM(char unit)
 {
     std::ifstream statusFile("/proc/self/status");
