@@ -5,7 +5,7 @@
 //
 
 // Version:
-#define _V "0.1.2"
+#define _V "0.1.3"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -1987,10 +1987,13 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(5, COLOR_GREEN, COLOR_BLACK);
 
-	wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
-	mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
-	wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
-	wrefresh(outputWin);
+	{
+		std::lock_guard<std::mutex> lock(cout_mutex);
+		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
+		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+		wrefresh(outputWin);
+	}
 
     Lampen[0] = false;
 
@@ -2025,29 +2028,33 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 
             // Redirect output to the ncurses window
 			
-			wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-			mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
-			wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
+			{
+				std::lock_guard<std::mutex> lock(cout_mutex);
 
-			wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
-			mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
-			wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+				wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
+				mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+				wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
-			wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-			mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
-			wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+				wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+				mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+				wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
-			wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
-			mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
-			wattron(outputWin, A_DIM);          // Halbdurchsichtig
-			mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());
-			wattron(outputWin, A_ITALIC);       // Kursiv
-			mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
-			wattroff(outputWin, A_DIM);
-			wattroff(outputWin, A_ITALIC);
-			wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+				wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+				mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+				wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
-			wrefresh(outputWin);
+				wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+				mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
+				wattron(outputWin, A_DIM);          // Halbdurchsichtig
+				mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());
+				wattron(outputWin, A_ITALIC);       // Kursiv
+				mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
+				wattroff(outputWin, A_DIM);
+				wattroff(outputWin, A_ITALIC);
+				wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+				wrefresh(outputWin);
+			}
 		}
     }
 
@@ -2059,30 +2066,34 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 	pdt(berechnungsZwCP_HR, CPdHR);
 	#pragma GCC diagnostic pop
 
-	wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-	mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
-	mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
-	wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
+	{
+		std::lock_guard<std::mutex> lock(cout_mutex);
 
-	wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
-	mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
-	wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
+		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
+		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
 
-	wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-	mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
-	wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+		mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
-	wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
-	mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
-	wattron(outputWin, A_DIM);          // Halbdurchsichtig
-	mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());
-	wattron(outputWin, A_ITALIC);       // Kursiv
-	mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
-	wattroff(outputWin, A_DIM);
-	wattroff(outputWin, A_ITALIC);
-	wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
-	wrefresh(outputWin);
+		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
+		wattron(outputWin, A_DIM);          // Halbdurchsichtig
+		mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());
+		wattron(outputWin, A_ITALIC);       // Kursiv
+		mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
+		wattroff(outputWin, A_DIM);
+		wattroff(outputWin, A_ITALIC);
+		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+		wrefresh(outputWin);
+	}
 
     return PositiveRunden;
 }
