@@ -253,7 +253,7 @@ void printProgressBarNcurses(uint64_t shift, uint64_t current, uint64_t total, i
     wattroff(outputWin, COLOR_PAIR(4));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(1));                  // Rot auf Schwarz
-    mvwprintw(outputWin, 1, 0, "RAM: %s", giveRAM(ramUnit).c_str());    // RAM verbrauch
+    mvwprintw(outputWin, barWidth + 50, 0, "RAM: %s", giveRAM(ramUnit).c_str());    // RAM verbrauch
     wattroff(outputWin, COLOR_PAIR(1));                 // Farbe deaktivieren
 
     wrefresh(outputWin);

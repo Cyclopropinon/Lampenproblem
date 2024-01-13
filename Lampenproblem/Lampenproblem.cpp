@@ -2102,10 +2102,12 @@ int main()
 {
 	ostringstream						Dateiausgabe;
 
-	auto								AnzThreadsUnterstützt = thread::hardware_concurrency;		// soviele threads wie CPU-Kerne
+	const auto							AnzThreadsUnterstützt = thread::hardware_concurrency;		// soviele threads wie CPU-Kerne
 	long long							AnzThreads3;
 //	unsigned long long					AnzThreads4;												// Anzahl der Threads für case 4+
 	unsigned int						AnzThreads4;												// Anzahl der Threads für case 4+
+	uint64_t							finishedThreads;											// Anzahl der bereits fertigen Threads
+
 
 	cout << "Version " << _V << " Compiled on: " << __DATE__ << ' ' << __TIME__ << '\n' << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads für Prüfmethode Nr.3 eingeben: ";
 	cin >> AnzThreads3;
@@ -3165,7 +3167,8 @@ int main()
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
-					delN = maxN - minN + 1;
+					delN = maxN - minN + 1;			// = maxN - minN + 1
+					diffN = delN - 1;				// = maxN - minN
 
 					output_fstream.open(filename, ios_base::out);
 					if (!output_fstream.is_open()) {
@@ -3188,20 +3191,20 @@ int main()
 						wrefresh(titleWin);
 
 						// Create an array to store pointers to ncurses windows
-						WINDOW *threadWins[maxN - minN + 1];
-						for (int i = 0; i <= maxN - minN; i++) {
+						WINDOW *threadWins[delN];
+						for (int i = 0; i <= delN - 1; i++) {
 							threadWins[i] = newwin(4, COLS, i * 4 + 1, 0);
 							box(threadWins[i], 0, 0);
 							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
 							wrefresh(threadWins[i]);
 						}
-						
+
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
 
 						for (size_t i = minN; i <= maxN; i++) {
 							// Use async to run the function asynchronously
-							auto fut = std::async(std::launch::async, [i, anz, &output_fstream, Session, berechnungsStartHR, &threadWins, minN]()
+							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, &minN, &diffN]()
 							{
 								string elapsed;
 								#pragma GCC diagnostic push
@@ -3247,12 +3250,18 @@ int main()
 									futures.erase(it);
 								}
 							}
+
+							finishedThreads = 0;
+							if (i >= minN + AnzThreads) finishedThreads = i - minN - AnzThreads + 1;
+							PrintProgressBar(finishedThreads / diffN, getConsoleWidth());
 						}
 
 						// Wait for the remaining threads to finish
 						for (auto& fut : futures)
 						{
 							fut.wait();
+							finishedThreads++;
+							PrintProgressBar(finishedThreads / diffN, getConsoleWidth());
 						}
 
 						cout << "Datei gespeichert als " << filename << '!' << endl;
