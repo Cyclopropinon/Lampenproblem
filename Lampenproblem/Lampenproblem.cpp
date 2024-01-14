@@ -5,7 +5,7 @@
 //
 
 // Version:
-#define _V "0.1.3"
+#define _V "0.1.4"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -30,6 +30,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
 #include <future>
 #include <fstream>
 #include <gmp.h>
@@ -2100,16 +2101,34 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 
 int main()
 {
+    // Setze die Locale auf die gewünschte Sprache (z.B. "de_DE.UTF-8")
+    std::locale::global(std::locale("de_DE.UTF-8"));
+
+
 	ostringstream						Dateiausgabe;
 
-	const auto							AnzThreadsUnterstützt = thread::hardware_concurrency;		// soviele threads wie CPU-Kerne
+    const char*							termType				= std::getenv("TERM");				// Terminal-Typ
+
+	const auto							AnzThreadsUnterstützt	= thread::hardware_concurrency;		// soviele threads wie CPU-Kerne
 	long long							AnzThreads3;
 //	unsigned long long					AnzThreads4;												// Anzahl der Threads für case 4+
 	unsigned int						AnzThreads4;												// Anzahl der Threads für case 4+
 	uint64_t							finishedThreads;											// Anzahl der bereits fertigen Threads
 
+	// Unicode-Zeichen für abgerundete Ecken
+	cchar_t ls, rs, ts, bs, tl, tr, bl, br;
+	setcchar(&ls, L"│", 0, 0, NULL);
+	setcchar(&rs, L"│", 0, 0, NULL);
+	setcchar(&ts, L"─", 0, 0, NULL);
+	setcchar(&bs, L"─", 0, 0, NULL);
+	setcchar(&tl, L"╭", 0, 0, NULL);
+	setcchar(&tr, L"╮", 0, 0, NULL);
+	setcchar(&bl, L"╰", 0, 0, NULL);
+	setcchar(&br, L"╯", 0, 0, NULL);
 
-	cout << "Version " << _V << " Compiled on: " << __DATE__ << ' ' << __TIME__ << '\n' << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads für Prüfmethode Nr.3 eingeben: ";
+
+	cout << "Version " << _V << " Compiled on: " << __DATE__ << ' ' << __TIME__ << "\nTerminal Typ: " << termType << '\n'
+	     << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads für Prüfmethode Nr.3 eingeben: ";
 	cin >> AnzThreads3;
 
 	if (AnzThreads3 == -1)
@@ -3173,6 +3192,11 @@ int main()
 					output_fstream.open(filename, ios_base::out);
 					if (!output_fstream.is_open()) {
 						cout << "Fehler: Failed to open " << filename << '\n';
+
+						#pragma GCC diagnostic push
+						#pragma GCC diagnostic ignored "-Wformat"
+						dt(berechnungsStartHR, durHR);
+						#pragma GCC diagnostic pop
 					}
 					else {
 						// erstelle Ordner für die Session
@@ -3186,18 +3210,20 @@ int main()
 
 						// Erstelle ein Fenster für die Titelzeile
 						WINDOW *titleWin = newwin(1, COLS, 0, 0);
-						box(titleWin, 0, 0);
-						mvwprintw(titleWin, 0, 2, "Dein Titel hier");
 						wrefresh(titleWin);
 
 						// Create an array to store pointers to ncurses windows
 						WINDOW *threadWins[delN];
-						for (int i = 0; i <= delN - 1; i++) {
+						for (int i = 0; i < delN; i++) {
 							threadWins[i] = newwin(4, COLS, i * 4 + 1, 0);
 							box(threadWins[i], 0, 0);
+							wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
 							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
 							wrefresh(threadWins[i]);
 						}
+
+						const int zeileDrunter = 4 * delN + 2;	// die Zeile unter den Ganzen Fenstern
+						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
@@ -3229,7 +3255,7 @@ int main()
 								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
 
 								// Close the ncurses window when the thread finishes
-								delwin(threadWins[i - minN]);
+								//delwin(threadWins[i - minN]);
 							});
 
 							// Store the future for later retrieval
@@ -3253,7 +3279,8 @@ int main()
 
 							finishedThreads = 0;
 							if (i >= minN + AnzThreads) finishedThreads = i - minN - AnzThreads + 1;
-							PrintProgressBar(finishedThreads / diffN, getConsoleWidth());
+							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex);
 						}
 
 						// Wait for the remaining threads to finish
@@ -3261,16 +3288,24 @@ int main()
 						{
 							fut.wait();
 							finishedThreads++;
-							PrintProgressBar(finishedThreads / diffN, getConsoleWidth());
+							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex);
 						}
 
-						cout << "Datei gespeichert als " << filename << '!' << endl;
+						#pragma GCC diagnostic push
+						#pragma GCC diagnostic ignored "-Wformat"
+						dt(berechnungsStartHR, durHR);
+						#pragma GCC diagnostic pop
+
+						cout << gotoZeileDrunter;
+						wcout << L"\nBerechnungen beendet! Taste drücken, um ins Menü zurückzukommen." << endl;
+						cin.get();
+						cin.get();
+						endwin();	// end ncurses
+
+						cout << gotoZeileDrunter << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
-					dt(berechnungsStartHR, durHR);
-				    #pragma GCC diagnostic pop
-					cout << "Laufzeit: " << durHR << "\n\n";
+					cout << "Laufzeit: " << durHR << "                                                      \n\n";
 					break;
 				default:
 					cout << "\aFehlerhafte Eingabe!\n\n";
