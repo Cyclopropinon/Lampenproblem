@@ -262,16 +262,16 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     wattroff(outputWin, COLOR_PAIR(5));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(4));                  // Gelb auf Schwarz
-    mvwprintw(outputWin, 0, barWidth + 10, "                                    "); // vorherige Shrift leeren
-    mvwprintw(outputWin, 0, barWidth + 10, "%s", Zeitanalyse.c_str());              // Zeit
+    //mvwprintw(outputWin, 0, barWidth + 10, "                                    "); // vorherige Shrift leeren
+    mvwprintw(outputWin, 0, barWidth + 10, "%s             ", Zeitanalyse.c_str()); // Zeit
     wattroff(outputWin, COLOR_PAIR(4));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(1));                  // Rot auf Schwarz
-    mvwprintw(outputWin, 0, barWidth + 50, "RAM: %s", giveRAM(ramUnit).c_str());    // RAM verbrauch
+    mvwprintw(outputWin, 0, barWidth + 55, "RAM: %s", giveRAM(ramUnit).c_str());    // RAM verbrauch
     wattroff(outputWin, COLOR_PAIR(1));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(3));                  // Magenta auf Schwarz
-    mvwprintw(outputWin, 0, barWidth + 70, "Terminal: %s", TERM);                   // Terminal type
+    mvwprintw(outputWin, 0, barWidth + 75, "Terminal: %s", TERM);                   // Terminal type
     wattroff(outputWin, COLOR_PAIR(3));                 // Farbe deaktivieren
 
     wattroff(outputWin, A_BOLD);                        // Fett deaktivieren
