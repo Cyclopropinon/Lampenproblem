@@ -2001,9 +2001,11 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 
 	{
 		std::lock_guard<std::mutex> lock(cout_mutex);
+		wattron(outputWin, A_BOLD);			// Fett
 		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
 		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+		wattroff(outputWin, A_BOLD);
 		wrefresh(outputWin);
 	}
 
@@ -2043,6 +2045,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 			{
 				std::lock_guard<std::mutex> lock(cout_mutex);
 
+				wattron(outputWin, A_BOLD);  		// Fett
+
 				wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
 				mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 				wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
@@ -2056,14 +2060,16 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 				wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 				wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
-				mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
+				mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
 				wattron(outputWin, A_DIM);          // Halbdurchsichtig
-				mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());
+				mvwprintw(outputWin, 2, 30, "dt: %s       ", CP_HR.c_str());
 				wattron(outputWin, A_ITALIC);       // Kursiv
-				mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
+				mvwprintw(outputWin, 2, 55, "dt/dn: %s    ", CPdHR.c_str());
 				wattroff(outputWin, A_DIM);
 				wattroff(outputWin, A_ITALIC);
 				wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+				wattroff(outputWin, A_BOLD);
 
 				wrefresh(outputWin);
 			}
@@ -3292,7 +3298,7 @@ int main()
 							finishedThreads = 0;
 							if (i >= minN + AnzThreads) finishedThreads = i - minN - AnzThreads + 1;
 							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex);
+							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType);
 						}
 
 						// Wait for the remaining threads to finish
@@ -3301,7 +3307,7 @@ int main()
 							fut.wait();
 							finishedThreads++;
 							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex);
+							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType);
 						}
 
 						#pragma GCC diagnostic push
@@ -3309,10 +3315,12 @@ int main()
 						dt(berechnungsStartHR, durHR);
 						#pragma GCC diagnostic pop
 
-						cout << gotoZeileDrunter;
-						wcout << L"\nBerechnungen beendet! Taste drücken, um ins Menü zurückzukommen." << endl;
-						cin.get();
-						cin.get();
+						if(!tty)
+						{
+							cout << gotoZeileDrunter << "\nBerechnungen beendet! Taste drücken, um ins Menü zurückzukommen." << endl;
+							cin.get();
+							cin.get();
+						}
 						endwin();	// end ncurses
 
 						if(tty) cout << gotoZeileDrunter;

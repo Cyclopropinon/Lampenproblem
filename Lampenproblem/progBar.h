@@ -187,7 +187,7 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
 
 // ncurses Variante
 // @param current Anzahl der fertigen Threads
-void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed_ns, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex) 
+void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed_ns, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex, const char* TERM)
 {
     double progress = static_cast<double>(current) / total;
     int pos = static_cast<int>(barWidth * progress) + (current > 0);
@@ -243,6 +243,8 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
 	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(5, COLOR_GREEN, COLOR_BLACK);
 
+    wattron(outputWin, A_BOLD);                         // Fette Schrift
+
     mvwprintw(outputWin, 0, 0, "%s", out.c_str());      // Fortschrittsbalken
 
     if (pos >= static_cast<int>(currentStr.length()))
@@ -267,6 +269,12 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     wattron(outputWin, COLOR_PAIR(1));                  // Rot auf Schwarz
     mvwprintw(outputWin, 0, barWidth + 50, "RAM: %s", giveRAM(ramUnit).c_str());    // RAM verbrauch
     wattroff(outputWin, COLOR_PAIR(1));                 // Farbe deaktivieren
+
+    wattron(outputWin, COLOR_PAIR(3));                  // Magenta auf Schwarz
+    mvwprintw(outputWin, 0, barWidth + 70, "Terminal: %s", TERM);                   // Terminal type
+    wattroff(outputWin, COLOR_PAIR(3));                 // Farbe deaktivieren
+
+    wattroff(outputWin, A_BOLD);                        // Fett deaktivieren
 
     wrefresh(outputWin);
 }
