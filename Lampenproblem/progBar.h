@@ -187,16 +187,17 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
 
 // ncurses Variante
 // @param current Anzahl der fertigen Threads
-void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex) 
+void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed_ns, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex) 
 {
     double progress = static_cast<double>(current) / total;
     int pos = static_cast<int>(barWidth * progress) + (current > 0);
 
     constexpr double B   = 3.68065;
     constexpr double lnB = 1.30309; // = ln(B)
-    double baseshift = std::log(std::chrono::duration_cast<std::chrono::duration<double>>(elapsed).count()) / lnB - current;
+    double baseshift = std::log(std::chrono::duration_cast<std::chrono::duration<double>>(elapsed_ns).count()) / lnB - current;
     std::chrono::duration<double> dd(std::pow(B, (baseshift + total + min)));
-    std::chrono::nanoseconds estTotalTime = std::chrono::duration_cast<std::chrono::nanoseconds>(dd);
+    std::chrono::seconds estTotalTime = std::chrono::duration_cast<std::chrono::seconds>(dd);
+    std::chrono::seconds elapsed = std::chrono::duration_cast<std::chrono::seconds>(elapsed_ns);
     auto remaining = estTotalTime - elapsed;
 
     auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
@@ -217,6 +218,20 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     out += ']';
 
     std::string currentStr = std::to_string(current);   // cyan color
+
+    std::string prozent;
+    if (current == total)
+    {
+        prozent = " 100% ";
+    } else {
+        std::stringstream outper;
+        auto percent = progress * 100.0;
+        if (percent < 10) outper << '0';                // Format: xx.xx%
+        outper << std::fixed << std::setprecision(2) << percent << '%';     // grün
+        prozent = outper.str();
+    }
+
+    std::string Zeitanalyse = std::to_string(remainingSeconds) + "s [" + std::to_string(elapsedSeconds) + "s/" + std::to_string(totalSeconds) + "s]";   //Gelb
 
     std::lock_guard<std::mutex> lock(pr_mutex);         // Verhindert race conditions
 
@@ -240,31 +255,17 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
         wattroff(outputWin, COLOR_PAIR(2));             // Farbe deaktivieren
     }
     
-    if (current == total)
-    {
-        wattron(outputWin, COLOR_PAIR(5));              // Grün auf Schwarz
-        mvwprintw(outputWin, barWidth + 4, 0, "100%");  // 100%
-        wattroff(outputWin, COLOR_PAIR(5));             // Farbe deaktivieren
-    } else {
-        std::stringstream outper;
-        auto percent = progress * 100.0;
-        if (percent < 10) outper << '0';                // Format: xx.xx%
-        outper << std::fixed << std::setprecision(2) << percent << '%';     // grün
-
-        wattron(outputWin, COLOR_PAIR(5));              // Grün auf Schwarz
-        mvwprintw(outputWin, barWidth + 3, 0, "%s", outper.str().c_str());  // Prozentzahl
-        wattroff(outputWin, COLOR_PAIR(5));             // Farbe deaktivieren
-    }
+    wattron(outputWin, COLOR_PAIR(5));                  // Grün auf Schwarz
+    mvwprintw(outputWin, 0, barWidth + 3, "%s", prozent.c_str());                   // Prozentzahl
+    wattroff(outputWin, COLOR_PAIR(5));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(4));                  // Gelb auf Schwarz
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
-    mvwprintw(outputWin, barWidth + 9, 0, "%llds [%llds/%llds]", remainingSeconds, elapsedSeconds, totalSeconds);   // Zeit
-	#pragma GCC diagnostic pop
+    mvwprintw(outputWin, 0, barWidth + 10, "                                    "); // vorherige Shrift leeren
+    mvwprintw(outputWin, 0, barWidth + 10, "%s", Zeitanalyse.c_str());              // Zeit
     wattroff(outputWin, COLOR_PAIR(4));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(1));                  // Rot auf Schwarz
-    mvwprintw(outputWin, barWidth + 50, 0, "RAM: %s", giveRAM(ramUnit).c_str());    // RAM verbrauch
+    mvwprintw(outputWin, 0, barWidth + 50, "RAM: %s", giveRAM(ramUnit).c_str());    // RAM verbrauch
     wattroff(outputWin, COLOR_PAIR(1));                 // Farbe deaktivieren
 
     wrefresh(outputWin);
