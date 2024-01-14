@@ -5,7 +5,7 @@
 //
 
 // Version:
-#define _V "0.1.4"
+#define _V "0.1.5"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -150,6 +150,17 @@ string GeeigneteThreadgroeszenBerechnen(unsigned long long dN, unsigned int AnzT
 	}
 
 	return GuteThreadgroeszen;
+}
+
+bool isTTY(std::string TERM)
+{
+	if (TERM == "linux") return true;				// Normales TTY Terminal
+	if (TERM.rfind("xterm", 0) == 0) return false;	// checks if it starts with xterm; xterm unterstützt de Unicode Block U+2500 und weitere nützliche sachen
+
+	// check other terinals
+
+	// if unknown, assume it is not a TTY
+	return false;
 }
 
 /*
@@ -2108,6 +2119,7 @@ int main()
 	ostringstream						Dateiausgabe;
 
     const char*							termType				= std::getenv("TERM");				// Terminal-Typ
+	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
 
 	const auto							AnzThreadsUnterstützt	= thread::hardware_concurrency;		// soviele threads wie CPU-Kerne
 	long long							AnzThreads3;
@@ -3217,7 +3229,7 @@ int main()
 						for (int i = 0; i < delN; i++) {
 							threadWins[i] = newwin(4, COLS, i * 4 + 1, 0);
 							box(threadWins[i], 0, 0);
-							wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+							if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
 							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
 							wrefresh(threadWins[i]);
 						}
@@ -3303,7 +3315,8 @@ int main()
 						cin.get();
 						endwin();	// end ncurses
 
-						cout << gotoZeileDrunter << "Datei gespeichert als " << filename << '!' << endl;
+						if(tty) cout << gotoZeileDrunter;
+						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
 					cout << "Laufzeit: " << durHR << "                                                      \n\n";
 					break;
