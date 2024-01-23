@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
+#include <cstring>
 #include <future>
 #include <fstream>
 #include <gmp.h>
@@ -3567,6 +3568,7 @@ int main()
 
 						const int zeileDrunter = 4 * delN + 2;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
+						const int timerOrt = delN + (75 + 13) + std::strlen(termType);
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
@@ -3623,7 +3625,7 @@ int main()
 							finishedThreads = 0;
 							if (i >= minN + AnzThreads) finishedThreads = i - minN - AnzThreads + 1;
 							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType);
+							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrt);
 						}
 
 						// Wait for the remaining threads to finish
@@ -3632,7 +3634,7 @@ int main()
 							fut.wait();
 							finishedThreads++;
 							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType);
+							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrt);
 						}
 
 						#pragma GCC diagnostic push
