@@ -155,7 +155,6 @@ void printCurrentTime(WINDOW* win, int x = 0, int y = 50)
     std::time_t currentTime = std::time(nullptr);
     // Konvertieren Sie die Zeit in einen String
     char* timeString = std::ctime(&currentTime);
-
     mvwprintw(win, x, y, "Letzte Bildschirmaktualisierung: %s", timeString);
 }
 
@@ -304,7 +303,11 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     wattroff(outputWin, COLOR_PAIR(1));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(3));                  // Magenta auf Schwarz
-    mvwprintw(outputWin, 0, barWidth + 75, "Terminal: %s", TERM);                   // Terminal type
+    #ifdef _V
+        mvwprintw(outputWin, 0, barWidth + 75, "Programmversion: %s  Terminal: %s", _V, TERM);  // Programmversion & Terminal type
+    #else //!_V
+        mvwprintw(outputWin, 0, barWidth + 75, "Terminal: %s", TERM);               // Terminal type
+    #endif
     wattroff(outputWin, COLOR_PAIR(3));                 // Farbe deaktivieren
 
     wattroff(outputWin, A_BOLD);                        // Fett deaktivieren
@@ -400,7 +403,11 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     wattroff(outputWin, COLOR_PAIR(1));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(3));                  // Magenta auf Schwarz
-    mvwprintw(outputWin, 0, barWidth + 75, "Terminal: %s", TERM);                   // Terminal type
+    #ifdef _V
+        mvwprintw(outputWin, 0, barWidth + 75, "Programmversion: %s  Terminal: %s", _V, TERM);  // Programmversion & Terminal type
+    #else //!_V
+        mvwprintw(outputWin, 0, barWidth + 75, "Terminal: %s", TERM);               // Terminal type
+    #endif
     wattroff(outputWin, COLOR_PAIR(3));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(6));                  // Blau auf Schwarz

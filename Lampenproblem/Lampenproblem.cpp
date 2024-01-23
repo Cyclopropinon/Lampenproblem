@@ -4,7 +4,7 @@
 // TODO Terminal width
 //
 
-// Version:
+// Programmversion:
 #define _V "0.1.7"
 
 // Uncomment to enable big ints
@@ -58,6 +58,9 @@
 	#include <ncurses.h>
 #endif
 
+std::mutex output_mutex;			// Mutex für den Dateizugriff
+std::mutex cout_mutex;				// Mutex für den Zugriff auf std::cout
+constexpr auto Vsize = strlen(_V);	// String-Länge der Programmversion als eine globale Konstante
 
 // if using a progressBar
 #include "progBar.h"
@@ -65,9 +68,6 @@
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;
-
-std::mutex output_mutex;	// Mutex für den Dateizugriff
-std::mutex cout_mutex;		// Mutex für den Zugriff auf std::cout
 
 #ifdef _ENABLEBIGINTS_
 using namespace boost::multiprecision;
@@ -3583,7 +3583,7 @@ int main()
 
 						const int zeileDrunter = 4 * delN + 2;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
-						const int timerOrt = delN + (75 + 13) + std::strlen(termType);
+						const int timerOrt = delN + (75 + Vsize + 34 - 3) + std::strlen(termType);
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
