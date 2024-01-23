@@ -5,7 +5,7 @@
 //
 
 // Version:
-#define _V "0.1.6"
+#define _V "0.1.7"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -2132,7 +2132,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
-vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin)
+vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrt)
 {
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
@@ -2220,6 +2220,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 			{
 				std::lock_guard<std::mutex> lock(cout_mutex);
 
+				wattron(titelWin, A_BOLD);  		// Fett
 				wattron(outputWin, A_BOLD);  		// Fett
 
 				wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
@@ -2248,8 +2249,14 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 				mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
 				wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
+				wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
+				printCurrentTime(titelWin, 0, timerOrt);
+				wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
+
+				wattroff(titelWin, A_BOLD);
 				wattroff(outputWin, A_BOLD);
 
+				wrefresh(titelWin);
 				wrefresh(outputWin);
 			}
 		}
@@ -2294,6 +2301,14 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 		wrefresh(outputWin);
+
+		wattron(titelWin, A_BOLD);  		// Fett
+		wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
+		printCurrentTime(titelWin, 0, timerOrt);
+		wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
+		wattroff(titelWin, A_BOLD);
+
+		wrefresh(titelWin);
 	}
 
     return PositiveRunden;
@@ -3575,7 +3590,7 @@ int main()
 
 						for (size_t i = minN; i <= maxN; i++) {
 							// Use async to run the function asynchronously
-							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN]()
+							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrt]()
 							{
 								string elapsed;
 								#pragma GCC diagnostic push
@@ -3589,7 +3604,7 @@ int main()
 								}
 
 								// Perform the slow operation in the async thread
-								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv5(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin);
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv5(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrt);
 
 								std::ostringstream oss2;
 								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));

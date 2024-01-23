@@ -370,6 +370,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
 	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
 	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(5, COLOR_GREEN, COLOR_BLACK);
+	init_pair(6, COLOR_BLUE, COLOR_BLACK);
 
     wattron(outputWin, A_BOLD);                         // Fette Schrift
 
@@ -402,7 +403,9 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     mvwprintw(outputWin, 0, barWidth + 75, "Terminal: %s", TERM);                   // Terminal type
     wattroff(outputWin, COLOR_PAIR(3));                 // Farbe deaktivieren
 
+    wattron(outputWin, COLOR_PAIR(6));                  // Blau auf Schwarz
     printCurrentTime(outputWin, 0, timerOrt);
+    wattroff(outputWin, COLOR_PAIR(6));                 // Farbe deaktivieren
 
     wattroff(outputWin, A_BOLD);                        // Fett deaktivieren
 
