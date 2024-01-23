@@ -5,7 +5,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.7"
+#define _V "0.1.8"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -2132,7 +2132,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
-vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrt)
+vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
@@ -2226,7 +2226,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 				wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 				mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
 				wattron(outputWin, A_DIM);          // Halbdurchsichtig
-				mvwprintw(outputWin, 2, 30, "dt: %s       ", CP_HR.c_str());
+				if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+				else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
 				wattron(outputWin, A_ITALIC);       // Kursiv
 				mvwprintw(outputWin, 2, 55, "dt/dn: %s    ", CPdHR.c_str());
 				wattroff(outputWin, A_DIM);
@@ -2250,7 +2251,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 				wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 				wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
-				printCurrentTime(titelWin, 0, timerOrt);
+				printCurrentTime(titelWin, timerOrty, timerOrtx);
 				wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
 
 				wattroff(titelWin, A_BOLD);
@@ -2276,7 +2277,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
 		wattron(outputWin, A_DIM);          // Halbdurchsichtig
-		mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());
+		if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+		else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
 		wattron(outputWin, A_ITALIC);       // Kursiv
 		mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
 		wattroff(outputWin, A_DIM);
@@ -2304,7 +2306,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 
 		wattron(titelWin, A_BOLD);  		// Fett
 		wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
-		printCurrentTime(titelWin, 0, timerOrt);
+		printCurrentTime(titelWin, timerOrty, timerOrtx);
 		wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
 		wattroff(titelWin, A_BOLD);
 
@@ -3568,29 +3570,31 @@ int main()
 						curs_set(0);
 
 						// Erstelle ein Fenster für die Titelzeile
-						WINDOW *titleWin = newwin(1, COLS, 0, 0);
+						const int titleWinHeight = 2 - tty;		// 1 hoch, wenn tty, sonst 2 hoch
+						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
 						wrefresh(titleWin);
 
 						// Create an array to store pointers to ncurses windows
 						WINDOW *threadWins[delN];
 						for (int i = 0; i < delN; i++) {
-							threadWins[i] = newwin(4, COLS, i * 4 + 1, 0);
+							threadWins[i] = newwin(4, COLS, i * 4 + titleWinHeight, 0);
 							box(threadWins[i], 0, 0);
 							if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
 							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
 							wrefresh(threadWins[i]);
 						}
 
-						const int zeileDrunter = 4 * delN + 2;	// die Zeile unter den Ganzen Fenstern
+						const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
-						const int timerOrt = delN + (75 + Vsize + 34 - 3) + std::strlen(termType);
+						const int timerOrty = !tty;				// wenn es ein tty ist, hat die erste zeile noch genügend platz, sonst nicht
+						const int timerOrtx = tty ? delN + (75 + Vsize + 34 - 3) + std::strlen(termType) : 0;
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
 
 						for (size_t i = minN; i <= maxN; i++) {
 							// Use async to run the function asynchronously
-							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrt]()
+							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
 							{
 								string elapsed;
 								#pragma GCC diagnostic push
@@ -3604,7 +3608,7 @@ int main()
 								}
 
 								// Perform the slow operation in the async thread
-								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv5(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrt);
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv5(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
 
 								std::ostringstream oss2;
 								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
@@ -3640,7 +3644,7 @@ int main()
 							finishedThreads = 0;
 							if (i >= minN + AnzThreads) finishedThreads = i - minN - AnzThreads + 1;
 							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrt);
+							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 						}
 
 						// Wait for the remaining threads to finish
@@ -3649,7 +3653,7 @@ int main()
 							fut.wait();
 							finishedThreads++;
 							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrt);
+							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 						}
 
 						#pragma GCC diagnostic push

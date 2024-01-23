@@ -149,13 +149,13 @@ int getConsoleWidth()
     return w.ws_col;
 }
 
-void printCurrentTime(WINDOW* win, int x = 0, int y = 50)
+void printCurrentTime(WINDOW* win, int y = 0, int x = 50)
 {
     // Holen Sie sich die aktuelle Zeit
     std::time_t currentTime = std::time(nullptr);
     // Konvertieren Sie die Zeit in einen String
     char* timeString = std::ctime(&currentTime);
-    mvwprintw(win, x, y, "Letzte Bildschirmaktualisierung: %s", timeString);
+    mvwprintw(win, y, x, "Letzte Bildschirmaktualisierung: %s", timeString);
 }
 
 // @param current das jetztige n (aka i)
@@ -318,7 +318,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
 // ncurses Variante
 // @param current Anzahl der fertigen Threads
 // @param timerOrt platz für den timer
-void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed_ns, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex, const char* TERM, int timerOrt)
+void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed_ns, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex, const char* TERM, const int& timerOrtx, const int& timerOrty)
 {
     double progress = static_cast<double>(current) / total;
     int pos = static_cast<int>(barWidth * progress) + (current > 0);
@@ -411,7 +411,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     wattroff(outputWin, COLOR_PAIR(3));                 // Farbe deaktivieren
 
     wattron(outputWin, COLOR_PAIR(6));                  // Blau auf Schwarz
-    printCurrentTime(outputWin, 0, timerOrt);
+    printCurrentTime(outputWin, timerOrty, timerOrtx);
     wattroff(outputWin, COLOR_PAIR(6));                 // Farbe deaktivieren
 
     wattroff(outputWin, A_BOLD);                        // Fett deaktivieren
