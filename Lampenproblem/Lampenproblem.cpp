@@ -45,6 +45,7 @@
 #include <thread>
 #include <unistd.h>
 #include <vector>
+#include "cpu.h"
 #include "zwischenVar.h"
 
 //#include <ncurses.h>

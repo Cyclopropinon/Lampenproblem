@@ -23,6 +23,14 @@
 
 #define __defProgBar__
 
+struct Zeitpacket
+{
+    uint64_t ns;
+    uint32_t s;
+    uint32_t remaining_ns;
+    std::string str;
+};
+
 #define dt(Start, out)	{\
                 			char buffer[50];\
 			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
@@ -525,4 +533,23 @@ void pnarc(std::string msg)  // printNumberAndResetCursor
 
     // Zurücksetzen des Cursors auf die gespeicherte Position
     std::cout.seekp(currentPosition);
+}
+
+// mache die Nanosekundenzahl nützlicher
+Zeitpacket pack(uint64_t ns)
+{
+    Zeitpacket packet;
+
+    // Berechne die Sekunden und verbleibenden Nanosekunden
+    packet.s = static_cast<uint32_t>(ns / 1'000'000'000);
+    packet.remaining_ns = static_cast<uint32_t>(ns % 1'000'000'000);
+
+    // Setze den Gesamtnanosekunden-Wert im Zeitpacket
+    packet.ns = ns;
+
+    char buffer[50];
+    sprintf(buffer, "%llu,%09llus", packet.s, packet.remaining_ns);
+    packet.str = buffer;
+
+    return packet;
 }
