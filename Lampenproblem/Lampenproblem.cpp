@@ -5,7 +5,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.10"
+#define _V "0.1.11"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -2495,6 +2495,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 
 					wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
 					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+					mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
 					wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 					wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
@@ -2548,6 +2549,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 
 		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
 		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
 		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 		wrefresh(outputWin);
@@ -2665,7 +2667,7 @@ int main()
 					+ "15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n"
 					+ "17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n"
 					+ "19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
-					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V5"
+					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6"
 					+ '\n';
 				cout << menu;
 				cin >> prüfart;
@@ -4111,7 +4113,7 @@ int main()
 						curs_set(0);
 
 						// Erstelle ein Fenster für die Titelzeile
-						constexpr int titleWinHeight = 1;
+						const int titleWinHeight = 2 - tty;		// 1 hoch, wenn tty, sonst 2 hoch
 						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
 						wrefresh(titleWin);
 
@@ -4127,8 +4129,8 @@ int main()
 
 						const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
-						const int timerOrtx = delN + (50 + Vsize + 34 - 3) + std::strlen(termType);
-						constexpr int timerOrty = 0;
+						const int timerOrty = !tty;				// wenn es ein tty ist, hat die erste zeile noch genügend platz, sonst nicht
+						const int timerOrtx = tty ? delN + (75 + Vsize + 34 - 3) + std::strlen(termType) : 0;
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;

@@ -1,19 +1,21 @@
 #pragma once
 
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <iostream>
-#include <iomanip>
-#include <vector>
-#include <gmp.h>
-#include <math.h>
+#include <chrono>
+#include <cstring>
+#include <ctime>
 #include <fstream>
+#include <gmp.h>
+#include <iomanip>
+#include <iostream>
+#include <math.h>
+#include <mutex>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <chrono>
-#include <mutex>
-#include <ctime>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <vector>
+#include "cpu.h"
 #include "globalVars.hh"
 
 #ifdef DNCURSES_WIDECHAR
@@ -169,6 +171,25 @@ int getConsoleWidth()
     return w.ws_col;
 }
 
+// mache die Nanosekundenzahl nützlicher
+Zeitpacket pack(uint64_t ns)
+{
+    Zeitpacket packet;
+
+    // Berechne die Sekunden und verbleibenden Nanosekunden
+    packet.s = static_cast<uint32_t>(ns / 1'000'000'000);
+    packet.remaining_ns = static_cast<uint32_t>(ns % 1'000'000'000);
+
+    // Setze den Gesamtnanosekunden-Wert im Zeitpacket
+    packet.ns = ns;
+
+    char buffer[50];
+    sprintf(buffer, "%u,%09us", packet.s, packet.remaining_ns);
+    packet.str = buffer;
+
+    return packet;
+}
+
 void printCurrentTime(WINDOW* win, int y = 0, int x = 50)
 {
     // Holen Sie sich die aktuelle Zeit
@@ -183,7 +204,12 @@ void printCurrentTime(WINDOW* win, int y = 0, int x = 50)
 	adt(StartTimeGlobal, durHR);
 	#pragma GCC diagnostic pop
 
-    mvwprintw(win, y, x, "Letzte Bildschirmaktualisierung: %s  \tLaufzeit: %s ", timeString, durHR.c_str());
+    std::string durCPU = CPUProfiler::cpuFamilyTimeStr();
+
+    auto x2 = x + 36 + strlen(timeString);
+
+    mvwprintw(win, y, x, "Letzte Bildschirmaktualisierung: %s", timeString);
+    mvwprintw(win, y, x2, "Laufzeit: %s    CPU-Zeit: %s", durHR.c_str(), durCPU.c_str());
 }
 
 // @param current das jetztige n (aka i)
@@ -553,23 +579,4 @@ void pnarc(std::string msg)  // printNumberAndResetCursor
 
     // Zurücksetzen des Cursors auf die gespeicherte Position
     std::cout.seekp(currentPosition);
-}
-
-// mache die Nanosekundenzahl nützlicher
-Zeitpacket pack(uint64_t ns)
-{
-    Zeitpacket packet;
-
-    // Berechne die Sekunden und verbleibenden Nanosekunden
-    packet.s = static_cast<uint32_t>(ns / 1'000'000'000);
-    packet.remaining_ns = static_cast<uint32_t>(ns % 1'000'000'000);
-
-    // Setze den Gesamtnanosekunden-Wert im Zeitpacket
-    packet.ns = ns;
-
-    char buffer[50];
-    sprintf(buffer, "%llu,%09llus", packet.s, packet.remaining_ns);
-    packet.str = buffer;
-
-    return packet;
 }

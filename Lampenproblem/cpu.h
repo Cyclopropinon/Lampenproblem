@@ -71,6 +71,25 @@ public:
         #endif
     }
 
+    // @brief Methode zum besseren Extrahieren der CPU-Zeit diese Threads in einen String.
+    // @warning geht nur für Linux zurzeit
+    static std::string cpuTimeStr()
+    {
+        clockid_t clockId;
+        struct timespec ts;
+
+        pthread_getcpuclockid(pthread_self(), &clockId);
+        clock_gettime(clockId, &ts);
+
+            // Umrechnung in Nanosekunden
+        char buffer[50];
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wformat"
+        sprintf(buffer, "%llu,%09llus", static_cast<uint64_t>(ts.tv_sec), static_cast<uint64_t>(ts.tv_nsec));
+	    #pragma GCC diagnostic pop
+        return buffer;
+    }
+
     // Methode zur Berechnung der gesamten CPU-Zeit (einschließlich Kinder) in Nanosekunden
     static uint64_t cpuFamilyTime()
     {
@@ -96,5 +115,23 @@ public:
             // Umrechnung in Nanosekunden
             return totalTimeMicro * 1000;
         #endif
+    }
+
+    // @brief Methode zum besseren Extrahieren der gesamten CPU-Zeit in einen String.
+    // @warning geht nur für Linux zurzeit
+    static std::string cpuFamilyTimeStr()
+    {
+        struct rusage usage;
+        getrusage(RUSAGE_SELF, &usage);
+        
+        uint64_t seconds = static_cast<uint64_t>(usage.ru_utime.tv_sec) + usage.ru_stime.tv_sec;    // Sekunden
+        uint64_t micsecs = static_cast<uint64_t>(usage.ru_utime.tv_usec) + usage.ru_stime.tv_usec;  // Mikrosekunden
+
+        char buffer[50];
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wformat"
+        sprintf(buffer, "%llu,%06llus", seconds, micsecs);
+	    #pragma GCC diagnostic pop
+        return buffer;
     }
 };
