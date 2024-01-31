@@ -75,6 +75,17 @@ struct Zeitpacket
 			    			out = buffer;\
 			    		}
 
+// wie dt(), aber zeit ist durch den dPrint geteilt.
+#define Pdt(Start, out)	{\
+                			char buffer[50];\
+			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
+			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
+			    			uint64_t total_seconds = duration.count() / (1'000'000'000 * dPrint);\
+			    			uint64_t remaining_ns = (duration.count() % 1'000'000'000) / dPrint;\
+			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			out = buffer;\
+			    		}
+
 // crash by dereferencing null pointer.
 void crash()
 {

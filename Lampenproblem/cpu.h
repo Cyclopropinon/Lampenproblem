@@ -1,7 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <cstdint>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 #ifdef _WIN32 // Windows
     #include <windows.h>
@@ -15,6 +17,34 @@
 class CPUProfiler
 {
 public:
+    // Details zur CPU
+    static std::string cpuInfo()
+    {
+                // Modellname der CPU aus der /proc/cpuinfo-Datei lesen
+        std::ifstream cpuinfo("/proc/cpuinfo");
+        std::string line;
+        std::string model_name;
+
+        while (std::getline(cpuinfo, line)) {
+            if (line.find("model name") != std::string::npos) {
+                size_t colon_pos = line.find(':');
+                if (colon_pos != std::string::npos) {
+                    model_name = line.substr(colon_pos + 2);
+                    break;
+                }
+            }
+        }
+
+        cpuinfo.close();
+        return model_name;
+    }
+
+    // Anzahll von Kernen
+    inline auto cpuCores()
+    {
+           return sysconf(_SC_NPROCESSORS_ONLN);
+    }
+
     // Methode zur Berechnung der CPU-Zeit in Nanosekunden
     static uint64_t cpuTime()
     {

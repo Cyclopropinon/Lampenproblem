@@ -5,7 +5,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.9"
+#define _V "0.1.10"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -261,6 +261,50 @@ void CheckpointLSGv4(const std::string& ordner, const bool retrieve, unsigned lo
 		saveVar(Schritte);
 		saveVar(Lampejetzt);
 		saveVar(print);
+	}
+}
+
+void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL)
+{
+	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
+	{
+		uint64_t n;
+		uint64_t Lampejetzt;
+		uint64_t print;
+		uint64_t cPrint;
+		uint64_t dPrint;
+		readVar(n);
+		readVar(anz);
+		readVar(einsenAnzeigen);
+		readVar(AnzRunden);
+		readVar(Lampen);
+		readVar(PositiveRunden);
+		readVar(Schritte);
+		readVar(Lampejetzt);
+		readVar(print);
+		readVar(cPrint);
+		readVar(dPrint);
+		n_ULL = (unsigned long long)n;
+		Lampejetzt_ULL = (unsigned long long)Lampejetzt;
+		print_ULL = (unsigned long long)print;
+	} else {
+		erstelleVerzeichnis(ordner.c_str());
+		uint64_t n = (uint64_t)n_ULL;
+		uint64_t Lampejetzt = (uint64_t)Lampejetzt_ULL;
+		uint64_t print = (uint64_t)print_ULL;
+		uint64_t cPrint = (uint64_t)cPrint_ULL;
+		uint64_t dPrint = (uint64_t)dPrint_ULL;
+		saveVar(n);
+		saveVar(anz);
+		saveVar(einsenAnzeigen);
+		saveVar(AnzRunden);
+		saveVar(Lampen);
+		saveVar(PositiveRunden);
+		saveVar(Schritte);
+		saveVar(Lampejetzt);
+		saveVar(print);
+		saveVar(cPrint);
+		saveVar(dPrint);
 	}
 }
 
@@ -2317,6 +2361,199 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
+vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
+{
+    mpz_class AnzRunden = 2;
+    vector<bool> Lampen(n, true);
+    vector<mpz_class> PositiveRunden;
+    mpz_t tmp_n_gmplib;
+    mpz_init_set_ui(tmp_n_gmplib, n);
+    mpz_class Schritte(tmp_n_gmplib);
+    const mpz_class n_gmplib(tmp_n_gmplib);
+    unsigned long long Lampejetzt;
+    unsigned long long print = 0;
+    unsigned long long cPrint = 0;
+    unsigned long long dPrint = 0;
+	bool increasedBackupFrequency = false;
+    auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
+    auto berechnungsEndeHR = berechnungsStartHR;
+    auto berechnungsZwCP_HR = berechnungsStartHR;
+    string durHR;
+    string CP_HR;
+    string CPdHR;
+	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
+
+    vector<bool> AlleLampenAn(n, true);
+    vector<bool> AlleLampenAus(n, false);
+
+    PositiveRunden.reserve(anz);
+    if (einsenAnzeigen)
+    {
+        PositiveRunden.push_back(1);
+    }
+
+	start_color();  // Aktiviert die Farbunterstützung
+	init_pair(0, COLOR_WHITE, COLOR_BLACK);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(2, COLOR_CYAN, COLOR_BLACK);
+	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(5, COLOR_GREEN, COLOR_BLACK);
+	init_pair(6, COLOR_BLUE, COLOR_BLACK);
+
+	{
+		std::lock_guard<std::mutex> lock(cout_mutex);
+		wattron(outputWin, A_BOLD);			// Fett
+		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
+		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+		wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
+		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+		mvwprintw(outputWin, 2, 76, "AnzPR: 0");						// Anzahl der bereits gefundendn positiver Runden (hier: 0)
+		wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
+		wattroff(outputWin, A_BOLD);
+		wrefresh(outputWin);
+	}
+
+    Lampen[0] = false;
+
+    while (AnzPR < anz)
+    {
+        Schritte += AnzRunden;
+        if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
+        {
+            if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+            {
+                PositiveRunden.push_back(AnzRunden);
+				AnzPR = PositiveRunden.size();
+            }
+
+            AnzRunden = 1 + Schritte / n_gmplib;
+            bool nonsense = Lampen[1];
+        }
+        Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
+        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+
+        print++;
+
+		if(print % 32768 == 0)
+		{
+			if (increasedBackupFrequency || print % 1048576 == 0)
+			{
+				dPrint = print - cPrint;
+				cPrint = print;
+
+				CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
+				berechnungsZwCP_HR = berechnungsEndeHR;
+				#pragma GCC diagnostic push
+				#pragma GCC diagnostic ignored "-Wformat"
+				dt(berechnungsStartHR, durHR);
+				dt(berechnungsZwCP_HR, CP_HR);
+				ddt(berechnungsZwCP_HR, CPdHR);
+				#pragma GCC diagnostic pop
+
+				// Redirect output to the ncurses window
+				
+				{
+					std::lock_guard<std::mutex> lock(cout_mutex);
+
+					wattron(titelWin, A_BOLD);  		// Fett
+					wattron(outputWin, A_BOLD);  		// Fett
+
+					wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+					mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
+					wattron(outputWin, A_DIM);          // Halbdurchsichtig
+					if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+					else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
+					wattron(outputWin, A_ITALIC);       // Kursiv
+					mvwprintw(outputWin, 2, 55, "dt/dn: %s    ", CPdHR.c_str());
+					wattroff(outputWin, A_DIM);
+					wattroff(outputWin, A_ITALIC);
+					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wformat"
+					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+					#pragma GCC diagnostic pop
+					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+					mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+					wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+					wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+
+					wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
+					printCurrentTime(titelWin, timerOrty, timerOrtx);
+					wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
+
+					wattroff(titelWin, A_BOLD);
+					wattroff(outputWin, A_BOLD);
+
+					wrefresh(titelWin);
+					wrefresh(outputWin);
+				}
+			}
+		}
+	}
+
+	berechnungsZwCP_HR = berechnungsEndeHR;
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wformat"
+	dt(berechnungsStartHR, durHR);
+	dt(berechnungsZwCP_HR, CP_HR);
+	pdt(berechnungsZwCP_HR, CPdHR);
+	#pragma GCC diagnostic pop
+
+	{
+		std::lock_guard<std::mutex> lock(cout_mutex);
+
+		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
+		wattron(outputWin, A_DIM);          // Halbdurchsichtig
+		if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+		else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
+		wattron(outputWin, A_ITALIC);       // Kursiv
+		mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
+		wattroff(outputWin, A_DIM);
+		wattroff(outputWin, A_ITALIC);
+		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wformat"
+		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		#pragma GCC diagnostic pop
+		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
+		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+		mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+
+		wrefresh(outputWin);
+
+		wattron(titelWin, A_BOLD);  		// Fett
+		wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
+		printCurrentTime(titelWin, timerOrty, timerOrtx);
+		wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
+		wattroff(titelWin, A_BOLD);
+
+		wrefresh(titelWin);
+	}
+
+    return PositiveRunden;
+}
+
 int main()
 {
     // Setze die Locale auf die gewünschte Sprache (z.B. "de_DE.UTF-8")
@@ -2418,7 +2655,7 @@ int main()
 					+ "15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n"
 					+ "17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n"
 					+ "19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
-					+ "21 = 20, aber rückwärts"
+					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V5"
 					+ '\n';
 				cout << menu;
 				cin >> prüfart;
@@ -3757,6 +3994,152 @@ int main()
 
 								// Perform the slow operation in the async thread
 								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv5(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
+
+								std::ostringstream oss2;
+								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
+								oss2 << PositiveRunden.back();
+
+								// Synchronize file output with a mutex
+								std::lock_guard<std::mutex> lock(output_mutex);
+								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
+
+								// Close the ncurses window when the thread finishes
+								//delwin(threadWins[i - minN]);
+							});
+
+							// Store the future for later retrieval
+							futures.push_back(std::move(fut));
+
+							// Check if the number of active threads exceeds the limit
+							while (futures.size() >= AnzThreads)
+							{
+								auto it = std::find_if(futures.begin(), futures.end(), [](const std::future<void>& f)
+								{
+									return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+								});
+
+								// Remove completed futures
+								if (it != futures.end())
+								{
+									it->wait();
+									futures.erase(it);
+								}
+							}
+
+							finishedThreads = 0;
+							if (i <= maxN - AnzThreads + 1) finishedThreads = (maxN - i) - AnzThreads + 2;
+							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+						}
+
+						// Wait for the remaining threads to finish
+						for (auto& fut : futures)
+						{
+							fut.wait();
+							finishedThreads++;
+							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+						}
+
+						#pragma GCC diagnostic push
+						#pragma GCC diagnostic ignored "-Wformat"
+						dt(berechnungsStartHR, durHR);
+						#pragma GCC diagnostic pop
+
+						if(!tty)
+						{
+							cout << gotoZeileDrunter << "\nBerechnungen beendet! Taste drücken, um ins Menü zurückzukommen." << endl;
+							cin.get();
+							cin.get();
+						}
+						endwin();	// end ncurses
+
+						if(tty) cout << gotoZeileDrunter;
+						cout << "Datei gespeichert als " << filename << '!' << endl;
+					}
+					cout << "Laufzeit: " << durHR << "                                                      \n\n";
+					break;
+				case 22:
+					cout << "min n eingeben: ";
+					cin >> minN;
+					cout << "max n eingeben: ";
+					cin >> maxN;
+				    cout << "Anzahl der PR je Lampenanzahl: ";
+					cin >> anz;
+					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
+					cin >> AnzThreads;
+
+					cout << "Datei speichern unter: ";
+					cin >> filename;
+					cout << "Zwischenstand speichern unter: ";
+					cin >> Session;
+
+					berechnungsStartHR = std::chrono::high_resolution_clock::now();
+
+					delN = maxN - minN + 1;			// = maxN - minN + 1
+					diffN = delN - 1;				// = maxN - minN
+
+					output_fstream.open(filename, ios_base::out);
+					if (!output_fstream.is_open())
+					{
+						cout << "Fehler: Failed to open " << filename << '\n';
+
+						#pragma GCC diagnostic push
+						#pragma GCC diagnostic ignored "-Wformat"
+						dt(berechnungsStartHR, durHR);
+						#pragma GCC diagnostic pop
+					}
+					else {
+						// erstelle Ordner für die Session
+						erstelleVerzeichnis(Session.c_str());
+
+						initscr();
+						start_color();
+						cbreak();
+						noecho();
+						curs_set(0);
+
+						// Erstelle ein Fenster für die Titelzeile
+						constexpr int titleWinHeight = 1;
+						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
+						wrefresh(titleWin);
+
+						// Create an array to store pointers to ncurses windows
+						WINDOW *threadWins[delN];
+						for (int i = 0; i < delN; i++) {
+							threadWins[i] = newwin(4, COLS, i * 4 + titleWinHeight, 0);
+							box(threadWins[i], 0, 0);
+							if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
+							wrefresh(threadWins[i]);
+						}
+
+						const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
+						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
+						const int timerOrtx = delN + (50 + Vsize + 34 - 3) + std::strlen(termType);
+						constexpr int timerOrty = 0;
+
+						// Vector to store futures
+						std::vector<std::future<void>> futures;
+
+						for (size_t i = maxN; i >= minN; i--)					// falsch rum für besseres Zeitmanagement
+						{
+							// Use async to run the function asynchronously
+							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
+							{
+								string elapsed;
+								#pragma GCC diagnostic push
+								#pragma GCC diagnostic ignored "-Wformat"
+								adt(berechnungsStartHR, elapsed);
+								#pragma GCC diagnostic pop
+								{
+									std::lock_guard<std::mutex> lock(cout_mutex);
+									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
+									wrefresh(threadWins[i - minN]);
+								}
+
+								// Perform the slow operation in the async thread
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv6(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
 
 								std::ostringstream oss2;
 								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
