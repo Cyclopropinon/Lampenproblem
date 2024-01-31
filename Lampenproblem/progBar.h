@@ -14,6 +14,7 @@
 #include <chrono>
 #include <mutex>
 #include <ctime>
+#include "globalVars.hh"
 
 #ifdef DNCURSES_WIDECHAR
 	#include <ncursesw/ncurses.h>
@@ -174,7 +175,15 @@ void printCurrentTime(WINDOW* win, int y = 0, int x = 50)
     std::time_t currentTime = std::time(nullptr);
     // Konvertieren Sie die Zeit in einen String
     char* timeString = std::ctime(&currentTime);
-    mvwprintw(win, y, x, "Letzte Bildschirmaktualisierung: %s", timeString);
+
+    // Bisher Verstrichene Zeit
+    std::string durHR;
+    #pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wformat"
+	adt(StartTimeGlobal, durHR);
+	#pragma GCC diagnostic pop
+
+    mvwprintw(win, y, x, "Letzte Bildschirmaktualisierung: %s  \tLaufzeit: %s ", timeString, durHR.c_str());
 }
 
 // @param current das jetztige n (aka i)

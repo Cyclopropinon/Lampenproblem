@@ -32,6 +32,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <future>
 #include <fstream>
 #include <gmp.h>
@@ -59,9 +60,7 @@
 	#include <ncurses.h>
 #endif
 
-std::mutex output_mutex;			// Mutex für den Dateizugriff
-std::mutex cout_mutex;				// Mutex für den Zugriff auf std::cout
-constexpr auto Vsize = strlen(_V);	// String-Länge der Programmversion als eine globale Konstante
+#include "globalVars.hh"
 
 // if using a progressBar
 #include "progBar.h"
@@ -264,7 +263,7 @@ void CheckpointLSGv4(const std::string& ordner, const bool retrieve, unsigned lo
 	}
 }
 
-void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL)
+void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
 {
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
@@ -284,6 +283,7 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 		readVar(print);
 		readVar(cPrint);
 		readVar(dPrint);
+		readVar(Laufzeit);
 		n_ULL = (unsigned long long)n;
 		Lampejetzt_ULL = (unsigned long long)Lampejetzt;
 		print_ULL = (unsigned long long)print;
@@ -305,6 +305,7 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 		saveVar(print);
 		saveVar(cPrint);
 		saveVar(dPrint);
+		saveVar(Laufzeit);
 	}
 }
 
@@ -2378,10 +2379,18 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
     auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
     auto berechnungsEndeHR = berechnungsStartHR;
     auto berechnungsZwCP_HR = berechnungsStartHR;
+	std::chrono::nanoseconds Laufzeit;
     string durHR;
     string CP_HR;
     string CPdHR;
 	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
+
+	if (std::filesystem::exists(Session))
+	{
+		// Lade die Vorherige Session falls eine existiert
+		CheckpointLSGv6(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
+		berechnungsStartHR -= Laufzeit;
+	}
 
     vector<bool> AlleLampenAn(n, true);
     vector<bool> AlleLampenAus(n, false);
@@ -2442,14 +2451,15 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 			{
 				dPrint = print - cPrint;
 				cPrint = print;
+				Laufzeit = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
 
-				CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
+				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
 				#pragma GCC diagnostic push
 				#pragma GCC diagnostic ignored "-Wformat"
 				dt(berechnungsStartHR, durHR);
 				dt(berechnungsZwCP_HR, CP_HR);
-				ddt(berechnungsZwCP_HR, CPdHR);
+				Pdt(berechnungsZwCP_HR, CPdHR);
 				#pragma GCC diagnostic pop
 
 				// Redirect output to the ncurses window
@@ -4075,6 +4085,7 @@ int main()
 					cin >> Session;
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
+					StartTimeGlobal = berechnungsStartHR;
 
 					delN = maxN - minN + 1;			// = maxN - minN + 1
 					diffN = delN - 1;				// = maxN - minN

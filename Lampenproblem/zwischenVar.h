@@ -102,6 +102,30 @@ uint64_t readVariable(std::string dateiname, uint64_t useless_var)
     else lesefehler();
 }
 
+void saveVariable(std::string dateiname, std::chrono::nanoseconds var)
+{
+    std::ofstream outFile(dateiname, std::ios::binary | std::ios::out);
+    if (outFile.is_open())
+    {
+        outFile.write(reinterpret_cast<const char*>(&var), sizeof(var));
+        outFile.close();
+    }
+    else schreibfehler();
+}
+
+std::chrono::nanoseconds readVariable(std::string dateiname, std::chrono::nanoseconds useless_var)
+{
+    std::ifstream inFile(dateiname, std::ios::in);
+    if (inFile.is_open())
+    {
+        std::chrono::nanoseconds var;
+        inFile.read(reinterpret_cast<char*>(&var), sizeof(var));
+        inFile.close();
+        return var;
+    }
+    else lesefehler();
+}
+
 void saveVariable(std::string dateiname, std::vector<mpz_class> var)
 {
     const uint64_t size = var.size();
