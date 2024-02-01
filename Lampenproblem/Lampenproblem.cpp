@@ -2372,9 +2372,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
     mpz_class Schritte(tmp_n_gmplib);
     const mpz_class n_gmplib(tmp_n_gmplib);
     unsigned long long Lampejetzt;
-    unsigned long long print = 0;
-    unsigned long long cPrint = 0;
-    unsigned long long dPrint = 0;
+    unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
+    unsigned long long cPrint = 0;		// Checkpoint für print
+    unsigned long long dPrint = 0;		// Anz Iterationen zwischen den 2 letzten Sicherungen
 	bool increasedBackupFrequency = false;
     auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
     auto berechnungsEndeHR = berechnungsStartHR;
@@ -2452,7 +2452,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 				dPrint = print - cPrint;
 				cPrint = print;
 				Laufzeit = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-
+				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
 				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
 				#pragma GCC diagnostic push
@@ -2473,8 +2473,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 					wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 					mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
 					wattron(outputWin, A_DIM);          // Halbdurchsichtig
-					if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
-					else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
+					if(tty) mvwprintw(outputWin, 2, 30, "dn: %llu dt: %s", dPrint, CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+					else    mvwprintw(outputWin, 2, 30, "Δn: %llu Δt: %s", dPrint, CP_HR.c_str());
 					wattron(outputWin, A_ITALIC);       // Kursiv
 					mvwprintw(outputWin, 2, 55, "dt/dn: %s    ", CPdHR.c_str());
 					wattroff(outputWin, A_DIM);
@@ -2512,12 +2512,15 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 		}
 	}
 
+	dPrint = print - cPrint;
+	cPrint = print;
+
 	berechnungsZwCP_HR = berechnungsEndeHR;
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
 	dt(berechnungsZwCP_HR, CP_HR);
-	pdt(berechnungsZwCP_HR, CPdHR);
+	Pdt(berechnungsZwCP_HR, CPdHR);
 	#pragma GCC diagnostic pop
 
 	{
@@ -2526,8 +2529,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
 		wattron(outputWin, A_DIM);          // Halbdurchsichtig
-		if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
-		else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
+		if(tty) mvwprintw(outputWin, 2, 30, "dn: %llu dt: %s", dPrint, CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+		else    mvwprintw(outputWin, 2, 30, "Δn: %llu Δt: %s", dPrint, CP_HR.c_str());
 		wattron(outputWin, A_ITALIC);       // Kursiv
 		mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
 		wattroff(outputWin, A_DIM);
@@ -2577,7 +2580,8 @@ int main()
     const char*							termType				= std::getenv("TERM");				// Terminal-Typ
 	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
 
-	const auto							AnzThreadsUnterstützt	= thread::hardware_concurrency;		// soviele threads wie CPU-Kerne
+//	const auto							AnzThreadsUnterstützt	= thread::hardware_concurrency;		// soviele threads wie CPU-Kerne
+	const auto							AnzThreadsUnterstützt	= cpuCores;							// soviele threads wie CPU-Kerne
 	long long							AnzThreads3;
 //	unsigned long long					AnzThreads4;												// Anzahl der Threads für case 4+
 	unsigned int						AnzThreads4;												// Anzahl der Threads für case 4+
@@ -4113,7 +4117,7 @@ int main()
 						curs_set(0);
 
 						// Erstelle ein Fenster für die Titelzeile
-						const int titleWinHeight = 2 - tty;		// 1 hoch, wenn tty, sonst 2 hoch
+						constexpr int titleWinHeight = 2;
 						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
 						wrefresh(titleWin);
 
@@ -4129,8 +4133,8 @@ int main()
 
 						const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
-						const int timerOrty = !tty;				// wenn es ein tty ist, hat die erste zeile noch genügend platz, sonst nicht
-						const int timerOrtx = tty ? delN + (75 + Vsize + 34 - 3) + std::strlen(termType) : 0;
+						constexpr int timerOrty = 1;
+						constexpr int timerOrtx = 0;
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;

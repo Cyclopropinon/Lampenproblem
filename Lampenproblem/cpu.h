@@ -40,10 +40,7 @@ public:
     }
 
     // Anzahll von Kernen
-    inline auto cpuCores()
-    {
-           return sysconf(_SC_NPROCESSORS_ONLN);
-    }
+    #define cpuCores sysconf(_SC_NPROCESSORS_ONLN);
 
     // Methode zur Berechnung der CPU-Zeit in Nanosekunden
     static uint64_t cpuTime()
@@ -130,7 +127,7 @@ public:
         char buffer[50];
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wformat"
-        sprintf(buffer, "%llu,%06llus", seconds, micsecs);
+        sprintf(buffer, "%llu,%06llus (%lluh)", seconds, micsecs, seconds / 3600);
 	    #pragma GCC diagnostic pop
         return buffer;
     }
