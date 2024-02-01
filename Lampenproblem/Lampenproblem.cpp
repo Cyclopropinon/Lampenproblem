@@ -2438,7 +2438,6 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
             }
 
             AnzRunden = 1 + Schritte / n_gmplib;
-            bool nonsense = Lampen[1];
         }
         Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
         Lampen[Lampejetzt] = !Lampen[Lampejetzt];
@@ -2473,8 +2472,10 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 					wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 					mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
 					wattron(outputWin, A_DIM);          // Halbdurchsichtig
-					if(tty) mvwprintw(outputWin, 2, 30, "dn: %llu dt: %s", dPrint, CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
-					else    mvwprintw(outputWin, 2, 30, "Δn: %llu Δt: %s", dPrint, CP_HR.c_str());
+					if(tty) mvwprintw(outputWin, 2, 30, "dt: %s    ", CP_HR.c_str());				// tty unterstützt nicht so viele unicode zeichen
+					else    mvwprintw(outputWin, 2, 30, "Δt: %s    ", CP_HR.c_str());
+					// if(tty) mvwprintw(outputWin, 2, 30, "dn: %llu dt: %s", dPrint, CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+					// else    mvwprintw(outputWin, 2, 30, "Δn: %llu Δt: %s", dPrint, CP_HR.c_str());
 					wattron(outputWin, A_ITALIC);       // Kursiv
 					mvwprintw(outputWin, 2, 55, "dt/dn: %s    ", CPdHR.c_str());
 					wattroff(outputWin, A_DIM);
@@ -2519,7 +2520,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
-	dt(berechnungsZwCP_HR, CP_HR);
+	// dt(berechnungsZwCP_HR, CP_HR);
 	Pdt(berechnungsZwCP_HR, CPdHR);
 	#pragma GCC diagnostic pop
 
@@ -2529,10 +2530,10 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
 		wattron(outputWin, A_DIM);          // Halbdurchsichtig
-		if(tty) mvwprintw(outputWin, 2, 30, "dn: %llu dt: %s", dPrint, CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
-		else    mvwprintw(outputWin, 2, 30, "Δn: %llu Δt: %s", dPrint, CP_HR.c_str());
+		// if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+		// else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
 		wattron(outputWin, A_ITALIC);       // Kursiv
-		mvwprintw(outputWin, 2, 55, "dt/dn: %s", CPdHR.c_str());
+		mvwprintw(outputWin, 2, 55, "dt/dn: %s      ", CPdHR.c_str());
 		wattroff(outputWin, A_DIM);
 		wattroff(outputWin, A_ITALIC);
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren

@@ -73,7 +73,7 @@ struct Zeitpacket
 			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / (1'000'000'000 * p);\
-			    			uint64_t remaining_ns = (duration.count() % 1'000'000'000) / p;\
+			    			uint64_t remaining_ns = (duration.count() / p) % 1'000'000'000;\
 			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
@@ -83,11 +83,12 @@ struct Zeitpacket
                 			char buffer[50];\
 			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
-			    			uint64_t total_seconds = duration.count() / (1'000'000'000 * dPrint);\
-			    			uint64_t remaining_ns = (duration.count() % 1'000'000'000) / dPrint;\
+			    			uint64_t total_seconds = duration.count() / (1'000'000'000UL * dPrint);\
+			    			uint64_t remaining_ns = (duration.count() / dPrint) % 1'000'000'000UL;\
 			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
+			    			//sprintf(buffer, "%llu,%09llus = %llu / %llu dPrint", total_seconds, remaining_ns, duration.count(), dPrint);
 
 // crash by dereferencing null pointer.
 void crash()
