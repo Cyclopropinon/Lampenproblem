@@ -32,5 +32,5 @@ Theoreme (unbewiesen)
 -> die Vermutung von Krabbenhöft-Taschner: für k<=n gibt es nur die PR (n,1) und (3,3)
 -> die Vermutung von Taschner-Krabbenhöft: es gibt für jedes n unendlich viele PR
 ```
-![grafik](https://github.com/Cyclopropinon/Lampenproblem/assets/119750500/b384c8f6-5ae9-4639-bb8d-0e3dbe831cc1)
+![grafik](./readme/Lampenanordnung.png)
 
