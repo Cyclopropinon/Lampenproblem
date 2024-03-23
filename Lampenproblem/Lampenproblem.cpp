@@ -5,7 +5,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.11"
+#define _V "0.1.12"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -30,6 +30,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <csignal>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -189,6 +190,12 @@ void leseVariable(const std::string& ordner, const std::string& variablenname, v
 }
 #define reed(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
 */
+
+void signalHandler(int signum)
+{
+    std::cout << "Signal " << signum << " erhalten. Programm läuft weiter." << SIGRTMAX << '\t' << SIGRTMIN << std::endl;
+	exit(0);
+}
 
 void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, int& print)
 {
@@ -2572,14 +2579,43 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 
 int main()
 {
-    // Setze die Locale auf die gewünschte Sprache (z.B. "de_DE.UTF-8")
-    std::locale::global(std::locale("de_DE.UTF-8"));
+    //signal(SIGINT, signalHandler);
 
+    // Signal-Handler für SIGSEGV (Speicherzugriffsfehler)
+    //signal(SIGSEGV, signalHandler);
+
+	for(int i = 0; i <= SIGRTMAX; i++)
+	{
+		signal(i, signalHandler);
+	}
+
+	int klp = 55;
+	int* bfz = &klp;
+	bfz = 0;
+	klp = *bfz;
+	klp++;
+	//cout << klp << '\t' << bfz << endl;
 
 	ostringstream						Dateiausgabe;
 
     const char*							termType				= std::getenv("TERM");				// Terminal-Typ
+	const char*							Sprache					= std::getenv("LANG");				// Terminal-Sprache
 	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
+	char								usePresetLang;												// Ob die vorgegebene Sprache benutzt werden soll
+
+	cout << "Language detected: \"" << Sprache << "\" Use this language? (y/n) ";
+	cin >> usePresetLang;
+	if(usePresetLang!='n')
+	{
+		// Setze die Locale auf die gewünschte Sprache (z.B. "de_DE.UTF-8")
+		std::locale::global(std::locale(Sprache));
+	} else {
+		string alternateLang;
+		cout << "enter alternative language: ";
+		cin >> alternateLang;
+		std::locale::global(std::locale(alternateLang));
+	}
+
 
 //	const auto							AnzThreadsUnterstützt	= thread::hardware_concurrency;		// soviele threads wie CPU-Kerne
 	const auto							AnzThreadsUnterstützt	= cpuCores;							// soviele threads wie CPU-Kerne
