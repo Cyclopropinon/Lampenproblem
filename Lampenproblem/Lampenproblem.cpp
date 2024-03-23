@@ -128,7 +128,6 @@ string GeeigneteThreadgroeszenBerechnen(unsigned long long dN, unsigned int AnzT
 	string			GuteThreadgroeszen;
 	unsigned int	mod;
 	unsigned int	Abweichung;
-//	string			str;
 
 	for (size_t i = minG; i <= maxG; i++)
 	{
@@ -147,7 +146,6 @@ string GeeigneteThreadgroeszenBerechnen(unsigned long long dN, unsigned int AnzT
 			GuteThreadgroeszen += to_string(i);
 			GuteThreadgroeszen += "\tAbweichung: ";
 			GuteThreadgroeszen += to_string(Abweichung);
-//			GuteThreadgrößen.push_back(str);
 		}
 	}
 
@@ -164,32 +162,6 @@ bool isTTY(std::string TERM)
 	// if unknown, assume it is not a TTY
 	return false;
 }
-
-/*
-void speichereVariable(const std::string& ordner, const std::string& variablenname, const void* daten, size_t groesse) {
-    std::ofstream file(ordner + "/" + variablenname, std::ios::binary);
-    if (file.is_open()) {
-        file.write(reinterpret_cast<const char*>(daten), groesse);
-        file.close();
-        std::cout << "Variable '" << variablenname << "' erfolgreich gespeichert." << std::endl;
-    } else {
-        std::cerr << "Fehler beim Öffnen der Datei für Variable '" << variablenname << "'" << std::endl;
-    }
-}
-#define sav(vs, var) speichereVariable(ordner, vs, &var, sizeof(var))
-
-void leseVariable(const std::string& ordner, const std::string& variablenname, void* daten, size_t groesse) {
-    std::ifstream file(ordner + "/" + variablenname, std::ios::binary);
-    if (file.is_open()) {
-        file.read(reinterpret_cast<char*>(daten), groesse);
-        file.close();
-        std::cout << "Variable '" << variablenname << "' erfolgreich geladen." << std::endl;
-    } else {
-        std::cerr << "Fehler beim Öffnen der Datei für Variable '" << variablenname << "'" << std::endl;
-    }
-}
-#define reed(vs, var) leseVariable(ordner, vs, &var, sizeof(var))
-*/
 
 void signalHandler(int signum)
 {
@@ -360,7 +332,6 @@ vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long 
 vector<unsigned long long> LampenEinzelnPrüfen(unsigned long long n, unsigned long long maxK, unsigned long long testLampen/*, bool nurNNprüfen*/)		//testLampen <= n
 {
 	vector<unsigned long long>	PositiveRunden;			// Liste der Runden nachdem alle Lampen an/aus sind
-//	vector<unsigned long long>	endePositiveRunden;		// Liste der Runden nachdem alle Lampen an/aus sind
 	vector<unsigned long long>	Modulo;					// Modulo-werte für einzelne Runden
 	vector<bool>				Lampen;
 	unsigned long long			rest = 0;
@@ -381,7 +352,6 @@ vector<unsigned long long> LampenEinzelnPrüfen(unsigned long long n, unsigned l
 
 	for (size_t i = 1; i <= maxK; i++)			// 2. bis maxK+1-ten Wert erstellen
 	{
-//		rest = i * ((n - rest) / i) + rest + i - n;
 		unsigned long long zwischenwert = i * ((n - rest) / i) + rest + i;
 		rest = (zwischenwert) % n;
 		if (rest==0)							// Lampe 0 ist inexistent
@@ -401,7 +371,6 @@ vector<unsigned long long> LampenEinzelnPrüfen(unsigned long long n, unsigned l
 
 	for (size_t i = 1; i <= maxK; i++)
 	{
-//		if (!(Modulo[i] > testLampen && testLampen < i))	// Wenn keine Lampen betätigt werden, wird es übersprungen
 		if (Modulo[i] <= testLampen)						// Wenn keine Lampen betätigt werden, wird es übersprungen
 		{
 			if (endeLsgTriv)
@@ -560,7 +529,6 @@ vector<unsigned long long> OptimierteForm2(unsigned long long n, unsigned long l
 		vector<unsigned long long>	PositiveRunden;			// Liste der Runden nachdem alle Lampen an/aus sind
 		vector<unsigned long long>	Modulo;					// Modulo-werte für einzelne Runden
 		vector<bool>				Lampen;
-//		bool						lösungJetzt = false;
 		unsigned long long			rest = 0;
 		double						wechselD = n * wechselfaktorN + maxK * wechselfaktorK;
 		unsigned long long			wechsel;
@@ -614,43 +582,25 @@ vector<unsigned long long> OptimierteForm2(unsigned long long n, unsigned long l
 
 		for (size_t i = 1; i <= wechsel; i++)
 		{
-//			if (Modulo[i]!=0)
-//			{
-//			if (!(Modulo[i] > testLampen /* && testLampen < i */ ))		// Wenn keine Lampen betätigt werden, wird es übersprungen
 			if (Modulo[i] <= testLampen)								// Wenn keine Lampen betätigt werden, wird es übersprungen
 			{
-/*					if (lösungJetzt)
-				{
-					lösungJetzt = false;
-					PositiveRunden.push_back(i-1)
-				}*/
-
 				for (size_t j = Modulo[i]; j <= testLampen; j+=i)
 				{
-//					if (j % i == Modulo[i]/* && Modulo[i] != 0*/)		// Schrott-Werte aussortieren
-//					{
 					Lampen[j] = !Lampen[j];
-//					}
 				}
 
-/*					if (Modulo[i] != 0 && i != 1)							// Nur nicht-triviale Lösungen ausgeben
-				{*/
 				Lampen[0] = true;
 				if (Lampen == AlleLampenAn)
 				{
 					PositiveRunden.push_back(i);
-//						lösungJetzt = true;
 				}
 
 				Lampen[0] = false;
 				if (Lampen == AlleLampenAus)
 				{
 					PositiveRunden.push_back(i);
-//						lösungJetzt = true;
 				}
-//				}
 			}
-//			}
 		}
 
 		// Berechnungswechsel
@@ -660,16 +610,9 @@ vector<unsigned long long> OptimierteForm2(unsigned long long n, unsigned long l
 
 		if (Modulo[AnzRunden]<=testLampen)
 		{
-//			for (size_t j = Modulo[AnzRunden]; j <= testLampen; j+=AnzRunden)
-//			{
 			Lampen[Modulo[AnzRunden]] = !Lampen[Modulo[AnzRunden]];
-//			}
 		}
 		
-/*		if (Modulo[AnzRunden] <= testLampen)
-		{
-			Lampen[Modulo[AnzRunden]] = !Lampen[Modulo[AnzRunden]];
-		}*/
 
 		while (AnzRunden <= maxK)								// bis Rundenanzahl erreicht
 		{
@@ -874,7 +817,6 @@ vector<unsigned long long> OptimierteForm4(unsigned long long n, unsigned long l
 		{
 			unsigned long long zwischenwert = i * ((n - rest - 1) / i) + rest + i;
 			rest = (zwischenwert) % n;
-//			if (zwischenwert - rest > n)
 			for (size_t j = 1; j < (zwischenwert - rest) / n; j++)
 			{
 				Modulo.push_back(unsinn);
@@ -1018,7 +960,6 @@ vector<unsigned long long> OptimierteForm5(unsigned long long n, unsigned long l
 	}
 }
 
-//vector<vector<unsigned long long>> OptimierteForm2Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)
 string OptimierteForm2Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)
 {
 	vector<vector<unsigned long long>>	output;
@@ -1180,7 +1121,6 @@ string OptimierteForm6Pack(unsigned long long minN, unsigned long long maxN, uns
 				}
 			}
 
-//			return PositiveRunden;
 		}
 		output.push_back(PositiveRunden);
 	}
@@ -1843,8 +1783,6 @@ vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool
 	mpz_class				n_gmplib(tmp_n_gmplib);
     unsigned long long		Lampejetzt;
 
-//	mpz_init(Schritte);
-//	mpz_set(Schritte.get_mpz_t(), n_gmplib);
 
 	vector<bool>	AlleLampenAn(n, true);
 	vector<bool>	AlleLampenAus(n, false);
@@ -1923,9 +1861,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
         Lampen[Lampejetzt] = !Lampen[Lampejetzt];
 
 		print++;
-//		if (print % 65536 == 0)
 		if (print % 1048576 == 0)
-//			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
 			CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
@@ -1999,9 +1935,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
         Lampen[Lampejetzt] = !Lampen[Lampejetzt];
 
 		print++;
-//		if (print % 65536 == 0)
 		if (print % 1048576 == 0)
-//			pnarc("Mem:" + giveRAM('k') + "\tIteration: " + to_string(print));
 		{
 			CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
@@ -2579,22 +2513,11 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 
 int main()
 {
-    //signal(SIGINT, signalHandler);
-
-    // Signal-Handler für SIGSEGV (Speicherzugriffsfehler)
-    //signal(SIGSEGV, signalHandler);
-
+	// Signal-Handler initialisieren
 	for(int i = 0; i <= SIGRTMAX; i++)
 	{
 		signal(i, signalHandler);
 	}
-
-	int klp = 55;
-	int* bfz = &klp;
-	bfz = 0;
-	klp = *bfz;
-	klp++;
-	//cout << klp << '\t' << bfz << endl;
 
 	ostringstream						Dateiausgabe;
 
@@ -4492,16 +4415,4 @@ int main()
 
 	}
 }
-
-
-// Programm ausführen: STRG+F5 oder Menüeunsigned long longrag "Debuggen" > "Starten ohne Debuggen starten"
-// Programm debuggen: F5 oder "Debuggen" > Menü "Debuggen starten"
-
-// Tipps für den Einstieg: 
-//   1. Verwenden Sie das Projektmappen-Explorer-Fenster zum Hinzufügen/Verwalten von Dateien.
-//   2. Verwenden Sie das Team Explorer-Fenster zum Herstellen einer Verbindung mit der Quellcodeverwaltung.
-//   3. Verwenden Sie das Ausgabefenster, um die Buildausgabe und andere Nachrichten anzuzeigen.
-//   4. Verwenden Sie das Fenster "Fehlerliste", um Fehler anzuzeigen.
-//   5. Wechseln Sie zu "Projekt" > "Neues Element hinzufügen", um neue Codedateien zu erstellen, bzw. zu "Projekt" > "Vorhandenes Element hinzufügen", um dem Projekt vorhandene Codedateien hinzuzufügen.
-//   6. Um dieses Projekt später erneut zu öffnen, wechseln Sie zu "Datei" > "Öffnen" > "Projekt", und wählen Sie die SLN-Datei aus.
 
