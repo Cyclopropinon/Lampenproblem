@@ -165,7 +165,7 @@ bool isTTY(std::string TERM)
 
 void signalHandler(int signum)
 {
-    std::cout << "Signal " << signum << " erhalten. Programm läuft weiter." << SIGRTMAX << '\t' << SIGRTMIN << std::endl;
+    std::cout << "Signal " << signum << " erhalten. Programm läuft nicht weiter." /*<< SIGRTMAX << '\t' << SIGRTMIN*/ << std::endl;
 	exit(0);
 }
 
@@ -1990,7 +1990,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 	init_pair(6, COLOR_BLUE, COLOR_BLACK);
 
 	{
-		std::lock_guard<std::mutex> lock(cout_mutex);
+		lock_cout;
 		wattron(outputWin, A_BOLD);			// Fett
 		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
@@ -2038,7 +2038,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
             // Redirect output to the ncurses window
 			
 			{
-				std::lock_guard<std::mutex> lock(cout_mutex);
+				lock_cout;
 
 				wattron(outputWin, A_BOLD);  		// Fett
 
@@ -2084,7 +2084,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 	#pragma GCC diagnostic pop
 
 	{
-		std::lock_guard<std::mutex> lock(cout_mutex);
+		lock_cout;
 
 		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
@@ -2157,7 +2157,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 	init_pair(6, COLOR_BLUE, COLOR_BLACK);
 
 	{
-		std::lock_guard<std::mutex> lock(cout_mutex);
+		lock_cout;
 		wattron(outputWin, A_BOLD);			// Fett
 		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
@@ -2205,7 +2205,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
             // Redirect output to the ncurses window
 			
 			{
-				std::lock_guard<std::mutex> lock(cout_mutex);
+				lock_cout;
 
 				wattron(titelWin, A_BOLD);  		// Fett
 				wattron(outputWin, A_BOLD);  		// Fett
@@ -2259,7 +2259,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 	#pragma GCC diagnostic pop
 
 	{
-		std::lock_guard<std::mutex> lock(cout_mutex);
+		lock_cout;
 
 		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
@@ -2352,7 +2352,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 	init_pair(6, COLOR_BLUE, COLOR_BLACK);
 
 	{
-		std::lock_guard<std::mutex> lock(cout_mutex);
+		lock_cout;
 		wattron(outputWin, A_BOLD);			// Fett
 		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
@@ -2405,7 +2405,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 				// Redirect output to the ncurses window
 				
 				{
-					std::lock_guard<std::mutex> lock(cout_mutex);
+					lock_cout;
 
 					wattron(titelWin, A_BOLD);  		// Fett
 					wattron(outputWin, A_BOLD);  		// Fett
@@ -2466,7 +2466,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 	#pragma GCC diagnostic pop
 
 	{
-		std::lock_guard<std::mutex> lock(cout_mutex);
+		lock_cout;
 
 		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
@@ -3552,7 +3552,7 @@ int main()
 								adt(berechnungsStartHR, elapsed);
 								#pragma GCC diagnostic pop
 								{
-									std::lock_guard<std::mutex> lock(cout_mutex);
+									lock_cout;
 									cout << "[Thread] Launched Thread Nr. " << i << "\tTime: " << elapsed << endl;
 								}
 
@@ -3564,7 +3564,7 @@ int main()
 								oss2 << PositiveRunden.back();
 
 								// Synchronize file output with a mutex
-								std::lock_guard<std::mutex> lock(output_mutex);
+								lock_output;
 								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
 							});
 
@@ -3672,7 +3672,7 @@ int main()
 								adt(berechnungsStartHR, elapsed);
 								#pragma GCC diagnostic pop
 								{
-									std::lock_guard<std::mutex> lock(cout_mutex);
+									lock_cout;
 									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
 									wrefresh(threadWins[i - minN]);
 								}
@@ -3685,7 +3685,7 @@ int main()
 								oss2 << PositiveRunden.back();
 
 								// Synchronize file output with a mutex
-								std::lock_guard<std::mutex> lock(output_mutex);
+								lock_output;
 								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
 
 								// Close the ncurses window when the thread finishes
@@ -3817,7 +3817,7 @@ int main()
 								adt(berechnungsStartHR, elapsed);
 								#pragma GCC diagnostic pop
 								{
-									std::lock_guard<std::mutex> lock(cout_mutex);
+									lock_cout;
 									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
 									wrefresh(threadWins[i - minN]);
 								}
@@ -3830,7 +3830,7 @@ int main()
 								oss2 << PositiveRunden.back();
 
 								// Synchronize file output with a mutex
-								std::lock_guard<std::mutex> lock(output_mutex);
+								lock_output;
 								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
 
 								// Close the ncurses window when the thread finishes
@@ -3963,7 +3963,7 @@ int main()
 								adt(berechnungsStartHR, elapsed);
 								#pragma GCC diagnostic pop
 								{
-									std::lock_guard<std::mutex> lock(cout_mutex);
+									lock_cout;
 									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
 									wrefresh(threadWins[i - minN]);
 								}
@@ -3976,7 +3976,7 @@ int main()
 								oss2 << PositiveRunden.back();
 
 								// Synchronize file output with a mutex
-								std::lock_guard<std::mutex> lock(output_mutex);
+								lock_output;
 								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
 
 								// Close the ncurses window when the thread finishes
@@ -4110,7 +4110,7 @@ int main()
 								adt(berechnungsStartHR, elapsed);
 								#pragma GCC diagnostic pop
 								{
-									std::lock_guard<std::mutex> lock(cout_mutex);
+									lock_cout;
 									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
 									wrefresh(threadWins[i - minN]);
 								}
@@ -4123,7 +4123,7 @@ int main()
 								oss2 << PositiveRunden.back();
 
 								// Synchronize file output with a mutex
-								std::lock_guard<std::mutex> lock(output_mutex);
+								lock_output;
 								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
 
 								// Close the ncurses window when the thread finishes

@@ -1,3 +1,4 @@
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -5,6 +6,10 @@
 #include <vector>
 #include <gmpxx.h>
 #include <sys/stat.h>
+
+#ifdef _WIN32 //Windows
+    #include <windows.h>
+#endif
 
 #define saveVar(var) saveVariable(ordner + "/" + #var, var)
 #define readVar(var) var = readVariable(ordner + "/" + #var, var)
@@ -17,18 +22,33 @@
 
 bool erstelleVerzeichnis(const char* path)
 {
-    // Hier wird das Verzeichnis erstellt
-    int result = mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    #ifdef _WIN32 //Windows
+        // Konvertiere std::string in wchar_t für die Windows-API
+        wchar_t* wideCharName = new wchar_t[strlen(path) + 1];
+        mbstowcs(wideCharName, path, strlen(path) + 1);
 
-/*    if (result == 0)
-    {
-        //std::cout << "Verzeichnis erfolgreich erstellt: " << path << std::endl;
-        return true;
-    } else {
-        //std::cerr << "Fehler beim Erstellen des Verzeichnisses " << path << std::endl;
-        return false;
-    }*/
-    return result == 0;
+        // Verzeichnis erstellen
+        if (CreateDirectory(path, NULL) || ERROR_ALREADY_EXISTS == GetLastError()) {
+            delete[] wideCharName;
+            return true;
+        } else {
+            delete[] wideCharName;
+            return false;
+        }
+    #else // Linux
+        // Hier wird das Verzeichnis erstellt
+        int result = mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
+    /*    if (result == 0)
+        {
+            //std::cout << "Verzeichnis erfolgreich erstellt: " << path << std::endl;
+            return true;
+        } else {
+            //std::cerr << "Fehler beim Erstellen des Verzeichnisses " << path << std::endl;
+            return false;
+        }*/
+        return result == 0;
+    #endif
 }
 
 void saveVariable(std::string dateiname, mpz_class zahl)

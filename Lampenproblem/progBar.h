@@ -12,7 +12,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sys/ioctl.h>
 #include <unistd.h>
 #include <vector>
 #include "cpu.h"
@@ -22,6 +21,12 @@
 	#include <ncursesw/ncurses.h>
 #else
 	#include <ncurses.h>
+#endif
+
+#ifdef _WIN32 // Windows
+    #include <windows.h>
+#else // Linux
+    #include <sys/ioctl.h>
 #endif
 
 #define __defProgBar__
@@ -167,9 +172,15 @@ std::string giveRAM(char unit)
 
 int getConsoleWidth() 
 {
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    return w.ws_col;
+    #ifdef _WIN32 // Windows
+        CONSOLE_SCREEN_BUFFER_INFO csbi;
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+        return csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    #else // Linux
+        struct winsize w;
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+        return w.ws_col;
+    #endif
 }
 
 // mache die Nanosekundenzahl nützlicher
@@ -222,8 +233,13 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
     constexpr double B   = 3.68065;
     constexpr double lnB = 1.30309; // = ln(B)
     //double factor = std::pow(static_cast<double>(total) / (current - shift), 2.5);  //TODO adjust
-    double baseshift = std::log(std::chrono::duration_cast<std::chrono::duration<double>>(elapsed).count()) / lnB - current;
-    std::chrono::duration<double> dd(std::pow(B, (baseshift + total + shift)));
+    #ifdef _WIN32
+        double baseshift = log(std::chrono::duration_cast<std::chrono::duration<double>>(elapsed).count()) / lnB - current;
+        std::chrono::duration<double> dd(pow(B, (baseshift + total + shift)));
+    #else
+        double baseshift = std::log(std::chrono::duration_cast<std::chrono::duration<double>>(elapsed).count()) / lnB - current;
+        std::chrono::duration<double> dd(std::pow(B, (baseshift + total + shift)));
+    #endif
     std::chrono::nanoseconds estTotalTime = std::chrono::duration_cast<std::chrono::nanoseconds>(dd);
     auto remaining = estTotalTime - elapsed;
 

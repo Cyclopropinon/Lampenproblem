@@ -72,19 +72,23 @@ public:
     // @warning geht nur für Linux zurzeit
     static std::string cpuTimeStr()
     {
-        clockid_t clockId;
-        struct timespec ts;
+        #ifdef _WIN32 //Windows
+            return "cpuTimeStr() unavailable in Windows";
+        #else // Linux
+            clockid_t clockId;
+            struct timespec ts;
 
-        pthread_getcpuclockid(pthread_self(), &clockId);
-        clock_gettime(clockId, &ts);
+            pthread_getcpuclockid(pthread_self(), &clockId);
+            clock_gettime(clockId, &ts);
 
-            // Umrechnung in Nanosekunden
-        char buffer[50];
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wformat"
-        sprintf(buffer, "%llu,%09llus", static_cast<uint64_t>(ts.tv_sec), static_cast<uint64_t>(ts.tv_nsec));
-	    #pragma GCC diagnostic pop
-        return buffer;
+                // Umrechnung in Nanosekunden
+            char buffer[50];
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Wformat"
+            sprintf(buffer, "%llu,%09llus", static_cast<uint64_t>(ts.tv_sec), static_cast<uint64_t>(ts.tv_nsec));
+            #pragma GCC diagnostic pop
+            return buffer;
+        #endif
     }
 
     // Methode zur Berechnung der gesamten CPU-Zeit (einschließlich Kinder) in Nanosekunden
@@ -118,17 +122,21 @@ public:
     // @warning geht nur für Linux zurzeit
     static std::string cpuFamilyTimeStr()
     {
-        struct rusage usage;
-        getrusage(RUSAGE_SELF, &usage);
-        
-        uint64_t seconds = static_cast<uint64_t>(usage.ru_utime.tv_sec) + usage.ru_stime.tv_sec;    // Sekunden
-        uint64_t micsecs = static_cast<uint64_t>(usage.ru_utime.tv_usec) + usage.ru_stime.tv_usec;  // Mikrosekunden
+        #ifdef _WIN32 //Windows
+            return "cpuFamilyTimeStr() unavailable in Windows";
+        #else // Linux
+            struct rusage usage;
+            getrusage(RUSAGE_SELF, &usage);
+            
+            uint64_t seconds = static_cast<uint64_t>(usage.ru_utime.tv_sec) + usage.ru_stime.tv_sec;    // Sekunden
+            uint64_t micsecs = static_cast<uint64_t>(usage.ru_utime.tv_usec) + usage.ru_stime.tv_usec;  // Mikrosekunden
 
-        char buffer[50];
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wformat"
-        sprintf(buffer, "%llu,%06llus (%lluh)", seconds, micsecs, seconds / 3600);
-	    #pragma GCC diagnostic pop
-        return buffer;
+            char buffer[50];
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Wformat"
+            sprintf(buffer, "%llu,%06llus (%lluh)", seconds, micsecs, seconds / 3600);
+            #pragma GCC diagnostic pop
+            return buffer;
+        #endif
     }
 };
