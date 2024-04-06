@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# built Program
+#Lampenproblem
+
 # User-specific files
 *.rsuser
 *.suo
@@ -97,6 +100,9 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+
+# uncomment if issues arise
+*.json
 
 # Chutzpah Test files
 _Chutzpah*
