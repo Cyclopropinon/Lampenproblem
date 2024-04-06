@@ -2565,10 +2565,8 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 	fmpzxx AnzRunden(2);
 	vector<bool> Lampen(n, true);
 	vector<fmpzxx> PositiveRunden;
-	fmpz_t tmp_n_flintlib;
-	fmpz_init_set_ui(tmp_n_flintlib, n);
-	fmpzxx Schritte(tmp_n_flintlib);
-	const fmpzxx n_gmplib(tmp_n_flintlib);
+	fmpzxx Schritte(n);
+	const fmpzxx n_gmplib(n);
 	unsigned long long Lampejetzt;
 	unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
 	unsigned long long cPrint = 0;		// Checkpoint für print
@@ -2586,7 +2584,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 	if (std::filesystem::exists(Session))
 	{
 		// Lade die Vorherige Session falls eine existiert
-		CheckpointLSGv6(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
+		CheckpointLSF(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 		berechnungsStartHR -= Laufzeit;
 	}
 
@@ -2650,7 +2648,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 				cPrint = print;
 				Laufzeit = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
 				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
-				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
+				CheckpointLSF(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
 				#pragma GCC diagnostic push
 				#pragma GCC diagnostic ignored "-Wformat"

@@ -77,7 +77,7 @@ mpz_class readVariable(std::string dateiname, mpz_class useless_var)
     return zahl;
 }
 
-void saveVariable(std::string dateiname, fmpzxx zahl)
+void saveVariable(std::string dateiname, flint::fmpzxx zahl)
 {
     FILE* file = fopen(dateiname.c_str(), "wb");
     if (!file) schreibfehler();
@@ -87,9 +87,9 @@ void saveVariable(std::string dateiname, fmpzxx zahl)
     fclose(file);
 }
 
-fmpzxx readVariable(std::string dateiname, fmpzxx useless_var)
+flint::fmpzxx readVariable(std::string dateiname, flint::fmpzxx useless_var)
 {
-    fmpzxx zahl;
+    flint::fmpzxx zahl;
 
     FILE* file = fopen(dateiname.c_str(), "rb");
     if (!file) lesefehler();
@@ -198,7 +198,7 @@ std::vector<mpz_class> readVariable(std::string dateiname, std::vector<mpz_class
     return var;
 }
 
-void saveVariable(std::string dateiname, std::vector<fmpzxx> var)
+void saveVariable(std::string dateiname, std::vector<flint::fmpzxx> var)
 {
     const uint64_t size = var.size();
     const std::string dir = dateiname + "/";
@@ -210,16 +210,16 @@ void saveVariable(std::string dateiname, std::vector<fmpzxx> var)
     }
 }
 
-std::vector<fmpzxx> readVariable(std::string dateiname, std::vector<fmpzxx> useless_var)
+std::vector<flint::fmpzxx> readVariable(std::string dateiname, std::vector<flint::fmpzxx> useless_var)
 {
     erstelleVerzeichnis(dateiname.c_str());
     const std::string dir = dateiname + "/";
     uint64_t size = readVariable(dir + "size", (uint64_t)1729);
-    std::vector<fmpzxx> var;
+    std::vector<flint::fmpzxx> var;
     var.reserve(size);
     for (uint64_t i = 0; i < size; i++)
     {
-        var.push_back(readVariable(dir + std::to_string(i), fmpzxx{}));
+        var.push_back(readVariable(dir + std::to_string(i), flint::fmpzxx{}));
     }
     return var;
 }
