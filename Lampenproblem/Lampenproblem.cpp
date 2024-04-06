@@ -35,9 +35,7 @@
 #include <cstring>
 #include <filesystem>
 #include <flint/flint.h>
-#include <flint/nmod_poly.h>
-#include <flint/nmod_polyxx.h>
-#include <flint/ulong_extras.h>
+#include <flint/fmpzxx.h>
 #include <future>
 #include <fstream>
 #include <gmp.h>
@@ -73,6 +71,7 @@
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;
+using flint::fmpzxx;
 
 #ifdef _ENABLEBIGINTS_
 using namespace boost::multiprecision;
@@ -2515,15 +2514,15 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
-vector<mpz_class> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
+vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
-    mpz_class AnzRunden = 2;
+    fmpzxx AnzRunden(2);
     vector<bool> Lampen(n, true);
-    vector<mpz_class> PositiveRunden;
+    vector<fmpzxx> PositiveRunden;
     mpz_t tmp_n_gmplib;
     mpz_init_set_ui(tmp_n_gmplib, n);
-    mpz_class Schritte(tmp_n_gmplib);
-    const mpz_class n_gmplib(tmp_n_gmplib);
+    fmpzxx Schritte(tmp_n_gmplib);
+    const fmpzxx n_gmplib(tmp_n_gmplib);
     unsigned long long Lampejetzt;
     unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
     unsigned long long cPrint = 0;		// Checkpoint für print
@@ -2592,7 +2591,7 @@ vector<mpz_class> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool
 
             AnzRunden = 1 + Schritte / n_gmplib;
         }
-        Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
+        Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
         Lampen[Lampejetzt] = !Lampen[Lampejetzt];
 
         print++;
@@ -2648,7 +2647,7 @@ vector<mpz_class> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool
 					wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", fmpz_sizeinbase(Schritte._fmpz(), 265));
 					mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
 					wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
@@ -2705,7 +2704,7 @@ vector<mpz_class> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool
 		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", fmpz_sizeinbase(Schritte._fmpz(), 265));
 		mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
 		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
