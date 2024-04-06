@@ -168,7 +168,8 @@ bool isTTY(std::string TERM)
 
 void signalHandler(int signum)
 {
-    std::cout << "Signal " << signum << " erhalten. Programm läuft nicht weiter." /*<< SIGRTMAX << '\t' << SIGRTMIN*/ << std::endl;
+	endwin();	// end ncurses
+    std::cerr << "\nSignal " << signum << " erhalten. Programm läuft nicht weiter." /*<< SIGRTMAX << '\t' << SIGRTMIN*/ << std::endl;
 	exit(0);
 }
 
@@ -2566,7 +2567,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 	vector<bool> Lampen(n, true);
 	vector<fmpzxx> PositiveRunden;
 	fmpzxx Schritte(n);
-	const fmpzxx n_gmplib(n);
+	const fmpzxx n_flintlib(n);
 	unsigned long long Lampejetzt;
 	unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
 	unsigned long long cPrint = 0;		// Checkpoint für print
@@ -2625,7 +2626,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 	while (AnzPR < anz)
 	{
 		Schritte += AnzRunden;
-		if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
+		if (AnzRunden > n_flintlib || AnzRunden < 1 + Schritte / n_flintlib)
 		{
 			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
 			{
@@ -2633,7 +2634,223 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 				AnzPR = PositiveRunden.size();
 			}
 
-			AnzRunden = 1 + Schritte / n_gmplib;
+			AnzRunden = 1 + Schritte / n_flintlib;
+		}
+		Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
+		Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+
+		print++;
+
+		if(print % 32768 == 0)
+		{
+			if (increasedBackupFrequency || print % 1048576 == 0)
+			{
+				dPrint = print - cPrint;
+				cPrint = print;
+				Laufzeit = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
+				CheckpointLSF(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
+				berechnungsZwCP_HR = berechnungsEndeHR;
+				#pragma GCC diagnostic push
+				#pragma GCC diagnostic ignored "-Wformat"
+				dt(berechnungsStartHR, durHR);
+				dt(berechnungsZwCP_HR, CP_HR);
+				Pdt(berechnungsZwCP_HR, CPdHR);
+				#pragma GCC diagnostic pop
+
+				// Redirect output to the ncurses window
+				
+				{
+					lock_cout;
+
+					wattron(titelWin, A_BOLD);  		// Fett
+					wattron(outputWin, A_BOLD);  		// Fett
+
+					wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+					mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
+					wattron(outputWin, A_DIM);          // Halbdurchsichtig
+					if(tty) mvwprintw(outputWin, 2, 30, "dt: %s    ", CP_HR.c_str());				// tty unterstützt nicht so viele unicode zeichen
+					else    mvwprintw(outputWin, 2, 30, "Δt: %s    ", CP_HR.c_str());
+					// if(tty) mvwprintw(outputWin, 2, 30, "dn: %llu dt: %s", dPrint, CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+					// else    mvwprintw(outputWin, 2, 30, "Δn: %llu Δt: %s", dPrint, CP_HR.c_str());
+					wattron(outputWin, A_ITALIC);       // Kursiv
+					mvwprintw(outputWin, 2, 55, "dt/dn: %s    ", CPdHR.c_str());
+					wattroff(outputWin, A_DIM);
+					wattroff(outputWin, A_ITALIC);
+					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wformat"
+					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+					#pragma GCC diagnostic pop
+					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+					mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+					wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", fmpz_sizeinbase(Schritte._fmpz(), 265));
+					mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
+					wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+
+					wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
+					printCurrentTime(titelWin, timerOrty, timerOrtx);
+					wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
+
+					wattroff(titelWin, A_BOLD);
+					wattroff(outputWin, A_BOLD);
+
+					wrefresh(titelWin);
+					wrefresh(outputWin);
+				}
+			}
+		}
+	}
+
+	dPrint = print - cPrint;
+	cPrint = print;
+
+	berechnungsZwCP_HR = berechnungsEndeHR;
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wformat"
+	dt(berechnungsStartHR, durHR);
+	// dt(berechnungsZwCP_HR, CP_HR);
+	Pdt(berechnungsZwCP_HR, CPdHR);
+	#pragma GCC diagnostic pop
+
+	{
+		lock_cout;
+
+		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
+		wattron(outputWin, A_DIM);          // Halbdurchsichtig
+		// if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+		// else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
+		wattron(outputWin, A_ITALIC);       // Kursiv
+		mvwprintw(outputWin, 2, 55, "dt/dn: %s      ", CPdHR.c_str());
+		wattroff(outputWin, A_DIM);
+		wattroff(outputWin, A_ITALIC);
+		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wformat"
+		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		#pragma GCC diagnostic pop
+		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
+		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+		mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", fmpz_sizeinbase(Schritte._fmpz(), 265));
+		mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
+		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+
+		wrefresh(outputWin);
+
+		wattron(titelWin, A_BOLD);  		// Fett
+		wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
+		printCurrentTime(titelWin, timerOrty, timerOrtx);
+		wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
+		wattroff(titelWin, A_BOLD);
+
+		wrefresh(titelWin);
+	}
+
+	return PositiveRunden;
+}
+
+vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
+{
+	fmpzxx AnzRunden(2);
+	vector<bool> Lampen(n, true);
+	vector<fmpzxx> PositiveRunden;
+	fmpzxx Schritte(n);
+	const fmpzxx n_flintlib(n);
+	unsigned long long Lampejetzt;
+	unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
+	unsigned long long cPrint = 0;		// Checkpoint für print
+	unsigned long long dPrint = 0;		// Anz Iterationen zwischen den 2 letzten Sicherungen
+	bool increasedBackupFrequency = false;
+	bool AnzRunden_vs_n = false;	// ob AnzRunden größer als n ist
+	auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
+	auto berechnungsEndeHR = berechnungsStartHR;
+	auto berechnungsZwCP_HR = berechnungsStartHR;
+	std::chrono::nanoseconds Laufzeit;
+	string durHR;
+	string CP_HR;
+	string CPdHR;
+	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
+
+	if (std::filesystem::exists(Session))
+	{
+		// Lade die Vorherige Session falls eine existiert
+		CheckpointLSF(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
+		berechnungsStartHR -= Laufzeit;
+	}
+
+	vector<bool> AlleLampenAn(n, true);
+	vector<bool> AlleLampenAus(n, false);
+
+	PositiveRunden.reserve(anz);
+	if (einsenAnzeigen)
+	{
+		PositiveRunden.push_back(fmpzxx{1});
+	}
+
+	start_color();  // Aktiviert die Farbunterstützung
+	init_pair(0, COLOR_WHITE, COLOR_BLACK);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(2, COLOR_CYAN, COLOR_BLACK);
+	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(5, COLOR_GREEN, COLOR_BLACK);
+	init_pair(6, COLOR_BLUE, COLOR_BLACK);
+
+	{
+		lock_cout;
+		wattron(outputWin, A_BOLD);			// Fett
+		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
+		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+		wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
+		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+		mvwprintw(outputWin, 2, 76, "AnzPR: 0");						// Anzahl der bereits gefundendn positiver Runden (hier: 0)
+		wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
+		wattroff(outputWin, A_BOLD);
+		wrefresh(outputWin);
+	}
+
+	Lampen[0] = false;
+
+	while (AnzPR < anz)
+	{
+		Schritte += AnzRunden;
+		//if (AnzRunden > n_flintlib)
+		if (AnzRunden_vs_n)
+		{
+			LampenSimulierenFLINTv2_subroundJumper:
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden);
+				AnzPR = PositiveRunden.size();
+			}
+
+			// optimize that
+			AnzRunden = 1 + Schritte / n_flintlib;
+		}
+		//else if (AnzRunden > n_flintlib || AnzRunden < 1 + Schritte / n_flintlib)
+		else if(AnzRunden < 1 + Schritte / n_flintlib)
+		{
+			AnzRunden_vs_n = AnzRunden > n_flintlib;
+			goto LampenSimulierenFLINTv2_subroundJumper;
 		}
 		Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
 		Lampen[Lampejetzt] = !Lampen[Lampejetzt];
@@ -2899,6 +3116,7 @@ int main()
 				switch (prüfart)
 				{
 				case 0:
+					endwin();	// end ncurses
 					return 0;
 					break;
 				case 1:
@@ -4478,6 +4696,7 @@ int main()
 						cbreak();
 						noecho();
 						curs_set(0);
+						flint_set_num_threads((int)AnzThreadsUnterstützt);
 
 						// Erstelle ein Fenster für die Titelzeile
 						constexpr int titleWinHeight = 2;
@@ -4519,10 +4738,10 @@ int main()
 								}
 
 								// Perform the slow operation in the async thread
-								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv6(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
+								vector<fmpzxx> PositiveRunden = LampenSimulierenFLINT(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
 
 								std::ostringstream oss2;
-								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
+								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<fmpzxx>(oss2, "\n"));
 								oss2 << PositiveRunden.back();
 
 								// Synchronize file output with a mutex
@@ -4593,6 +4812,7 @@ int main()
 			catch (const std::exception& e)
 			{
 				cerr << "\aFehler:\n" << e.what() << endl;
+				endwin();	// end ncurses
 			}
 		}
 

@@ -6,6 +6,34 @@
 # built Program
 #Lampenproblem
 
+# Testumgebung
+Lampenproblem/testumgebung/q*
+Lampenproblem/testumgebung/w*
+Lampenproblem/testumgebung/e*
+#Lampenproblem/testumgebung/r*    # disabled because of run.sh
+Lampenproblem/testumgebung/t*
+Lampenproblem/testumgebung/z*
+Lampenproblem/testumgebung/u*
+Lampenproblem/testumgebung/i*
+Lampenproblem/testumgebung/o*
+Lampenproblem/testumgebung/p*
+Lampenproblem/testumgebung/a*
+Lampenproblem/testumgebung/s*
+Lampenproblem/testumgebung/d*
+Lampenproblem/testumgebung/f*
+Lampenproblem/testumgebung/g*
+Lampenproblem/testumgebung/h*
+Lampenproblem/testumgebung/j*
+Lampenproblem/testumgebung/k*
+Lampenproblem/testumgebung/l*
+Lampenproblem/testumgebung/y*
+Lampenproblem/testumgebung/x*
+Lampenproblem/testumgebung/c*
+Lampenproblem/testumgebung/v*
+Lampenproblem/testumgebung/b*
+Lampenproblem/testumgebung/n*
+Lampenproblem/testumgebung/m*
+
 # User-specific files
 *.rsuser
 *.suo
