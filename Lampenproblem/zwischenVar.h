@@ -198,6 +198,32 @@ std::vector<mpz_class> readVariable(std::string dateiname, std::vector<mpz_class
     return var;
 }
 
+void saveVariable(std::string dateiname, std::vector<fmpzxx> var)
+{
+    const uint64_t size = var.size();
+    const std::string dir = dateiname + "/";
+    erstelleVerzeichnis(dateiname.c_str());
+    saveVariable(dir + "size", size);
+    for (uint64_t i = 0; i < size; i++)
+    {
+        saveVariable(dir + std::to_string(i), var[i]);
+    }
+}
+
+std::vector<fmpzxx> readVariable(std::string dateiname, std::vector<fmpzxx> useless_var)
+{
+    erstelleVerzeichnis(dateiname.c_str());
+    const std::string dir = dateiname + "/";
+    uint64_t size = readVariable(dir + "size", (uint64_t)1729);
+    std::vector<fmpzxx> var;
+    var.reserve(size);
+    for (uint64_t i = 0; i < size; i++)
+    {
+        var.push_back(readVariable(dir + std::to_string(i), fmpzxx{}));
+    }
+    return var;
+}
+
 void saveVariable(std::string dateiname, bool var)
 {
     saveVariable(dateiname, (uint64_t)var);

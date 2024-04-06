@@ -291,7 +291,7 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 	}
 }
 
-void CheckpointLSF(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
+void CheckpointLSF(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, fmpzxx& AnzRunden, vector<bool>& Lampen, vector<fmpzxx>& PositiveRunden, fmpzxx& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
 {
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
@@ -2562,25 +2562,25 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 
 vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
-    fmpzxx AnzRunden(2);
-    vector<bool> Lampen(n, true);
-    vector<fmpzxx> PositiveRunden;
-    mpz_t tmp_n_gmplib;
-    mpz_init_set_ui(tmp_n_gmplib, n);
-    fmpzxx Schritte(tmp_n_gmplib);
-    const fmpzxx n_gmplib(tmp_n_gmplib);
-    unsigned long long Lampejetzt;
-    unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
-    unsigned long long cPrint = 0;		// Checkpoint für print
-    unsigned long long dPrint = 0;		// Anz Iterationen zwischen den 2 letzten Sicherungen
+	fmpzxx AnzRunden(2);
+	vector<bool> Lampen(n, true);
+	vector<fmpzxx> PositiveRunden;
+	fmpz_t tmp_n_flintlib;
+	fmpz_init_set_ui(tmp_n_flintlib, n);
+	fmpzxx Schritte(tmp_n_flintlib);
+	const fmpzxx n_gmplib(tmp_n_flintlib);
+	unsigned long long Lampejetzt;
+	unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
+	unsigned long long cPrint = 0;		// Checkpoint für print
+	unsigned long long dPrint = 0;		// Anz Iterationen zwischen den 2 letzten Sicherungen
 	bool increasedBackupFrequency = false;
-    auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
-    auto berechnungsEndeHR = berechnungsStartHR;
-    auto berechnungsZwCP_HR = berechnungsStartHR;
+	auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
+	auto berechnungsEndeHR = berechnungsStartHR;
+	auto berechnungsZwCP_HR = berechnungsStartHR;
 	std::chrono::nanoseconds Laufzeit;
-    string durHR;
-    string CP_HR;
-    string CPdHR;
+	string durHR;
+	string CP_HR;
+	string CPdHR;
 	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
 
 	if (std::filesystem::exists(Session))
@@ -2590,14 +2590,14 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 		berechnungsStartHR -= Laufzeit;
 	}
 
-    vector<bool> AlleLampenAn(n, true);
-    vector<bool> AlleLampenAus(n, false);
+	vector<bool> AlleLampenAn(n, true);
+	vector<bool> AlleLampenAus(n, false);
 
-    PositiveRunden.reserve(anz);
-    if (einsenAnzeigen)
-    {
-        PositiveRunden.push_back(1);
-    }
+	PositiveRunden.reserve(anz);
+	if (einsenAnzeigen)
+	{
+		PositiveRunden.push_back(fmpzxx{1});
+	}
 
 	start_color();  // Aktiviert die Farbunterstützung
 	init_pair(0, COLOR_WHITE, COLOR_BLACK);
@@ -2622,25 +2622,25 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 		wrefresh(outputWin);
 	}
 
-    Lampen[0] = false;
+	Lampen[0] = false;
 
-    while (AnzPR < anz)
-    {
-        Schritte += AnzRunden;
-        if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
-        {
-            if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-            {
-                PositiveRunden.push_back(AnzRunden);
+	while (AnzPR < anz)
+	{
+		Schritte += AnzRunden;
+		if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
+		{
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden);
 				AnzPR = PositiveRunden.size();
-            }
+			}
 
-            AnzRunden = 1 + Schritte / n_gmplib;
-        }
-        Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
-        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+			AnzRunden = 1 + Schritte / n_gmplib;
+		}
+		Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
+		Lampen[Lampejetzt] = !Lampen[Lampejetzt];
 
-        print++;
+		print++;
 
 		if(print % 32768 == 0)
 		{
@@ -2765,7 +2765,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 		wrefresh(titelWin);
 	}
 
-    return PositiveRunden;
+	return PositiveRunden;
 }
 
 int main()
