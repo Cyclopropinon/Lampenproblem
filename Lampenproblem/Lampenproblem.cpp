@@ -2836,7 +2836,6 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 		//if (AnzRunden > n_flintlib)
 		if (AnzRunden_vs_n)
 		{
-			LampenSimulierenFLINTv2_subroundJumper:
 			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
 			{
 				PositiveRunden.push_back(AnzRunden);
@@ -2845,14 +2844,19 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 
 			// optimize that
 			AnzRunden = 1 + Schritte / n_flintlib;
+			Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
 		}
 		//else if (AnzRunden > n_flintlib || AnzRunden < 1 + Schritte / n_flintlib)
 		else if(AnzRunden < 1 + Schritte / n_flintlib)
 		{
 			AnzRunden_vs_n = AnzRunden > n_flintlib;
-			goto LampenSimulierenFLINTv2_subroundJumper;
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden);
+				AnzPR = PositiveRunden.size();
+			}
+			Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
 		}
-		Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
 		Lampen[Lampejetzt] = !Lampen[Lampejetzt];
 
 		print++;
