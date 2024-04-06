@@ -1,4 +1,6 @@
 #include <cstring>
+#include <flint/flint.h>
+#include <flint/fmpzxx.h>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -69,6 +71,30 @@ mpz_class readVariable(std::string dateiname, mpz_class useless_var)
     if (!file) lesefehler();
 
     mpz_inp_raw(zahl.get_mpz_t(), file);
+
+    fclose(file);
+
+    return zahl;
+}
+
+void saveVariable(std::string dateiname, fmpzxx zahl)
+{
+    FILE* file = fopen(dateiname.c_str(), "wb");
+    if (!file) schreibfehler();
+
+    if(fmpz_out_raw(file, zahl._fmpz()) == 0) schreibfehler();
+
+    fclose(file);
+}
+
+fmpzxx readVariable(std::string dateiname, fmpzxx useless_var)
+{
+    fmpzxx zahl;
+
+    FILE* file = fopen(dateiname.c_str(), "rb");
+    if (!file) lesefehler();
+
+    if(fmpz_inp_raw(zahl._fmpz(), file) == 0) lesefehler();
 
     fclose(file);
 
