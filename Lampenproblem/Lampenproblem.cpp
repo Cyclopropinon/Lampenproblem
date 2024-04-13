@@ -2,10 +2,13 @@
 //
 // TODO 1kb
 // TODO Terminal width
+// TODO Benchmark-Tests um zu entscheiden, ob LampenSimulierenFLINT_tdiv_qr_ist_schneller
+// um zu switchen, das Makro unkommentieren
+#define __LS_division_variant 3
 //
 
 // Programmversion:
-#define _V "0.1.13"
+#define _V "0.1.14"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -2843,8 +2846,23 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 			}
 
 			// optimize that
-			AnzRunden = 1 + Schritte / n_flintlib;
-			Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
+			// TODO braucht Benchmarktests
+			#if __LS_division_variant == 0
+				AnzRunden = 1 + Schritte / n_flintlib;
+				Lampejetzt = fmpz_tdiv_ui(Schritte._fmpz(), n);
+			#elif __LS_division_variant == 1
+				fmpzxx Lj; // = neu Lampejetzt
+				fmpz_tdiv_qr(AnzRunden._fmpz(), Lj._fmpz(), Schritte._fmpz(), n_flintlib._fmpz());
+				AnzRunden += 1;
+				Lampejetzt = fmpz_get_ui(Lj._fmpz());
+			#elif __LS_division_variant == 2
+				Lampejetzt = mpz_tdiv_q_ui((mpz_ptr)AnzRunden._fmpz(), (mpz_srcptr)Schritte._fmpz(), n);
+				AnzRunden += 1;
+			#elif __LS_division_variant == 3
+				fmpz_tdiv_q_ui(AnzRunden._fmpz(), Schritte._fmpz(), n);
+				AnzRunden += 1;
+				Lampejetzt = fmpz_tdiv_ui(Schritte._fmpz(), n);
+			#endif
 		}
 		//else if (AnzRunden > n_flintlib || AnzRunden < 1 + Schritte / n_flintlib)
 		else if(AnzRunden < 1 + Schritte / n_flintlib)
@@ -2857,7 +2875,7 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 			}
 			Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
 		}
-		Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+		Lampen[Lampejetzt] = !Lampen[Lampejetzt];			// Lampe umschalten
 
 		print++;
 
