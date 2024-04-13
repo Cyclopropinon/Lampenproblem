@@ -47,7 +47,7 @@ inline void weiterlaufen3(unsigned long long *n, const flint::fmpzxx *n_flintlib
 const std::vector<LampenSchrittVariante> LSvarianten = {
 	weiterlaufen0,
 	weiterlaufen1,
-	weiterlaufen2,
+	//weiterlaufen2,
 	weiterlaufen3
 };
 

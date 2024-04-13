@@ -34,3 +34,5 @@ Theoreme (unbewiesen)
 ```
 ![grafik](./readme/Lampenanordnung.png)
 
+Ein paar Screenshots:
+![grafik](./readme/Screenshot%20from%202024-04-13%2023-43-39.png)

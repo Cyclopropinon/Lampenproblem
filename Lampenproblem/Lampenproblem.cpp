@@ -4,7 +4,7 @@
 // TODO Terminal width
 // TODO Benchmark-Tests um zu entscheiden, ob LampenSimulierenFLINT_tdiv_qr_ist_schneller
 // um zu switchen, das Makro unkommentieren
-#define __LS_division_variant 3
+#define __LS_division_variant 1
 //
 
 // Programmversion:
@@ -176,7 +176,7 @@ bool isTTY(std::string TERM)
 void signalHandler(int signum)
 {
 	AnzInterrupts++;
-	if (AnzInterrupts > 500)	// Killswitch
+	if (AnzInterrupts > 25)	// Killswitch
 	{
 		endwin();	// end ncurses
 	    std::cerr << "\033[0m\n\033[1;4;31mFehler: zu viele Interrupts erhalten.\nLetztes Signal:    " << signum << "\nVorletztes Signal: " << UserInterrupt << "\nProgramm läuft nicht weiter.\033[0m" << std::endl;
@@ -186,7 +186,12 @@ void signalHandler(int signum)
 	    std::cerr << "\nSignal " << UserInterrupt << " erhalten und Exekution vom Nutzer befohlen. Programm läuft nicht weiter." << std::endl;
 		exit(UserInterrupt);
 	} else {
-	    std::cerr << "\nSignal " << signum << " erhalten. Programm läuft noch weiter.\nZum Anhalten bitte Strg+C drücken! (SIGINT wird benötigt)" << std::endl;
+		if (InterruptRequiredByApp)
+		{
+			std::cout << "Signal received! Stopping soon :)\r" << flush;
+		} else {		
+	    	std::cerr << "\nSignal " << signum << " erhalten. Programm läuft noch weiter.\nZum Anhalten bitte Strg+C drücken! (SIGINT wird benötigt)" << std::endl;
+		}
 		UserInterrupt = signum;
 		// mach etwas
 	}
@@ -3028,7 +3033,9 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 {
 	const fmpzxx n_flintlib(n);
 	string durHR;
+	string durCPU;
 	uint64_t currentSchritteBits = 0;
+	InterruptRequiredByApp = true;
 	while (UserInterrupt == 0)
 	{
 		uint64_t minSchritteBits = currentSchritteBits;
@@ -3042,20 +3049,24 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			fmpzxx maxSchritte; fmpz_set_d_2exp(maxSchritte._fmpz(), 1, maxSchritteBits);
 			fmpzxx AnzRunden(0);
 			auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
+			auto berechnungsStartCPU = CPUProfiler::cpuTimeTs();
 			while (Schritte <= maxSchritte)
 			{
 				Schritte += AnzRunden;
 				LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt);
 			}
 			auto berechnungsEndeHR = std::chrono::high_resolution_clock::now();
+			durCPU = CPUProfiler::cpuTimeStrDiff(berechnungsStartCPU);
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wformat"
 			dt(berechnungsStartHR, durHR);
 			#pragma GCC diagnostic pop
-			cout << "[Benchmark] Bits: " << minSchritteBits << " - " << maxSchritteBits << "\tVariante: " << f << "\tZeit (Wanduhr): " << durHR << "\tZeit (CPU): ";
-		}		
+			cout << "[Benchmark] Bits: " << minSchritteBits << " - " << maxSchritteBits << "\tVariante: " << f << "\tZeit (Wanduhr): " << durHR << "\tZeit (CPU): " << durCPU << endl;
+		}
+		cout << endl;
 	}
-
+	UserInterrupt = 0;
+	InterruptRequiredByApp = false;
 	return currentSchritteBits;
 }
 
@@ -3180,7 +3191,8 @@ int main()
 					+ "17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n"
 					+ "19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
 					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
-					+ "23 = optimierte & erweiterte Simulation mit FLINT"
+					+ "23 = optimierte & erweiterte Simulation mit FLINT\n"
+					+ "\n-1 = Benchmark für die Schritte"
 					+ '\n';
 				cout << menu;
 				cin >> prüfart;
@@ -3227,6 +3239,22 @@ int main()
 
 					berechnungsEnde = steady_clock::now();
 					//			cout << "Laufzeit: " << nanoseconds{ berechnungsEnde - berechnungsStart }.count() << "ns\n";
+					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					break;
+				case -1:
+					cout << "n eingeben: ";
+					cin >> minN;
+					cout << "anzahl bits für Testpacktet: ";
+					cin >> anz;
+					cout << "Ausgabe von den Ergebnissen: ";
+					cin >> filename;
+
+					berechnungsStart = steady_clock::now();
+
+					anz = Benchmarking(filename, minN, anz);
+
+					berechnungsEnde = steady_clock::now();
+					cout << "Gesamtzahl an geprüften Bits: " << anz << '\n';
 					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
 					break;
 				case 2:

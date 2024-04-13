@@ -68,6 +68,7 @@ public:
         #endif
     }
 
+    // funktioniert nicht wirklich. Warum?
     static timespec cpuTimeTs()
     {
         #ifdef _WIN32 // Windows
@@ -78,7 +79,7 @@ public:
 
             pthread_getcpuclockid(pthread_self(), &clockId);
             clock_gettime(clockId, &ts);
-            return ts
+            return ts;
         #endif
     }
 
@@ -118,11 +119,21 @@ public:
             pthread_getcpuclockid(pthread_self(), &clockId);
             clock_gettime(clockId, &tsNow);
 
-                // Umrechnung in Nanosekunden
+            // Umrechnung in Nanosekunden
+            uint64_t ns = static_cast<uint64_t>(tsNow.tv_sec);
+            uint64_t ss = static_cast<uint64_t>(tsStart.tv_sec);
+            uint64_t nn = static_cast<uint64_t>(tsNow.tv_nsec);
+            uint64_t sn = static_cast<uint64_t>(tsStart.tv_nsec);
+            if (sn > nn)
+            {
+                ns--;
+                nn += 1'000'000'000;
+            }
+            
             char buffer[50];
             #pragma GCC diagnostic push
             #pragma GCC diagnostic ignored "-Wformat"
-            sprintf(buffer, "%llu,%09llus", (static_cast<uint64_t>(tsNow.tv_sec) - static_cast<uint64_t>(tsNow.tv_sec)), (static_cast<uint64_t>(tsNow.tv_nsec) - static_cast<uint64_t>(tsNow.tv_nsec)));
+            sprintf(buffer, "%llu,%09llus", (ns - ss), (nn - sn));
             #pragma GCC diagnostic pop
             return buffer;
         #endif
