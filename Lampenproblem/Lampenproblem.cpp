@@ -66,7 +66,11 @@
 	#include <ncurses.h>
 #endif
 
+// für globale Variablen
 #include "globalVars.hh"
+
+// für die unterschiedlichen Divisionsverfahren beim Schrittegehen an den Lampen
+#include "LS_divionsVarianten.hh"
 
 // if using a progressBar
 #include "progBar.h"
