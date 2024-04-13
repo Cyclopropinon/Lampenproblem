@@ -171,15 +171,20 @@ bool isTTY(std::string TERM)
 
 void signalHandler(int signum)
 {
-	if (signum == SIGINT && UserInterrupt != 0)
+	AnzInterrupts++;
+	if (AnzInterrupts > 500)	// Killswitch
 	{
+		endwin();	// end ncurses
+	    std::cerr << "\033[0m\n\033[1;4;31mFehler: zu viele Interrupts erhalten.\nLetztes Signal:    " << signum << "\nVorletztes Signal: " << UserInterrupt << "\nProgramm läuft nicht weiter.\033[0m" << std::endl;
+		exit(signum);
+	} else if (signum == SIGINT && UserInterrupt != 0) {
 		endwin();	// end ncurses
 	    std::cerr << "\nSignal " << UserInterrupt << " erhalten und Exekution vom Nutzer befohlen. Programm läuft nicht weiter." << std::endl;
 		exit(UserInterrupt);
 	} else {
 	    std::cerr << "\nSignal " << signum << " erhalten. Programm läuft noch weiter.\nZum Anhalten bitte Strg+C drücken! (SIGINT wird benötigt)" << std::endl;
 		UserInterrupt = signum;
-		//
+		// mach etwas
 	}
 
     // std::cerr << "\nSignal " << signum << " erhalten. Programm läuft nicht weiter." /*<< SIGRTMAX << '\t' << SIGRTMIN*/ << std::endl;
@@ -3035,6 +3040,52 @@ void Benchmarking()
 	string CP_HR;
 	string CPdHR;
 	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
+	while (AnzPR < anz)
+	{
+		Schritte += AnzRunden;
+		//if (AnzRunden > n_flintlib)
+		if (AnzRunden_vs_n)
+		{
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden);
+				AnzPR = PositiveRunden.size();
+			}
+
+			// optimize that
+			// TODO braucht Benchmarktests
+			#if __LS_division_variant == 0
+				AnzRunden = 1 + Schritte / n_flintlib;
+				Lampejetzt = fmpz_tdiv_ui(Schritte._fmpz(), n);
+			#elif __LS_division_variant == 1
+				fmpzxx Lj; // = neu Lampejetzt
+				fmpz_tdiv_qr(AnzRunden._fmpz(), Lj._fmpz(), Schritte._fmpz(), n_flintlib._fmpz());
+				AnzRunden += 1;
+				Lampejetzt = fmpz_get_ui(Lj._fmpz());
+			#elif __LS_division_variant == 2
+				Lampejetzt = mpz_tdiv_q_ui((mpz_ptr)AnzRunden._fmpz(), (mpz_srcptr)Schritte._fmpz(), n);
+				AnzRunden += 1;
+			#elif __LS_division_variant == 3
+				fmpz_tdiv_q_ui(AnzRunden._fmpz(), Schritte._fmpz(), n);
+				AnzRunden += 1;
+				Lampejetzt = fmpz_tdiv_ui(Schritte._fmpz(), n);
+			#endif
+		}
+		//else if (AnzRunden > n_flintlib || AnzRunden < 1 + Schritte / n_flintlib)
+		else if(AnzRunden < 1 + Schritte / n_flintlib)
+		{
+			AnzRunden_vs_n = AnzRunden > n_flintlib;
+			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden);
+				AnzPR = PositiveRunden.size();
+			}
+			Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
+		}
+		Lampen[Lampejetzt] = !Lampen[Lampejetzt];			// Lampe umschalten
+
+		print++;
+	}
 }
 
 int main()
