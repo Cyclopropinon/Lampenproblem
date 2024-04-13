@@ -3027,6 +3027,7 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batchSize)
 {
 	const fmpzxx n_flintlib(n);
+	string durHR;
 	uint64_t currentSchritteBits = 0;
 	while (UserInterrupt == 0)
 	{
@@ -3040,78 +3041,22 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			fmpzxx Schritte; fmpz_set_d_2exp(Schritte._fmpz(), 1, minSchritteBits);
 			fmpzxx maxSchritte; fmpz_set_d_2exp(maxSchritte._fmpz(), 1, maxSchritteBits);
 			fmpzxx AnzRunden(0);
+			auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
 			while (Schritte <= maxSchritte)
 			{
 				Schritte += AnzRunden;
 				LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt);
 			}
+			auto berechnungsEndeHR = std::chrono::high_resolution_clock::now();
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wformat"
+			dt(berechnungsStartHR, durHR);
+			#pragma GCC diagnostic pop
+			cout << "[Benchmark] Bits: " << minSchritteBits << " - " << maxSchritteBits << "\tVariante: " << f << "\tZeit (Wanduhr): " << durHR << "\tZeit (CPU): ";
 		}		
 	}
 
 	return currentSchritteBits;
-
-	//blubb
-
-	vector<bool> Lampen(n, true);
-	vector<fmpzxx> PositiveRunden;
-	fmpzxx Schritte(n);
-	unsigned long long Lampejetzt;
-	unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
-	bool AnzRunden_vs_n = false;	// ob AnzRunden größer als n ist
-	auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
-	auto berechnungsEndeHR = berechnungsStartHR;
-	auto berechnungsZwCP_HR = berechnungsStartHR;
-	std::chrono::nanoseconds Laufzeit;
-	string durHR;
-	string CP_HR;
-	string CPdHR;
-	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
-	while (AnzPR < anz)
-	{
-		Schritte += AnzRunden;
-		//if (AnzRunden > n_flintlib)
-		if (AnzRunden_vs_n)
-		{
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden);
-				AnzPR = PositiveRunden.size();
-			}
-
-			// optimize that
-			// TODO braucht Benchmarktests
-			#if __LS_division_variant == 0
-				AnzRunden = 1 + Schritte / n_flintlib;
-				Lampejetzt = fmpz_tdiv_ui(Schritte._fmpz(), n);
-			#elif __LS_division_variant == 1
-				fmpzxx Lj; // = neu Lampejetzt
-				fmpz_tdiv_qr(AnzRunden._fmpz(), Lj._fmpz(), Schritte._fmpz(), n_flintlib._fmpz());
-				AnzRunden += 1;
-				Lampejetzt = fmpz_get_ui(Lj._fmpz());
-			#elif __LS_division_variant == 2
-				Lampejetzt = mpz_tdiv_q_ui((mpz_ptr)AnzRunden._fmpz(), (mpz_srcptr)Schritte._fmpz(), n);
-				AnzRunden += 1;
-			#elif __LS_division_variant == 3
-				fmpz_tdiv_q_ui(AnzRunden._fmpz(), Schritte._fmpz(), n);
-				AnzRunden += 1;
-				Lampejetzt = fmpz_tdiv_ui(Schritte._fmpz(), n);
-			#endif
-		}
-		//else if (AnzRunden > n_flintlib || AnzRunden < 1 + Schritte / n_flintlib)
-		else if(AnzRunden < 1 + Schritte / n_flintlib)
-		{
-			AnzRunden_vs_n = AnzRunden > n_flintlib;
-			if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-			{
-				PositiveRunden.push_back(AnzRunden);
-				AnzPR = PositiveRunden.size();
-			}
-			Lampejetzt = fmpz_fdiv_ui(Schritte._fmpz(), n);
-		}
-		Lampen[Lampejetzt] = !Lampen[Lampejetzt];			// Lampe umschalten
-
-		print++;
-	}
 }
 
 int main()

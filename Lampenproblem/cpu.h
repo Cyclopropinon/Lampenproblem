@@ -68,6 +68,20 @@ public:
         #endif
     }
 
+    static timespec cpuTimeTs()
+    {
+        #ifdef _WIN32 // Windows
+            //return "cpuTimeTs() unavailable in Windows";
+        #else // Linux
+            clockid_t clockId;
+            struct timespec ts;
+
+            pthread_getcpuclockid(pthread_self(), &clockId);
+            clock_gettime(clockId, &ts);
+            return ts
+        #endif
+    }
+
     // @brief Methode zum besseren Extrahieren der CPU-Zeit diese Threads in einen String.
     // @warning geht nur für Linux zurzeit
     static std::string cpuTimeStr()
@@ -86,6 +100,29 @@ public:
             #pragma GCC diagnostic push
             #pragma GCC diagnostic ignored "-Wformat"
             sprintf(buffer, "%llu,%09llus", static_cast<uint64_t>(ts.tv_sec), static_cast<uint64_t>(ts.tv_nsec));
+            #pragma GCC diagnostic pop
+            return buffer;
+        #endif
+    }
+
+    // @brief Methode zum besseren Extrahieren der CPU-Zeitdifferenzen diese Threads in einen String.
+    // @warning geht nur für Linux zurzeit
+    static std::string cpuTimeStrDiff(timespec tsStart)
+    {
+        #ifdef _WIN32 //Windows
+            return "cpuTimeStrDiff() unavailable in Windows";
+        #else // Linux
+            clockid_t clockId;
+            struct timespec tsNow;
+
+            pthread_getcpuclockid(pthread_self(), &clockId);
+            clock_gettime(clockId, &tsNow);
+
+                // Umrechnung in Nanosekunden
+            char buffer[50];
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Wformat"
+            sprintf(buffer, "%llu,%09llus", (static_cast<uint64_t>(tsNow.tv_sec) - static_cast<uint64_t>(tsNow.tv_sec)), (static_cast<uint64_t>(tsNow.tv_nsec) - static_cast<uint64_t>(tsNow.tv_nsec)));
             #pragma GCC diagnostic pop
             return buffer;
         #endif
