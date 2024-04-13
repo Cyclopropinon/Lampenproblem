@@ -171,9 +171,18 @@ bool isTTY(std::string TERM)
 
 void signalHandler(int signum)
 {
-	endwin();	// end ncurses
-    std::cerr << "\nSignal " << signum << " erhalten. Programm läuft nicht weiter." /*<< SIGRTMAX << '\t' << SIGRTMIN*/ << std::endl;
-	exit(0);
+	if (signum == SIGINT && UserInterrupt != 0)
+	{
+		endwin();	// end ncurses
+	    std::cerr << "\nSignal " << UserInterrupt << " erhalten und Exekution vom Nutzer befohlen. Programm läuft nicht weiter." << std::endl;
+		exit(UserInterrupt);
+	} else {
+	    std::cerr << "\nSignal " << signum << " erhalten. Programm läuft noch weiter.\nZum Anhalten bitte Strg+C drücken! (SIGINT wird benötigt)" << std::endl;
+		UserInterrupt = signum;
+		//
+	}
+
+    // std::cerr << "\nSignal " << signum << " erhalten. Programm läuft nicht weiter." /*<< SIGRTMAX << '\t' << SIGRTMIN*/ << std::endl;
 }
 
 void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, int& print)
@@ -3003,6 +3012,29 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 	}
 
 	return PositiveRunden;
+}
+
+void Benchmarking()
+{
+	fmpzxx AnzRunden(2);
+	vector<bool> Lampen(n, true);
+	vector<fmpzxx> PositiveRunden;
+	fmpzxx Schritte(n);
+	const fmpzxx n_flintlib(n);
+	unsigned long long Lampejetzt;
+	unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
+	unsigned long long cPrint = 0;		// Checkpoint für print
+	unsigned long long dPrint = 0;		// Anz Iterationen zwischen den 2 letzten Sicherungen
+	bool increasedBackupFrequency = false;
+	bool AnzRunden_vs_n = false;	// ob AnzRunden größer als n ist
+	auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
+	auto berechnungsEndeHR = berechnungsStartHR;
+	auto berechnungsZwCP_HR = berechnungsStartHR;
+	std::chrono::nanoseconds Laufzeit;
+	string durHR;
+	string CP_HR;
+	string CPdHR;
+	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
 }
 
 int main()
