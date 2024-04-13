@@ -40,9 +40,11 @@ inline void weiterlaufen3(unsigned long long *n, flint::fmpzxx *n_flintlib, flin
 // Definiere eine Typalias für eine Funktion mit zwei integer Argumenten und integer Rückgabewert
 using LampenSchrittVariante = std::function<void(unsigned long long*, flint::fmpzxx*, flint::fmpzxx*, flint::fmpzxx*, unsigned long long*)>;
 
-std::vector<LampenSchrittVariante> LSvarianten = {
+const std::vector<LampenSchrittVariante> LSvarianten = {
 	weiterlaufen0,
 	weiterlaufen1,
 	weiterlaufen2,
 	weiterlaufen3
 };
+
+const auto anzLSvarianten = LSvarianten.size();
