@@ -37,8 +37,12 @@ inline void weiterlaufen3(unsigned long long *n, flint::fmpzxx *n_flintlib, flin
 	*Lampejetzt = fmpz_tdiv_ui((*Schritte)._fmpz(), *n);
 }
 
-// Definiere eine Typalias für eine Funktion mit zwei integer Argumenten und integer Rückgabewert
-using LampenSchrittVariante = std::function<void(unsigned long long*, flint::fmpzxx*, flint::fmpzxx*, flint::fmpzxx*, unsigned long long*)>;
+// Definiere eine Typalias für die Funktion
+//using LampenSchrittVariante = std::function<void(unsigned long long*, flint::fmpzxx*, flint::fmpzxx*, flint::fmpzxx*, unsigned long long*)>;
+//#define LampenSchrittVariante std::function<void(unsigned long long *n, flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)>
+
+// Definiere eine Typalias für die Funktion
+#define LampenSchrittVariante std::function<void(unsigned long long*, flint::fmpzxx*, flint::fmpzxx*, flint::fmpzxx*, unsigned long long*)>
 
 const std::vector<LampenSchrittVariante> LSvarianten = {
 	weiterlaufen0,

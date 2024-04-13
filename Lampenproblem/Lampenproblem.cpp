@@ -3026,23 +3026,35 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 // @return Anzahl der bits die es geprüft hat
 uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batchSize)
 {
+	const fmpzxx n_flintlib(n);
 	uint64_t currentSchritteBits = 0;
 	while (UserInterrupt == 0)
 	{
 		uint64_t minSchritteBits = currentSchritteBits;
 		currentSchritteBits += batchSize;
 		uint64_t maxSchritteBits = currentSchritteBits;
-		fmpzxx Schritte; fmpz_set_d_2exp(Schritte._fmpz(), 1, minSchritteBits);
-		fmpzxx maxSchritte; fmpz_set_d_2exp(maxSchritte._fmpz(), 1, maxSchritteBits);
+		unsigned long long Lampejetzt;
+
+		for (size_t f = 0; f < anzLSvarianten; f++)
+		{
+			fmpzxx Schritte; fmpz_set_d_2exp(Schritte._fmpz(), 1, minSchritteBits);
+			fmpzxx maxSchritte; fmpz_set_d_2exp(maxSchritte._fmpz(), 1, maxSchritteBits);
+			fmpzxx AnzRunden(0);
+			while (Schritte <= maxSchritte)
+			{
+				Schritte += AnzRunden;
+				LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt);
+			}
+		}		
 	}
+
+	return currentSchritteBits;
 
 	//blubb
 
-	fmpzxx AnzRunden(2);
 	vector<bool> Lampen(n, true);
 	vector<fmpzxx> PositiveRunden;
 	fmpzxx Schritte(n);
-	const fmpzxx n_flintlib(n);
 	unsigned long long Lampejetzt;
 	unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
 	bool AnzRunden_vs_n = false;	// ob AnzRunden größer als n ist
