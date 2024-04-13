@@ -3019,7 +3019,7 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 	return PositiveRunden;
 }
 
-void Benchmarking()
+void Benchmarking(std::string Logdatei, unsigned long long n)
 {
 	fmpzxx AnzRunden(2);
 	vector<bool> Lampen(n, true);
@@ -3028,9 +3028,6 @@ void Benchmarking()
 	const fmpzxx n_flintlib(n);
 	unsigned long long Lampejetzt;
 	unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
-	unsigned long long cPrint = 0;		// Checkpoint für print
-	unsigned long long dPrint = 0;		// Anz Iterationen zwischen den 2 letzten Sicherungen
-	bool increasedBackupFrequency = false;
 	bool AnzRunden_vs_n = false;	// ob AnzRunden größer als n ist
 	auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
 	auto berechnungsEndeHR = berechnungsStartHR;
