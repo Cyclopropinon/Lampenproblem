@@ -3056,7 +3056,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			auto berechnungsStartCPU = CPUProfiler::cpuTimeTs();
 			while (Schritte <= maxSchritte)
 			{
-				Schritte += AnzRunden;
+				//Schritte += AnzRunden;
 				LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt);
 			}
 			auto berechnungsEndeHR = std::chrono::high_resolution_clock::now();
