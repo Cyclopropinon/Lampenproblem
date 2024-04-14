@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.14"
+#define _V "0.1.15"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -3054,11 +3054,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			fmpz_get_mpz(global_puffer_mpz_t2, (Schritte)._fmpz());
 			auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
 			auto berechnungsStartCPU = CPUProfiler::cpuTimeTs();
-			while (Schritte <= maxSchritte)
-			{
-				//Schritte += AnzRunden;
-				LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt);
-			}
+				while (LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt, &maxSchritte));
 			auto berechnungsEndeHR = std::chrono::high_resolution_clock::now();
 			durCPU = CPUProfiler::cpuTimeStrDiff(berechnungsStartCPU);
 			#pragma GCC diagnostic push
