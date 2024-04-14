@@ -2,6 +2,7 @@
 
 #include <flint/flint.h>
 #include <flint/fmpzxx.h>
+#include <flint/thread_support.h>
 #include <functional>
 #include <vector>
 
@@ -76,6 +77,30 @@ inline void weiterlaufen5(unsigned long long *n, const flint::fmpzxx *n_flintlib
     wl5l.join();
 }
 
+inline void weiterlaufen6thread(bool var, unsigned long long *n, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
+{
+	if(var)
+	{
+		fmpz_tdiv_q_ui((*AnzRunden)._fmpz(), (*Schritte)._fmpz(), *n);
+		*AnzRunden += 1;
+	} else {
+		*Lampejetzt = fmpz_tdiv_ui((*Schritte)._fmpz(), *n);
+	}
+}
+
+inline void weiterlaufen6(unsigned long long *n, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
+{
+	//flint_parallel_do(weiterlaufen6thread, n, AnzRunden, Schritte, Lampejetzt, 3, 2, FLINT_PARALLEL_UNIFORM);
+	// why it not work???
+}
+
+inline void weiterlaufen2(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
+{
+	*Lampejetzt = mpz_tdiv_q_ui(global_puffer_mpz_t1, global_puffer_mpz_t2, *n);
+	fmpz_set_mpz((*Schritte)._fmpz(), global_puffer_mpz_t2);
+	*AnzRunden += 1;
+}
+
 // Definiere eine Typalias für die Funktion
 //using LampenSchrittVariante = std::function<void(unsigned long long*, flint::fmpzxx*, flint::fmpzxx*, flint::fmpzxx*, unsigned long long*)>;
 #define LampenSchrittVariante std::function<void(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)>
@@ -89,7 +114,9 @@ const std::vector<LampenSchrittVariante> LSvarianten = {
 	weiterlaufen2,
 	weiterlaufen3,
 	weiterlaufen4,
-	weiterlaufen5
+	//weiterlaufen5,
+	//weiterlaufen6,
+	weiterlaufen7
 };
 
 const auto anzLSvarianten = LSvarianten.size();

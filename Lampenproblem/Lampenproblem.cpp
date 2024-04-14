@@ -3050,6 +3050,8 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			fmpzxx Schritte; fmpz_set_d_2exp(Schritte._fmpz(), 1, minSchritteBits);
 			fmpzxx maxSchritte; fmpz_set_d_2exp(maxSchritte._fmpz(), 1, maxSchritteBits);
 			fmpzxx AnzRunden(0);
+			fmpz_get_mpz(global_puffer_mpz_t1, (AnzRunden)._fmpz());
+			fmpz_get_mpz(global_puffer_mpz_t2, (Schritte)._fmpz());
 			auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
 			auto berechnungsStartCPU = CPUProfiler::cpuTimeTs();
 			while (Schritte <= maxSchritte)
