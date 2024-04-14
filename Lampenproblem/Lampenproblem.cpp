@@ -3042,6 +3042,8 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 		currentSchritteBits += batchSize;
 		uint64_t maxSchritteBits = currentSchritteBits;
 		unsigned long long Lampejetzt;
+		mpz_init(global_puffer_mpz_t1);
+		mpz_init(global_puffer_mpz_t2);
 
 		for (size_t f = 0; f < anzLSvarianten; f++)
 		{
@@ -3063,6 +3065,8 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			#pragma GCC diagnostic pop
 			cout << "[Benchmark] Bits: " << minSchritteBits << " - " << maxSchritteBits << "\tVariante: " << f << "\tZeit (Wanduhr): " << durHR << "\tZeit (CPU): " << durCPU << endl;
 		}
+		mpz_init(global_puffer_mpz_t1);
+		mpz_init(global_puffer_mpz_t2);
 		cout << endl;
 	}
 	UserInterrupt = 0;
@@ -3084,6 +3088,7 @@ int main()
 	const char*							Sprache					= std::getenv("LANG");				// Terminal-Sprache
 	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
 	char								usePresetLang;												// Ob die vorgegebene Sprache benutzt werden soll
+										Starttime				= std::chrono::steady_clock::now();
 
 	cout << "Language detected: \"" << Sprache << "\" Use this language? (y/n) ";
 	cin >> usePresetLang;
