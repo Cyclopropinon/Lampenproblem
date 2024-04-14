@@ -27,5 +27,5 @@ std::atomic<int>      UserInterrupt = 0;	// Wenn es einen Interrupt gab, dann se
 std::atomic<uint64_t> AnzInterrupts = 0;	// Anzahl Interrupts
 std::atomic<bool>     InterruptRequiredByApp = false;
 auto Starttime = std::chrono::steady_clock::now();
-mpz_t global_puffer_mpz_t1, global_puffer_mpz_t2;
+mpz_t global_puffer_mpz_t1, global_puffer_mpz_t2, global_puffer_mpz_t3;
 flint::fmpzxx global_puffer_mpzxx1;

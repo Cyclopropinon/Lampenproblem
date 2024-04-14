@@ -3044,6 +3044,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 		unsigned long long Lampejetzt;
 		mpz_init(global_puffer_mpz_t1);
 		mpz_init(global_puffer_mpz_t2);
+		mpz_init(global_puffer_mpz_t3);
 
 		for (size_t f = 0; f < anzLSvarianten; f++)
 		{
@@ -3052,6 +3053,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			fmpzxx AnzRunden(0);
 			fmpz_get_mpz(global_puffer_mpz_t1, (AnzRunden)._fmpz());
 			fmpz_get_mpz(global_puffer_mpz_t2, (Schritte)._fmpz());
+			fmpz_get_mpz(global_puffer_mpz_t3, (maxSchritte)._fmpz());
 			auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
 			auto berechnungsStartCPU = CPUProfiler::cpuTimeTs();
 				while (LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt, &maxSchritte));
@@ -3065,6 +3067,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 		}
 		mpz_init(global_puffer_mpz_t1);
 		mpz_init(global_puffer_mpz_t2);
+		mpz_init(global_puffer_mpz_t3);
 		cout << endl;
 	}
 	UserInterrupt = 0;

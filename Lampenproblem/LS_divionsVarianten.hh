@@ -120,8 +120,7 @@ inline bool weiterlaufen7(unsigned long long *n, const flint::fmpzxx *n_flintlib
 	mpz_add(global_puffer_mpz_t2, global_puffer_mpz_t1, global_puffer_mpz_t2);
 	*Lampejetzt = mpz_tdiv_q_ui(global_puffer_mpz_t1, global_puffer_mpz_t2, *n);
 	mpz_add_ui(global_puffer_mpz_t1, global_puffer_mpz_t1, 1);
-	fmpz_set_mpz((*Schritte)._fmpz(), global_puffer_mpz_t2);
-	return mpz_cmp(global_puffer_mpz_t2, global_puffer_mpz_t2) <= 0;
+	return mpz_cmp(global_puffer_mpz_t2, global_puffer_mpz_t3) <= 0;
 }
 
 // Definiere eine Typalias für die Funktion
