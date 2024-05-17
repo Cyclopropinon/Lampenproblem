@@ -11,18 +11,21 @@
     #define LOGLEVEL 3
 #endif
 
-#define LOGFILE Lampenproblem_logfile
-#ifdef __FUNCSIG__      //_MSC_VER //if compiling with vs
-    #define _PRINTWAYPOINT_lv(v) {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
-    #define _PRINTERROR_lv(v)    {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
-    #define _PRINTINPUT_lv(x,v)  {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
-#else
-    #define _PRINTWAYPOINT_lv(v) {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
-    #define _PRINTERROR_lv(v)    {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
-    #define _PRINTINPUT_lv(x,v)  {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
-#endif
-
 #if LOGLEVEL >= 1
+    #define LOGFILE Lampenproblem_logfile
+    
+    // Printing templates
+    #ifdef __FUNCSIG__      //_MSC_VER //if compiling with vs
+        #define _PRINTWAYPOINT_lv(v) {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
+        #define _PRINTERROR_lv(v)    {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
+        #define _PRINTINPUT_lv(x,v)  {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
+    #else
+        #define _PRINTWAYPOINT_lv(v) {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
+        #define _PRINTERROR_lv(v)    {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
+        #define _PRINTINPUT_lv(x,v)  {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
+    #endif
+
+    std::ofstream LOGFILE;
     // Initialisiert die Logdatei
     // sollte nur einmal aufgerufen werden
     #define _LOGFILEINIT_()         {\
@@ -38,13 +41,43 @@
         \
         auto t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());\
         \
-        std::ofstream LOGFILE(filename);                                                                /*/ File to write logs into*/\
-        LOGFILE << "Logfile of Lampenproblem, version: " << _V << "; compiled: " << __DATE__ << ' ' << __TIME__ << "; filename: \"" << filename << "\"; run: " << std::put_time(std::localtime(&t), "%Y-%m-%d %T") << "." << std::setfill('0') << std::setw(3) << '\n';\
+        LOGFILE.open(filename);                                                                     /*/ File to write logs into*/\
+        LOGFILE << "Logfile of Lampenproblem, version: " << _V << "; compiled: " << __DATE__ << ' ' << __TIME__ << "; filename: \"" << filename << "\"; loglevel: \"" << LOGLEVEL << "\"; run: " << std::put_time(std::localtime(&t), "%Y-%m-%d %T") << "." << std::setfill('0') << std::setw(3) << '\n';\
         std::cout << "Logfile: " << filename << std::endl;\
         \
-        auto Starttime = std::chrono::steady_clock::now();\
-        auto Nowtime = std::chrono::steady_clock::now();\
-        _PRINTINPUT_("#Arguments: " << argc)\
+        _PRINTINPUT_1_("#Arguments: " << argc)\
     }
+
+    #define _PRINTWAYPOINT_1_ _PRINTWAYPOINT_lv(1)
+    #define _PRINTFATALERROR_ _PRINTERROR_lv(1)
+    #define _PRINTINPUT_1_(x) _PRINTINPUT_lv(x,1)
+
+    #if LOGLEVEL >= 2
+        #define _PRINTWAYPOINT_2_ _PRINTWAYPOINT_lv(2)
+        #define _PRINTERROR_      _PRINTERROR_lv(2)
+        #define _PRINTINPUT_2_(x) _PRINTINPUT_lv(x,2)
+        #if LOGLEVEL >= 3
+            #define _PRINTWAYPOINT_3_ _PRINTWAYPOINT_lv(3)
+            #define _PRINTINPUT_3_(x) _PRINTINPUT_lv(x,3)
+            #if LOGLEVEL >= 4
+                #define _PRINTWAYPOINT_4_ _PRINTWAYPOINT_lv(4)
+                #define _PRINTINPUT_4_(x) _PRINTINPUT_lv(x,4)
+            #else // LOGLEVEL = 3
+                #define _PRINTWAYPOINT_4_
+                #define _PRINTINPUT_4_(x)
+            #endif
+        #else // LOGLEVEL = 2
+            #define _PRINTWAYPOINT_3_
+            #define _PRINTINPUT_3_(x)
+        #endif
+    #else // LOGLEVEL = 1
+        #define _PRINTWAYPOINT_2_
+        #define _PRINTERROR_
+        #define _PRINTINPUT_2_(x)
+    #endif
 #else // LOGLEVEL = 0
+    #define _LOGFILEINIT_()
+    #define _PRINTWAYPOINT_1_
+    #define _PRINTFATALERROR_
+    #define _PRINTINPUT_1_(x)
 #endif

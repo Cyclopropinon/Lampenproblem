@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.15"
+#define _V "0.1.16"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -3080,11 +3080,15 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 
 int main(int argc, const char** argv)
 {
+	Starttime = std::chrono::steady_clock::now();
+
 	// Signal-Handler initialisieren
 	for(int i = 0; i <= SIGRTMAX; i++)
 	{
 		signal(i, signalHandler);
 	}
+
+	_LOGFILEINIT_();
 
 	ostringstream						Dateiausgabe;
 
@@ -3092,9 +3096,6 @@ int main(int argc, const char** argv)
 	const char*							Sprache					= std::getenv("LANG");				// Terminal-Sprache
 	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
 	char								usePresetLang;												// Ob die vorgegebene Sprache benutzt werden soll
-										Starttime				= std::chrono::steady_clock::now();
-
-	_LOGFILEINIT_();
 
 	cout << "Language detected: \"" << Sprache << "\" Use this language? (y/n) ";
 	cin >> usePresetLang;
