@@ -1,5 +1,7 @@
 #pragma once
 
+#include "globalVars.hh"
+
 // Legt den default Loglevel fest, falls nicht vom Compiler angegeben
 #ifndef LOGLEVEL
     // Bestimmt, was alles geloggt wird:
@@ -8,7 +10,8 @@
     // 2: Alle Fehler und mehr Details
     // 3: Funktionsaufrufe
     // 4: Zwischenwerte
-    #define LOGLEVEL 4
+    // 5: Funktionsaufrufe in zeitkritischen Schleifen
+    #define LOGLEVEL 7
 #endif
 
 #if LOGLEVEL >= 1
@@ -16,13 +19,13 @@
     
     // Printing templates
     #ifdef __FUNCSIG__      //_MSC_VER //if compiling with vs
-        #define _PRINTWAYPOINT_lv(v) {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
-        #define _PRINTERROR_lv(v)    {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
-        #define _PRINTINPUT_lv(x,v)  {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
+        #define _PRINTWAYPOINT_lv(v) {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
+        #define _PRINTERROR_lv(v)    {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
+        #define _PRINTINPUT_lv(x,v)  {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
     #else
-        #define _PRINTWAYPOINT_lv(v) {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
-        #define _PRINTERROR_lv(v)    {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
-        #define _PRINTINPUT_lv(x,v)  {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
+        #define _PRINTWAYPOINT_lv(v) {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
+        #define _PRINTERROR_lv(v)    {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
+        #define _PRINTINPUT_lv(x,v)  {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
     #endif
 
     std::ofstream LOGFILE;

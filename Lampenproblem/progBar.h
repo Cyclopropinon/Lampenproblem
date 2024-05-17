@@ -98,6 +98,7 @@ struct Zeitpacket
 // crash by dereferencing null pointer.
 void crash()
 {
+    _PRINTINPUT_3_("Funktionsaufruf: crash")
     std::cout << "Crashing program..." << std::endl;
     const int* a = nullptr;
     auto b = *a;
@@ -120,6 +121,7 @@ void crash()
 
 std::string giveRAM(char unit)
 {
+    _PRINTINPUT_5_("Funktionsaufruf: giveRAM")
     std::ifstream statusFile("/proc/self/status");
     if (!statusFile.is_open())
     {
@@ -172,6 +174,7 @@ std::string giveRAM(char unit)
 
 int getConsoleWidth() 
 {
+    _PRINTINPUT_5_("Funktionsaufruf: getConsoleWidth")
     #ifdef _WIN32 // Windows
         CONSOLE_SCREEN_BUFFER_INFO csbi;
         GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
@@ -186,6 +189,7 @@ int getConsoleWidth()
 // mache die Nanosekundenzahl nützlicher
 Zeitpacket pack(uint64_t ns)
 {
+    _PRINTINPUT_5_("Funktionsaufruf: pack")
     Zeitpacket packet;
 
     // Berechne die Sekunden und verbleibenden Nanosekunden
@@ -204,6 +208,7 @@ Zeitpacket pack(uint64_t ns)
 
 void printCurrentTime(WINDOW* win, int y = 0, int x = 50)
 {
+    _PRINTINPUT_5_("Funktionsaufruf: printCurrentTime")
     // Holen Sie sich die aktuelle Zeit
     std::time_t currentTime = std::time(nullptr);
     // Konvertieren Sie die Zeit in einen String
@@ -227,6 +232,7 @@ void printCurrentTime(WINDOW* win, int y = 0, int x = 50)
 // @param current das jetztige n (aka i)
 void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed, char ramUnit) 
 {
+    _PRINTINPUT_5_("Funktionsaufruf: printProgressBar")
     double progress = static_cast<double>(current - shift) / total;
     int pos = static_cast<int>(barWidth * progress) + ((current - shift) > 0);
 
@@ -292,6 +298,7 @@ void printProgressBar(uint64_t shift, uint64_t current, uint64_t total, int barW
 // @param current Anzahl der fertigen Threads
 void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed_ns, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex, const char* TERM)
 {
+    _PRINTINPUT_5_("Funktionsaufruf: printProgressBar")
     double progress = static_cast<double>(current) / total;
     int pos = static_cast<int>(barWidth * progress) + (current > 0);
 
@@ -391,6 +398,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
 // @param timerOrt platz für den timer
 void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed_ns, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex, const char* TERM, const int& timerOrtx, const int& timerOrty)
 {
+    _PRINTINPUT_5_("Funktionsaufruf: printProgressBar")
     double progress = static_cast<double>(current) / total;
     int pos = static_cast<int>(barWidth * progress);// + (current > 0);
 
@@ -495,6 +503,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
 // @param timerOrt platz für den timer
 void printProgressBar(uint64_t current, uint64_t total, int barWidth, const std::chrono::nanoseconds& elapsed_ns, char ramUnit, WINDOW *outputWin, std::mutex& pr_mutex, const char* TERM, const int& timerOrtx, const int& timerOrty)
 {
+    _PRINTINPUT_5_("Funktionsaufruf: printProgressBar")
     double progress = static_cast<double>(current) / total;
     //int pos = static_cast<int>(barWidth * progress);
     int pos = current;
@@ -588,6 +597,7 @@ void printProgressBar(uint64_t current, uint64_t total, int barWidth, const std:
 
 void pnarc(std::string msg)  // printNumberAndResetCursor
 {
+    _PRINTINPUT_5_("Funktionsaufruf: pnarc")
     // Speichern der aktuellen Position des Cursors
     std::streampos currentPosition = std::cout.tellp();
 

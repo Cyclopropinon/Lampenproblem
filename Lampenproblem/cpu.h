@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include "logfile.hh"
 
 #ifdef _WIN32 // Windows
     #include <windows.h>
@@ -20,7 +21,8 @@ public:
     // Details zur CPU
     static std::string cpuInfo()
     {
-                // Modellname der CPU aus der /proc/cpuinfo-Datei lesen
+	    _PRINTINPUT_5_("Funktionsaufruf: CPUProfiler::cpuInfo")
+        // Modellname der CPU aus der /proc/cpuinfo-Datei lesen
         std::ifstream cpuinfo("/proc/cpuinfo");
         std::string line;
         std::string model_name;
@@ -45,6 +47,7 @@ public:
     // Methode zur Berechnung der CPU-Zeit in Nanosekunden
     static uint64_t cpuTime()
     {
+	    _PRINTINPUT_5_("Funktionsaufruf: CPUProfiler::cpuTime")
         #ifdef _WIN32 // Windows
             FILETIME createTime, exitTime, kernelTime, userTime;
 
@@ -71,6 +74,7 @@ public:
     // funktioniert nicht wirklich. Warum?
     static timespec cpuTimeTs()
     {
+	    _PRINTINPUT_5_("Funktionsaufruf: CPUProfiler::cpuTimeTs")
         #ifdef _WIN32 // Windows
             //return "cpuTimeTs() unavailable in Windows";
         #else // Linux
@@ -87,6 +91,7 @@ public:
     // @warning geht nur für Linux zurzeit
     static std::string cpuTimeStr()
     {
+	    _PRINTINPUT_5_("Funktionsaufruf: CPUProfiler::cpuTimeStr")
         #ifdef _WIN32 //Windows
             return "cpuTimeStr() unavailable in Windows";
         #else // Linux
@@ -110,6 +115,7 @@ public:
     // @warning geht nur für Linux zurzeit
     static std::string cpuTimeStrDiff(timespec tsStart)
     {
+	    _PRINTINPUT_5_("Funktionsaufruf: CPUProfiler::cpuTimeStrDiff")
         #ifdef _WIN32 //Windows
             return "cpuTimeStrDiff() unavailable in Windows";
         #else // Linux
@@ -142,6 +148,7 @@ public:
     // Methode zur Berechnung der gesamten CPU-Zeit (einschließlich Kinder) in Nanosekunden
     static uint64_t cpuFamilyTime()
     {
+	    _PRINTINPUT_5_("Funktionsaufruf: CPUProfiler::cpuFamilyTime")
         #ifdef _WIN32 // Windows
             FILETIME createTime, exitTime, kernelTime, userTime;
 
@@ -170,6 +177,7 @@ public:
     // @warning geht nur für Linux zurzeit
     static std::string cpuFamilyTimeStr()
     {
+	    _PRINTINPUT_5_("Funktionsaufruf: CPUProfiler::cpuFamilyTimeStr")
         #ifdef _WIN32 //Windows
             return "cpuFamilyTimeStr() unavailable in Windows";
         #else // Linux

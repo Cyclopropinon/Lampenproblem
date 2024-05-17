@@ -8,13 +8,14 @@
 #include <vector>
 #include <gmpxx.h>
 #include <sys/stat.h>
+#include "globalVars.hh"
 
 #ifdef _WIN32 //Windows
     #include <windows.h>
 #endif
 
-#define saveVar(var) saveVariable(ordner + "/" + #var, var)
-#define readVar(var) var = readVariable(ordner + "/" + #var, var)
+#define saveVar(var) saveVariable(ordner + "/" + #var, var);            _PRINTINPUT_5_("Funktionsaufruf: saveVariable: " << ordner + "/" + #var)
+#define readVar(var) var = readVariable(ordner + "/" + #var, var);      _PRINTINPUT_5_("Funktionsaufruf: readVariable: " << ordner + "/" + #var)
 
 //#define saveVar(var) saveVariable(std::string(#var), var)
 //#define readVar(var) var = readVariable(std::string(#var), var)
@@ -24,6 +25,8 @@
 
 bool erstelleVerzeichnis(const char* path)
 {
+    _PRINTINPUT_5_("Funktionsaufruf: erstelleVerzeichnis")
+
     #ifdef _WIN32 //Windows
         // Konvertiere std::string in wchar_t für die Windows-API
         wchar_t* wideCharName = new wchar_t[strlen(path) + 1];
