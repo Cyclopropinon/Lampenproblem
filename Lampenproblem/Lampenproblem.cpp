@@ -179,6 +179,7 @@ bool isTTY(std::string TERM)
 void signalHandler(int signum)
 {
 	AnzInterrupts++;
+	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
 	if (AnzInterrupts > 25)	// Killswitch
 	{
 		endwin();	// end ncurses
@@ -3092,7 +3093,7 @@ int main(int argc, const char** argv)
 
 	ostringstream						Dateiausgabe;
 
-    const char*							termType				= std::getenv("TERM");				// Terminal-Typ
+    const char*							termType				= std::getenv("TERM");				_PRINTVAR_2_(termType)		// Terminal-Typ
 	const char*							Sprache					= std::getenv("LANG");				// Terminal-Sprache
 	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
 	char								usePresetLang;												// Ob die vorgegebene Sprache benutzt werden soll
@@ -3101,12 +3102,14 @@ int main(int argc, const char** argv)
 	cin >> usePresetLang;
 	if(usePresetLang!='n')
 	{
+		_PRINTINPUT_2_("Language: " << Sprache)
 		// Setze die Locale auf die gewünschte Sprache (z.B. "de_DE.UTF-8")
 		std::locale::global(std::locale(Sprache));
 	} else {
 		string alternateLang;
 		cout << "enter alternative language: ";
 		cin >> alternateLang;
+		_PRINTINPUT_2_("Language: " << alternateLang)
 		std::locale::global(std::locale(alternateLang));
 	}
 
@@ -3132,7 +3135,7 @@ int main(int argc, const char** argv)
 
 	cout << "Version " << _V << " Compiled on: " << __DATE__ << ' ' << __TIME__ << "\nTerminal Typ: " << termType << '\n'
 	     << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads für Prüfmethode Nr.3 eingeben: ";
-	cin >> AnzThreads3;
+	cin >> AnzThreads3;					_PRINTVAR_2_(AnzThreads3)
 
 	if (AnzThreads3 == -1)
 	{
@@ -3207,7 +3210,7 @@ int main(int argc, const char** argv)
 					+ "\n-1 = Benchmark für die Schritte"
 					+ '\n';
 				cout << menu;
-				cin >> prüfart;
+				cin >> prüfart;					_PRINTVAR_2_(prüfart)
 
 				unsigned long long testLampen;
 				Dateiausgabe.clear();
@@ -3221,11 +3224,11 @@ int main(int argc, const char** argv)
 					break;
 				case 1:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben: ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3255,11 +3258,11 @@ int main(int argc, const char** argv)
 					break;
 				case -1:
 					cout << "n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "anzahl bits für Testpacktet: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(anz)
 					cout << "Ausgabe von den Ergebnissen: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3271,13 +3274,13 @@ int main(int argc, const char** argv)
 					break;
 				case 2:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben: ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 					cout << "Anzahl der zu testenden Lampen eingeben: ";
-					cin >> testLampen;
+					cin >> testLampen;			_PRINTVAR_4_(testLampen)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3307,15 +3310,15 @@ int main(int argc, const char** argv)
 					break;
 				case 3:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben: ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 					cout << "Anzahl der zu testenden Lampen eingeben: ";
-					cin >> testLampen;
+					cin >> testLampen;			_PRINTVAR_4_(testLampen)
 					cout << "wechselfaktor für n eingeben (empfohlen 2): ";
-					cin >> wechselfaktorN;
+					cin >> wechselfaktorN;		_PRINTVAR_4_(wechselfaktorN)
 
 					//			delN = maxN - minN;
 
@@ -3336,6 +3339,7 @@ int main(int argc, const char** argv)
 							}
 							catch (const std::exception& e)
 							{
+								_PRINTERROR_
 								cout << "Fehler:\t" << e.what() << "\t\tn = " << i + j << endl;
 							}
 						}
@@ -3396,21 +3400,21 @@ int main(int argc, const char** argv)
 					break;
 				case 4:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben: ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 					cout << "Anzahl der zu testenden Lampen eingeben: ";
-					cin >> testLampen;
+					cin >> testLampen;			_PRINTVAR_4_(testLampen)
 					cout << "wechselfaktor für n eingeben (empfohlen 2): ";
-					cin >> wechselfaktorN;
+					cin >> wechselfaktorN;		_PRINTVAR_4_(wechselfaktorN)
 					cout << "wechselfaktor für k eingeben (empfohlen 0): ";
-					cin >> wechselfaktorK;
+					cin >> wechselfaktorK;		_PRINTVAR_4_(wechselfaktorK)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads4;
+					cin >> AnzThreads4;			_PRINTVAR_4_(AnzThreads4)
 					cout << "Threadgröße (Anzahl der n je Thread): ";
-					cin >> delN;
+					cin >> delN;				_PRINTVAR_4_(delN)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3451,6 +3455,7 @@ int main(int argc, const char** argv)
 							}
 							catch (const std::exception& e)
 							{
+								_PRINTERROR_
 								cout << "Fehler:\t" << e.what() << "\t\tn = " << i + j << endl;
 							}
 						}
@@ -3462,11 +3467,11 @@ int main(int argc, const char** argv)
 				case 5:
 #ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben: ";
-					cin >> maxK1024;
+					cin >> maxK1024;			_PRINTVAR_4_(maxK1024)
 					cout << maxK1024 << '\n';
 
 					berechnungsStart = steady_clock::now();
@@ -3499,21 +3504,21 @@ int main(int argc, const char** argv)
 					break;
 				case 6:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben (>= max n): ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 					cout << "Anzahl der zu testenden Lampen eingeben (<= min n): ";
-					cin >> testLampen;
+					cin >> testLampen;			_PRINTVAR_4_(testLampen)
 					cout << "wechselfaktor für n eingeben (empfohlen 2): ";
-					cin >> wechselfaktorN;
+					cin >> wechselfaktorN;		_PRINTVAR_4_(wechselfaktorN)
 					cout << "wechselfaktor für k eingeben (empfohlen 0): ";
-					cin >> wechselfaktorK;
+					cin >> wechselfaktorK;		_PRINTVAR_4_(wechselfaktorK)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads4;
+					cin >> AnzThreads4;			_PRINTVAR_4_(AnzThreads4)
 					cout << "Threadgröße (Anzahl der n je Thread): ";
-					cin >> delN;
+					cin >> delN;				_PRINTVAR_4_(delN)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3554,6 +3559,7 @@ int main(int argc, const char** argv)
 							}
 							catch (const std::exception& e)
 							{
+								_PRINTERROR_
 								cout << "Fehler:\t" << e.what() << "\t\tn = " << i + j << endl;
 							}
 						}
@@ -3566,11 +3572,11 @@ int main(int argc, const char** argv)
 				case 7:
 #ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(maxN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben: ";
-					cin >> maxK1KB;
+					cin >> maxK1KB;				_PRINTVAR_4_(maxK1KB)
 					cout << maxK1KB << '\n';
 
 					berechnungsStart = steady_clock::now();
@@ -3603,21 +3609,21 @@ int main(int argc, const char** argv)
 					break;
 				case 8:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben (>= max n): ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 					cout << "Anzahl der zu testenden Lampen eingeben (<= min n): ";
-					cin >> testLampen;
+					cin >> testLampen;			_PRINTVAR_4_(testLampen)
 					cout << "wechselfaktor für n eingeben (empfohlen 2): ";
-					cin >> wechselfaktorN;
+					cin >> wechselfaktorN;		_PRINTVAR_4_(wechselfaktorN)
 					cout << "wechselfaktor für k eingeben (empfohlen 0): ";
-					cin >> wechselfaktorK;
+					cin >> wechselfaktorK;		_PRINTVAR_4_(wechselfaktorK)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads4;
+					cin >> AnzThreads4;			_PRINTVAR_4_(AnzThreads4)
 					cout << "Threadgröße (Anzahl der n je Thread): ";
-					cin >> delN;
+					cin >> delN;				_PRINTVAR_4_(delN)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3637,6 +3643,7 @@ int main(int argc, const char** argv)
 							}
 							catch (const std::exception& e)
 							{
+								_PRINTERROR_
 								cout << "Fehler:\t" << e.what() << "\t\tn = " << i + j << endl;
 							}
 						}
@@ -3648,19 +3655,19 @@ int main(int argc, const char** argv)
 					break;
 				case 9:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben (>= max n): ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 					cout << "Anzahl der zu testenden Lampen eingeben (<= min n): ";
-					cin >> testLampen;
+					cin >> testLampen;			_PRINTVAR_4_(testLampen)
 					cout << "wechselfaktor für n eingeben (empfohlen 2, mindestens 1): ";
-					cin >> wechselfaktorN;
+					cin >> wechselfaktorN;		_PRINTVAR_4_(wechselfaktorN)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads4;
+					cin >> AnzThreads4;			_PRINTVAR_4_(AnzThreads4)
 					cout << "Threadgröße (Anzahl der n je Thread): ";
-					cin >> delN;
+					cin >> delN;				_PRINTVAR_4_(delN)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3680,6 +3687,7 @@ int main(int argc, const char** argv)
 							}
 							catch (const std::exception& e)
 							{
+								_PRINTERROR_
 								cout << "Fehler:\t" << e.what() << "\t\tn = " << i + j << endl;
 							}
 						}
@@ -3691,19 +3699,19 @@ int main(int argc, const char** argv)
 					break;
 				case 10:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben (>= max n): ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 					cout << "Anzahl der zu testenden Lampen eingeben (<= min n): ";
-					cin >> testLampen;
+					cin >> testLampen;			_PRINTVAR_4_(testLampen)
 					cout << "wechselfaktor für n eingeben (empfohlen 2, mindestens 1): ";
-					cin >> wechselfaktorN;
+					cin >> wechselfaktorN;		_PRINTVAR_4_(wechselfaktorN)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads4;
+					cin >> AnzThreads4;			_PRINTVAR_4_(AnzThreads4)
 					cout << "Threadgröße (Anzahl der n je Thread): ";
-					cin >> delN;
+					cin >> delN;				_PRINTVAR_4_(delN)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3723,6 +3731,7 @@ int main(int argc, const char** argv)
 							}
 							catch (const std::exception& e)
 							{
+								_PRINTERROR_
 								cout << "Fehler:\t" << e.what() << "\t\tn = " << i + j << endl;
 							}
 						}
@@ -3735,13 +3744,13 @@ int main(int argc, const char** argv)
 				case 11:
 #ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben: ";
-					cin >> maxK1KB;
+					cin >> maxK1KB;				_PRINTVAR_4_(maxK1KB)
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 					//				cout << maxK1KB << '\n';
 
 					berechnungsStart = steady_clock::now();
@@ -3787,26 +3796,26 @@ int main(int argc, const char** argv)
 					break;
 				case 12:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben (>= max n): ";
-					cin >> maxK;
+					cin >> maxK;				_PRINTVAR_4_(maxK)
 					cout << "Anzahl der zu testenden Lampen eingeben (<= min n): ";
-					cin >> testLampen;
+					cin >> testLampen;			_PRINTVAR_4_(testLampen)
 					cout << "Wechselfaktor für n eingeben (empfohlen 2, mindestens 1): ";
-					cin >> wechselfaktorN;
+					cin >> wechselfaktorN;		_PRINTVAR_4_(wechselfaktorN)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads4;
+					cin >> AnzThreads4;			_PRINTVAR_4_(AnzThreads4)
 					cout << "minimale Threadgröße eingeben (empfohlen 100): ";
-					cin >> minG;
+					cin >> minG;				_PRINTVAR_4_(minG)
 					cout << "maximale Threadgröße eingeben (empfohlen 500): ";
-					cin >> maxG;
+					cin >> maxG;				_PRINTVAR_4_(maxG)
 					cout << "maximale Abweichung eingeben: ";
-					cin >> MaxAbweichung;
+					cin >> MaxAbweichung;		_PRINTVAR_4_(MaxAbweichung)
 					cout << GeeigneteThreadgroeszenBerechnen(maxN - minN + 1, AnzThreads4, minG, maxG, MaxAbweichung);
 					cout << "\n\nThreadgröße (Anzahl der n je Thread): ";
-					cin >> delN;
+					cin >> delN;				_PRINTVAR_4_(delN)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3826,6 +3835,7 @@ int main(int argc, const char** argv)
 							}
 							catch (const std::exception& e)
 							{
+								_PRINTERROR_
 								cout << "Fehler:\t" << e.what() << "\t\tn = " << i + j << endl;
 							}
 						}
@@ -3840,13 +3850,13 @@ int main(int argc, const char** argv)
 				case 13:
 #ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "max k eingeben: ";
-					cin >> maxK16KB;
+					cin >> maxK16KB;			_PRINTVAR_4_(maxK16KB)
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3893,11 +3903,11 @@ int main(int argc, const char** argv)
 				case 14:
 #ifdef _ENABLEBIGINTS_
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3938,13 +3948,13 @@ int main(int argc, const char** argv)
 					break;
 				case 15:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Basis von max k eingeben: ";
-					cin >> mkb;
+					cin >> mkb;					_PRINTVAR_4_(mkb)
 				    cout << "Exponent von max k eingeben (" << mkb << "te Potenz): ";
-					cin >> mke;
+					cin >> mke;					_PRINTVAR_4_(mke)
 //				    cout << "max k eingeben: ";
 //					cin >> maxK_GMPLIB;
 					maxK_GMPLIB = mkb;
@@ -3952,7 +3962,7 @@ int main(int argc, const char** argv)
 
 					cout << "max k = " << maxK_GMPLIB << '\n';
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 
 					berechnungsStart = steady_clock::now();
 
@@ -3989,16 +3999,16 @@ int main(int argc, const char** argv)
 					break;
 				case 16:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(anz)
 
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
-					cin >> Session;
+					cin >> Session;				_PRINTVAR_4_(Session)
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4037,11 +4047,11 @@ int main(int argc, const char** argv)
 					break;
 				case -16:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(maxN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(maxN)
 
 					berechnungsStart = steady_clock::now();
 
@@ -4067,9 +4077,9 @@ int main(int argc, const char** argv)
 					break;
 				case 17:
 					cout << "Zwischenstand laden: ";
-					cin >> Session;
+					cin >> Session;				_PRINTVAR_4_(Session)
 					cout << "Ergebnis speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4104,18 +4114,18 @@ int main(int argc, const char** argv)
 					break;
 				case 18:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(anz)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads;
+					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
 
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
-					cin >> Session;
+					cin >> Session;				_PRINTVAR_4_(Session)
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4194,18 +4204,18 @@ int main(int argc, const char** argv)
 					break;
 				case 19:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(anz)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads;
+					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
 
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
-					cin >> Session;
+					cin >> Session;				_PRINTVAR_4_(Session)
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4336,18 +4346,18 @@ int main(int argc, const char** argv)
 					break;
 				case 20:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(anz)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads;
+					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
 
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
-					cin >> Session;
+					cin >> Session;				_PRINTVAR_4_(Session)
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4481,18 +4491,18 @@ int main(int argc, const char** argv)
 					break;
 				case 21:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(anz)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads;
+					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
 
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
-					cin >> Session;
+					cin >> Session;				_PRINTVAR_4_(Session)
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4627,18 +4637,18 @@ int main(int argc, const char** argv)
 					break;
 				case 22:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(anz)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads;
+					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
 
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
-					cin >> Session;
+					cin >> Session;				_PRINTVAR_4_(Session)
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 					StartTimeGlobal = berechnungsStartHR;
@@ -4774,18 +4784,18 @@ int main(int argc, const char** argv)
 					break;
 				case 23:
 					cout << "min n eingeben: ";
-					cin >> minN;
+					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
-					cin >> maxN;
+					cin >> maxN;				_PRINTVAR_4_(maxN)
 				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;
+					cin >> anz;					_PRINTVAR_4_(anz)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads;
+					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
 
 					cout << "Datei speichern unter: ";
-					cin >> filename;
+					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
-					cin >> Session;
+					cin >> Session;				_PRINTVAR_4_(Session)
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 					StartTimeGlobal = berechnungsStartHR;
@@ -4927,6 +4937,7 @@ int main(int argc, const char** argv)
 			}
 			catch (const std::exception& e)
 			{
+				_PRINTERROR_
 				cerr << "\aFehler:\n" << e.what() << endl;
 				endwin();	// end ncurses
 			}
@@ -5038,6 +5049,7 @@ int main(int argc, const char** argv)
 						}
 						catch (const std::exception& e)
 						{
+							_PRINTERROR_
 							cout << "Fehler:\t" << e.what() << "\t\tn = " << i + j << endl;
 						}
 					}
@@ -5156,6 +5168,7 @@ int main(int argc, const char** argv)
 		}
 		catch (const std::exception& e)
 		{
+			_PRINTERROR_
 			cout << "Fehler:\n" << e.what() << endl;
 		}
 	}
