@@ -112,6 +112,7 @@ void PrintProgressBar(double progress,int barWidth)
 
 string VectorenZuString(unsigned long long n, vector<vector<unsigned long long>> v)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: VectorenZuString")
 	string	output = "";
 
 	for (size_t i = 0; i < v.size(); i++)
@@ -138,6 +139,7 @@ string VectorenZuString(unsigned long long n, vector<vector<unsigned long long>>
 
 string GeeigneteThreadgroeszenBerechnen(unsigned long long dN, unsigned int AnzThreads, unsigned int minG, unsigned int maxG, unsigned int MaxAbweichung)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: GeeigneteThreadgroeszenBerechnen")
 	string			GuteThreadgroeszen;
 	unsigned int	mod;
 	unsigned int	Abweichung;
@@ -167,6 +169,7 @@ string GeeigneteThreadgroeszenBerechnen(unsigned long long dN, unsigned int AnzT
 
 bool isTTY(std::string TERM)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: isTTY")
 	if (TERM == "linux") return true;				// Normales TTY Terminal
 	if (TERM.rfind("xterm", 0) == 0) return false;	// checks if it starts with xterm; xterm unterstützt de Unicode Block U+2500 und weitere nützliche sachen
 
@@ -205,6 +208,7 @@ void signalHandler(int signum)
 
 void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, int& print)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: CheckpointLSGv3")
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
 		uint64_t n;
@@ -240,6 +244,7 @@ void CheckpointLSGv3(const std::string& ordner, const bool retrieve, unsigned lo
 
 void CheckpointLSGv4(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: CheckpointLSGv4")
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
 		uint64_t n;
@@ -278,6 +283,7 @@ void CheckpointLSGv4(const std::string& ordner, const bool retrieve, unsigned lo
 
 void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: CheckpointLSGv6")
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
 		uint64_t n;
@@ -324,6 +330,7 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 
 void CheckpointLSF(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, fmpzxx& AnzRunden, vector<bool>& Lampen, vector<fmpzxx>& PositiveRunden, fmpzxx& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: CheckpointLSF")
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
 	{
 		uint64_t n;
@@ -370,6 +377,7 @@ void CheckpointLSF(const std::string& ordner, const bool retrieve, unsigned long
 
 vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulieren")
 	unsigned long long				AnzRunden = 2;				// Aktuelle Runde
     vector<bool>					Lampen;
 	vector<unsigned long long>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
@@ -411,6 +419,7 @@ vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long 
 
 vector<unsigned long long> LampenEinzelnPrüfen(unsigned long long n, unsigned long long maxK, unsigned long long testLampen/*, bool nurNNprüfen*/)		//testLampen <= n
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenEinzelnPrüfen")
 	vector<unsigned long long>	PositiveRunden;			// Liste der Runden nachdem alle Lampen an/aus sind
 	vector<unsigned long long>	Modulo;					// Modulo-werte für einzelne Runden
 	vector<bool>				Lampen;
@@ -490,6 +499,7 @@ vector<unsigned long long> LampenEinzelnPrüfen(unsigned long long n, unsigned l
 
 vector<unsigned long long> OptimierteForm1(unsigned long long n, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OptimierteForm1")
 	{
 		vector<unsigned long long>	PositiveRunden;			// Liste der Runden nachdem alle Lampen an/aus sind
 		vector<unsigned long long>	Modulo;					// Modulo-werte für einzelne Runden
@@ -605,6 +615,7 @@ vector<unsigned long long> OptimierteForm1(unsigned long long n, unsigned long l
 
 vector<unsigned long long> OptimierteForm2(unsigned long long n, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)
 {
+	_PRINTINPUT_5_("Funktionsaufruf: OptimierteForm2")
 	{
 		vector<unsigned long long>	PositiveRunden;			// Liste der Runden nachdem alle Lampen an/aus sind
 		vector<unsigned long long>	Modulo;					// Modulo-werte für einzelne Runden
@@ -731,6 +742,7 @@ vector<unsigned long long> OptimierteForm2(unsigned long long n, unsigned long l
 
 vector<unsigned long long> OptimierteForm3(unsigned long long n, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)	// maxK >= n
 {
+	_PRINTINPUT_5_("Funktionsaufruf: OptimierteForm3")
 	{
 		vector<unsigned long long>	PositiveRunden;			// Liste der Runden nachdem alle Lampen an/aus sind
 		vector<unsigned long long>	Modulo;					// Modulo-werte für einzelne Runden
@@ -864,6 +876,7 @@ vector<unsigned long long> OptimierteForm3(unsigned long long n, unsigned long l
 
 vector<unsigned long long> OptimierteForm4(unsigned long long n, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)	// maxK >= n
 {
+	_PRINTINPUT_5_("Funktionsaufruf: OptimierteForm4")
 	{
 		vector<unsigned long long>	PositiveRunden;			// Liste der Runden nachdem alle Lampen an/aus sind
 		vector<unsigned long long>	Modulo;					// Modulo-werte für einzelne Runden
@@ -955,6 +968,7 @@ vector<unsigned long long> OptimierteForm4(unsigned long long n, unsigned long l
 
 vector<unsigned long long> OptimierteForm5(unsigned long long n, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN /*double wechselfaktorK*/)	// maxK >= n
 {
+	_PRINTINPUT_5_("Funktionsaufruf: OptimierteForm5")
 	{
 		vector<unsigned long long>	PositiveRunden;			// Liste der Runden nachdem alle Lampen an/aus sind
 		vector<unsigned long long>	Modulo;					// Modulo-werte für einzelne Runden
@@ -1042,6 +1056,7 @@ vector<unsigned long long> OptimierteForm5(unsigned long long n, unsigned long l
 
 string OptimierteForm2Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OptimierteForm2Pack")
 	vector<vector<unsigned long long>>	output;
 	for (size_t i = minN; i <= maxN; i++)
 	{
@@ -1052,6 +1067,7 @@ string OptimierteForm2Pack(unsigned long long minN, unsigned long long maxN, uns
 
 string OptimierteForm3Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OptimierteForm3Pack")
 	vector<vector<unsigned long long>>	output;
 	for (size_t i = minN; i <= maxN; i++)
 	{
@@ -1062,6 +1078,7 @@ string OptimierteForm3Pack(unsigned long long minN, unsigned long long maxN, uns
 
 string OptimierteForm4Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN, double wechselfaktorK)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OptimierteForm4Pack")
 	vector<vector<unsigned long long>>	output;
 	for (size_t i = minN; i <= maxN; i++)
 	{
@@ -1072,6 +1089,7 @@ string OptimierteForm4Pack(unsigned long long minN, unsigned long long maxN, uns
 
 string OptimierteForm5Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OptimierteForm5Pack")
 	vector<vector<unsigned long long>>	output;
 	for (size_t i = minN; i <= maxN; i++)
 	{
@@ -1082,6 +1100,7 @@ string OptimierteForm5Pack(unsigned long long minN, unsigned long long maxN, uns
 
 string OptimierteForm6Pack(unsigned long long minN, unsigned long long maxN, unsigned long long maxK, unsigned long long testLampen, double wechselfaktorN)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OptimierteForm6Pack")
 	vector<vector<unsigned long long>>	output;
 
 	vector<bool>				AlleLampenAn(testLampen, true);
@@ -1211,6 +1230,7 @@ string OptimierteForm6Pack(unsigned long long minN, unsigned long long maxN, uns
 
 vector<uint1024_t> LampenSimulieren1024(unsigned long long n, uint1024_t k, bool einsenAnzeigen)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulieren1024")
 	uint1024_t				AnzRunden = 2;				// Aktuelle Runde
 	vector<bool>			Lampen;
 	vector<uint1024_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
@@ -1261,6 +1281,7 @@ vector<uint1024_t> LampenSimulieren1024(unsigned long long n, uint1024_t k, bool
 
 vector<uint1KB_t> LampenSimulieren1KB(unsigned long long n, uint1KB_t k, bool einsenAnzeigen)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulieren1KB")
 	uint1KB_t				AnzRunden = 2;				// Aktuelle Runde
 	vector<bool>			Lampen;
 	vector<uint1KB_t>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
@@ -1305,6 +1326,7 @@ vector<uint1KB_t> LampenSimulieren1KB(unsigned long long n, uint1KB_t k, bool ei
 
 vector<uint1KB_t> OP7LampenSimulieren1KB(unsigned long long n, uint1KB_t maxK, bool einsenAnzeigen)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OP7LampenSimulieren1KB")
 	/*unsigned long long		max64 = 18'446'744'073'709'551'615;
 	uint256_t				max256 = (uint256_t)"115792089237316195423570985008687907853269984665640564039457584007913129639935";
 	uint1024_t				max1024 = (uint1024_t)max256 * max256; max1024 *= max1024;
@@ -1464,6 +1486,7 @@ vector<uint1KB_t> OP7LampenSimulieren1KB(unsigned long long n, uint1KB_t maxK, b
 
 vector<uint16KB_t> OP8LampenSimulieren16KB(unsigned long long n, uint16KB_t maxK, bool einsenAnzeigen)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OP8LampenSimulieren16KB")
 	double					Doppel = log(2) / (log(n + 1) - log(n));
 	vector<unsigned int>	Wechsel(5);
 
@@ -1666,6 +1689,7 @@ vector<uint16KB_t> OP8LampenSimulieren16KB(unsigned long long n, uint16KB_t maxK
 
 vector<uint16KB_t> OP9LampenSimulieren16KB(unsigned long long n, bool einsenAnzeigen)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: OP9LampenSimulieren16KB")
 	double					Doppel = log(2) / (log(n + 1) - log(n));
 	vector<unsigned int>	Wechsel(5);
 
@@ -1854,6 +1878,7 @@ vector<uint16KB_t> OP9LampenSimulieren16KB(unsigned long long n, bool einsenAnze
 
 vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool einsenAnzeigen)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIB")
     mpz_class				AnzRunden = 2;
 	vector<bool>			Lampen(n, true);
     vector<mpz_class>		PositiveRunden;
@@ -1896,6 +1921,7 @@ vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool
 
 vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv2")
     mpz_class				AnzRunden = 2;
 	vector<bool>			Lampen(n, true);
     vector<mpz_class>		PositiveRunden;
@@ -1960,6 +1986,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 
 vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv3")
 	unsigned long long		n;
 	uint64_t				anz;
 	bool					einsenAnzeigen;
@@ -2034,6 +2061,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 
 vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv4")
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
     vector<mpz_class> PositiveRunden;
@@ -2201,6 +2229,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 
 vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv5")
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
     vector<mpz_class> PositiveRunden;
@@ -2385,6 +2414,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 
 vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv6")
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
     vector<mpz_class> PositiveRunden;
@@ -2593,6 +2623,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 
 vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenFLINT")
 	fmpzxx AnzRunden(2);
 	vector<bool> Lampen(n, true);
 	vector<fmpzxx> PositiveRunden;
@@ -2799,6 +2830,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 
 vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenFLINTv2")
 	fmpzxx AnzRunden(2);
 	vector<bool> Lampen(n, true);
 	vector<fmpzxx> PositiveRunden;
@@ -3035,6 +3067,7 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 // @return Anzahl der bits die es geprüft hat
 uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batchSize)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: Benchmarking")
 	const fmpzxx n_flintlib(n);
 	string durHR;
 	string durCPU;
