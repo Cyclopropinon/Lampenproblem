@@ -3172,6 +3172,7 @@ int main(int argc, const char** argv)
 		auto								berechnungsEnde    = steady_clock::now();
 		auto								berechnungsStartHR = std::chrono::high_resolution_clock::now();
 		auto								berechnungsEndeHR  = std::chrono::high_resolution_clock::now();
+		double								Dauer;
 		string								durHR;
 
 		double								diffN;
@@ -3254,7 +3255,8 @@ int main(int argc, const char** argv)
 
 					berechnungsEnde = steady_clock::now();
 					//			cout << "Laufzeit: " << nanoseconds{ berechnungsEnde - berechnungsStart }.count() << "ns\n";
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
 				case -1:
 					cout << "n eingeben: ";
@@ -3269,8 +3271,9 @@ int main(int argc, const char** argv)
 					anz = Benchmarking(filename, minN, anz);
 
 					berechnungsEnde = steady_clock::now();
-					cout << "Gesamtzahl an geprüften Bits: " << anz << '\n';
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					cout << "Gesamtzahl an geprüften Bits: " << anz << '\n';					_PRINTVAR_4_(anz)
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
 				case 2:
 					cout << "min n eingeben: ";
@@ -3306,7 +3309,8 @@ int main(int argc, const char** argv)
 					}
 
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
 				case 3:
 					cout << "min n eingeben: ";
@@ -3396,7 +3400,8 @@ int main(int argc, const char** argv)
 								}*/
 
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
 				case 4:
 					cout << "min n eingeben: ";
@@ -3461,8 +3466,10 @@ int main(int argc, const char** argv)
 						}
 						maxNecht = i + AnzThreads4 * delN - 1;
 					}
+					_PRINTVAR_4_(maxNecht)
 					berechnungsEnde = steady_clock::now();
-					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << Dauer << "s\n\n";
 					break;
 				case 5:
 #ifdef _ENABLEBIGINTS_
@@ -3497,7 +3504,8 @@ int main(int argc, const char** argv)
 					}
 
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 #else
 					cout << "[Error] big ints not enabled while compiling!" << endl;
 #endif // _ENABLEBIGINTS_
@@ -3566,8 +3574,10 @@ int main(int argc, const char** argv)
 						maxNecht = i + AnzThreads4 * delN - 1;
 					}
 
+					_PRINTVAR_4_(maxNecht)
 					berechnungsEnde = steady_clock::now();
-					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << Dauer << "s\n\n";
 					break;
 				case 7:
 #ifdef _ENABLEBIGINTS_
@@ -3602,7 +3612,8 @@ int main(int argc, const char** argv)
 					}
 
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 #else
 					cout << "[Error] big ints not enabled while compiling!" << endl;
 #endif // _ENABLEBIGINTS_
@@ -3650,8 +3661,10 @@ int main(int argc, const char** argv)
 						maxNecht = i + AnzThreads4 * delN - 1;
 					}
 
+					_PRINTVAR_4_(maxNecht)
 					berechnungsEnde = steady_clock::now();
-					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << Dauer << "s\n\n";
 					break;
 				case 9:
 					cout << "min n eingeben: ";
@@ -3694,8 +3707,10 @@ int main(int argc, const char** argv)
 						maxNecht = i + AnzThreads4 * delN - 1;
 					}
 
+					_PRINTVAR_4_(maxNecht)
 					berechnungsEnde = steady_clock::now();
-					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << Dauer << "s\n\n";
 					break;
 				case 10:
 					cout << "min n eingeben: ";
@@ -3738,8 +3753,10 @@ int main(int argc, const char** argv)
 						maxNecht = i + AnzThreads4 * delN - 1;
 					}
 
+					_PRINTVAR_4_(maxNecht)
 					berechnungsEnde = steady_clock::now();
-					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << Dauer << "s\n\n";
 					break;
 				case 11:
 #ifdef _ENABLEBIGINTS_
@@ -3789,7 +3806,8 @@ int main(int argc, const char** argv)
 					}
 
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 #else
 					cout << "[Error] big ints not enabled while compiling!" << endl;
 #endif // _ENABLEBIGINTS_
@@ -3843,8 +3861,10 @@ int main(int argc, const char** argv)
 						PrintProgressBar((i - minN) / diffN, getConsoleWidth());
 					}
 					PrintProgressBar(1, getConsoleWidth()); cout << endl;
+					_PRINTVAR_4_(maxNecht)
 					berechnungsEnde = steady_clock::now();
-					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << Dauer << "s\n\n";
 					break;
 
 				case 13:
@@ -3894,7 +3914,8 @@ int main(int argc, const char** argv)
 					}
 
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 #else
 					cout << "[Error] big ints not enabled while compiling!" << endl;
 #endif // _ENABLEBIGINTS_
@@ -3941,7 +3962,8 @@ int main(int argc, const char** argv)
 					}
 
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{ berechnungsEnde - berechnungsStart }.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 #else
 					cout << "[Error] big ints not enabled while compiling!" << endl;
 #endif // _ENABLEBIGINTS_
@@ -3994,8 +4016,10 @@ int main(int argc, const char** argv)
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
 
+					_PRINTVAR_4_(maxNecht)
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{berechnungsEnde - berechnungsStart}.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "berechnet bis: " << maxNecht << "\nLaufzeit: " << Dauer << "s\n\n";
 					break;
 				case 16:
 					cout << "min n eingeben: ";
@@ -4043,7 +4067,7 @@ int main(int argc, const char** argv)
 					#pragma GCC diagnostic ignored "-Wformat"
 					dt(berechnungsStartHR, durHR);
 				    #pragma GCC diagnostic pop
-					cout << "Laufzeit: " << durHR << "\n\n";
+					cout << "Laufzeit: " << durHR << "\n\n";		_PRINTVAR_2_(durHR)
 					break;
 				case -16:
 					cout << "min n eingeben: ";
@@ -4073,7 +4097,8 @@ int main(int argc, const char** argv)
 					}
 					
 					berechnungsEnde = steady_clock::now();
-					cout << "Laufzeit: " << duration<double>{berechnungsEnde - berechnungsStart}.count() << "s\n\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
 				case 17:
 					cout << "Zwischenstand laden: ";
@@ -4110,7 +4135,7 @@ int main(int argc, const char** argv)
 					#pragma GCC diagnostic ignored "-Wformat"
 					dt(berechnungsStartHR, durHR);
 				    #pragma GCC diagnostic pop
-					cout << "Laufzeit: " << durHR << "\n\n";
+					cout << "Laufzeit: " << durHR << "\n\n";		_PRINTVAR_2_(durHR)
 					break;
 				case 18:
 					cout << "min n eingeben: ";
@@ -4200,7 +4225,7 @@ int main(int argc, const char** argv)
 					#pragma GCC diagnostic ignored "-Wformat"
 					dt(berechnungsStartHR, durHR);
 				    #pragma GCC diagnostic pop
-					cout << "Laufzeit: " << durHR << "\n\n";
+					cout << "Laufzeit: " << durHR << "\n\n";		_PRINTVAR_2_(durHR)
 					break;
 				case 19:
 					cout << "min n eingeben: ";
@@ -4342,7 +4367,7 @@ int main(int argc, const char** argv)
 						if(tty) cout << gotoZeileDrunter;
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					cout << "Laufzeit: " << durHR << "                                                      \n\n";
+					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
 					break;
 				case 20:
 					cout << "min n eingeben: ";
@@ -4487,7 +4512,7 @@ int main(int argc, const char** argv)
 						if(tty) cout << gotoZeileDrunter;
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					cout << "Laufzeit: " << durHR << "                                                      \n\n";
+					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
 					break;
 				case 21:
 					cout << "min n eingeben: ";
@@ -4780,7 +4805,7 @@ int main(int argc, const char** argv)
 						if(tty) cout << gotoZeileDrunter;
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					cout << "Laufzeit: " << durHR << "                                                      \n\n";
+					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
 					break;
 				case 23:
 					cout << "min n eingeben: ";
@@ -4928,7 +4953,7 @@ int main(int argc, const char** argv)
 						if(tty) cout << gotoZeileDrunter;
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					cout << "Laufzeit: " << durHR << "                                                      \n\n";
+					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
 					break;
 				default:
 					cout << "\aFehlerhafte Eingabe!\n\n";
