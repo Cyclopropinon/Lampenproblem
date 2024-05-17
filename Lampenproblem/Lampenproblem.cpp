@@ -75,6 +75,9 @@
 // if using a progressBar
 #include "progBar.h"
 
+// für die Logdatei
+#include "logfile.hh"
+
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;

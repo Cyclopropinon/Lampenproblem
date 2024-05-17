@@ -8,18 +8,10 @@
 #else
 	std::mutex output_mutex;				// Mutex für den Dateizugriff
 	std::mutex cout_mutex;					// Mutex für den Zugriff auf std::cout
-	#define lock_output std::lock_guard<std::mutex> lock(output_mutex)
-	#define lock_cout   std::lock_guard<std::mutex> lock(cout_mutex)
-#endif
-#define LOGFILE std::cerr
-#ifdef __FUNCSIG__      //_MSC_VER //if compiling with vs
-    #define _PRINTWAYPOINT_     {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
-    #define _PRINTERROR_        {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
-    #define _PRINTINPUT_(x)     {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
-#else
-    #define _PRINTWAYPOINT_     {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
-    #define _PRINTERROR_        {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
-    #define _PRINTINPUT_(x)     {auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
+	std::mutex log_mutex;					// Mutex für den Zugriff auf die Logdatei
+	#define lock_output	std::lock_guard<std::mutex> lock(output_mutex)
+	#define lock_cout	std::lock_guard<std::mutex> lock(cout_mutex)
+	#define lock_log	std::lock_guard<std::mutex> lock(log_mutex)
 #endif
 constexpr auto Vsize = strlen(_V);			// String-Länge der Programmversion als eine globale Konstante
 std::chrono::_V2::system_clock::time_point StartTimeGlobal;
