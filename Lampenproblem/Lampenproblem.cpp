@@ -3078,7 +3078,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 	return currentSchritteBits;
 }
 
-int main()
+int main(int argc, const char** argv)
 {
 	// Signal-Handler initialisieren
 	for(int i = 0; i <= SIGRTMAX; i++)
@@ -3093,6 +3093,8 @@ int main()
 	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
 	char								usePresetLang;												// Ob die vorgegebene Sprache benutzt werden soll
 										Starttime				= std::chrono::steady_clock::now();
+
+	_LOGFILEINIT_();
 
 	cout << "Language detected: \"" << Sprache << "\" Use this language? (y/n) ";
 	cin >> usePresetLang;

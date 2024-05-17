@@ -34,6 +34,9 @@ Lampenproblem/testumgebung/b*
 Lampenproblem/testumgebung/n*
 Lampenproblem/testumgebung/m*
 
+# Logdateien
+*.LPlog
+
 # testing Folders
 1_split
 IDA
