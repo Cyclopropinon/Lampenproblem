@@ -14,18 +14,24 @@
     #define LOGLEVEL 7
 #endif
 
+// Maximum Filename Length
+#define _MaxFilenameLength_ 40
+
 #if LOGLEVEL >= 1
+    // Function to trim/extend the filename to the right size
+    #define __LengthUnifiedFilename__(length) LengthUnifiedFilename = std::string(__FILE__); LengthUnifiedFilename.resize(length, ' ')
+
     #define LOGFILE Lampenproblem_logfile
     
     // Printing templates
     #ifdef __FUNCSIG__      //_MSC_VER //if compiling with vs
-        #define _PRINTWAYPOINT_lv(v) {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
-        #define _PRINTERROR_lv(v)    {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
-        #define _PRINTINPUT_lv(x,v)  {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tFunktion: "<<__FUNCSIG__<<" \tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
+        #define _PRINTWAYPOINT_lv(v) {lock_log; auto __LengthUnifiedFilename__(_MaxFilenameLength_); auto Nowtime = std::chrono::steady_clock::now(); LOGFILE << LengthUnifiedFilename << " Line: " << __LINE__ << " \tSeverity: " << v << "\tFunktion: " << __FUNCSIG__ << " \tRuntime: " << std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
+        #define _PRINTERROR_lv(v)    {lock_log; auto __LengthUnifiedFilename__(_MaxFilenameLength_); auto Nowtime = std::chrono::steady_clock::now(); LOGFILE << LengthUnifiedFilename << " Line: " << __LINE__ << " \tSeverity: " << v << "\tFunktion: " << __FUNCSIG__ << " \tRuntime: " << std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
+        #define _PRINTINPUT_lv(x,v)  {lock_log; auto __LengthUnifiedFilename__(_MaxFilenameLength_); auto Nowtime = std::chrono::steady_clock::now(); LOGFILE << LengthUnifiedFilename << " Line: " << __LINE__ << " \tSeverity: " << v << "\tFunktion: " << __FUNCSIG__ << " \tRuntime: " << std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
     #else
-        #define _PRINTWAYPOINT_lv(v) {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
-        #define _PRINTERROR_lv(v)    {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
-        #define _PRINTINPUT_lv(x,v)  {lock_log; auto Nowtime = std::chrono::steady_clock::now(); LOGFILE<<__FILE__<<" \tLine: "<<__LINE__<<" \tSeverity: " << v << "\tRuntime: "<<std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
+        #define _PRINTWAYPOINT_lv(v) {lock_log; auto __LengthUnifiedFilename__(_MaxFilenameLength_); auto Nowtime = std::chrono::steady_clock::now(); LOGFILE << LengthUnifiedFilename << " Line: " << __LINE__ << " \tSeverity: " << v << "\tRuntime: " << std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns\n"<<std::flush;}
+        #define _PRINTERROR_lv(v)    {lock_log; auto __LengthUnifiedFilename__(_MaxFilenameLength_); auto Nowtime = std::chrono::steady_clock::now(); LOGFILE << LengthUnifiedFilename << " Line: " << __LINE__ << " \tSeverity: " << v << "\tRuntime: " << std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \tERROR: \t\t"<<e.what()<<'\n'<<std::flush;}
+        #define _PRINTINPUT_lv(x,v)  {lock_log; auto __LengthUnifiedFilename__(_MaxFilenameLength_); auto Nowtime = std::chrono::steady_clock::now(); LOGFILE << LengthUnifiedFilename << " Line: " << __LINE__ << " \tSeverity: " << v << "\tRuntime: " << std::chrono::duration<int64_t,std::nano>{Nowtime-Starttime}.count() << " ns  \t" << x << '\n' << std::flush;}
     #endif
 
     std::ofstream LOGFILE;
