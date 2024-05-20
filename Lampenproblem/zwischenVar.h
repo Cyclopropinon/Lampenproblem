@@ -1,6 +1,4 @@
 #include <cstring>
-#include <flint/flint.h>
-#include <flint/fmpzxx.h>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -80,6 +78,8 @@ mpz_class readVariable(std::string dateiname, mpz_class useless_var)
     return zahl;
 }
 
+#ifndef _DISABLELIBFLINTXX_
+
 void saveVariable(std::string dateiname, flint::fmpzxx zahl)
 {
     FILE* file = fopen(dateiname.c_str(), "wb");
@@ -103,6 +103,8 @@ flint::fmpzxx readVariable(std::string dateiname, flint::fmpzxx useless_var)
 
     return zahl;
 }
+
+#endif // !ifndef _DISABLELIBFLINTXX_
 
 void saveVariable(std::string dateiname, std::string var)
 {
@@ -201,6 +203,8 @@ std::vector<mpz_class> readVariable(std::string dateiname, std::vector<mpz_class
     return var;
 }
 
+#ifndef _DISABLELIBFLINTXX_
+
 void saveVariable(std::string dateiname, std::vector<flint::fmpzxx> var)
 {
     const uint64_t size = var.size();
@@ -226,6 +230,8 @@ std::vector<flint::fmpzxx> readVariable(std::string dateiname, std::vector<flint
     }
     return var;
 }
+
+#endif // !ifndef _DISABLELIBFLINTXX_
 
 void saveVariable(std::string dateiname, bool var)
 {

@@ -31,14 +31,29 @@
 	#endif
 #endif
 
+// check if flint is installed correctly
+#ifndef _DISABLELIBFLINT_
+	#if __has_include(<flint/fmpzxx.h>)
+		#include <flint/fmpzxx.h>
+	#elif __has_include(<flint/flint.h>)
+		#define _DISABLELIBFLINTXX_
+		#include <flint/flint.h>
+	#else 
+		#define _DISABLELIBFLINT_
+		#define _DISABLELIBFLINTXX_
+	#endif
+#else
+	#ifndef _DISABLELIBFLINTXX_
+		#define _DISABLELIBFLINTXX_
+	#endif
+#endif
+
 #include <algorithm>
 #include <chrono>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <flint/flint.h>
-#include <flint/fmpzxx.h>
 #include <future>
 #include <fstream>
 #include <gmp.h>
@@ -70,7 +85,9 @@
 #include "globalVars.hh"
 
 // für die unterschiedlichen Divisionsverfahren beim Schrittegehen an den Lampen
-#include "LS_divionsVarianten.hh"
+#ifndef _DISABLELIBFLINTXX_
+	#include "LS_divionsVarianten.hh"
+#endif // !ifndef _DISABLELIBFLINTXX_
 
 // if using a progressBar
 #include "progBar.h"
@@ -86,6 +103,8 @@ using flint::fmpzxx;
 #ifdef _ENABLEBIGINTS_
 using namespace boost::multiprecision;
 #endif
+
+#include "makrocheks.h"
 
 void Nix()
 {}
@@ -1874,7 +1893,7 @@ vector<uint16KB_t> OP9LampenSimulieren16KB(unsigned long long n, bool einsenAnze
 	return PositiveRunden;
 }
 
-#endif
+#endif // !ifdef _ENABLEBIGINTS_
 
 vector<mpz_class> LampenSimulierenGMPLIB(unsigned long long n, mpz_class k, bool einsenAnzeigen)
 {
@@ -2621,6 +2640,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
+#ifndef _DISABLELIBFLINTXX_
+
 vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenFLINT")
@@ -3112,6 +3133,8 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 	return currentSchritteBits;
 }
 
+#endif // !ifndef _DISABLELIBFLINTXX_
+
 int main(int argc, const char** argv)
 {
 	Starttime = std::chrono::steady_clock::now();
@@ -3292,21 +3315,25 @@ int main(int argc, const char** argv)
 					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
 				case -1:
-					cout << "n eingeben: ";
-					cin >> minN;				_PRINTVAR_4_(minN)
-					cout << "anzahl bits für Testpacktet: ";
-					cin >> anz;					_PRINTVAR_4_(anz)
-					cout << "Ausgabe von den Ergebnissen: ";
-					cin >> filename;			_PRINTVAR_4_(filename)
+					#ifndef _DISABLELIBFLINTXX_
+						cout << "n eingeben: ";
+						cin >> minN;				_PRINTVAR_4_(minN)
+						cout << "anzahl bits für Testpacktet: ";
+						cin >> anz;					_PRINTVAR_4_(anz)
+						cout << "Ausgabe von den Ergebnissen: ";
+						cin >> filename;			_PRINTVAR_4_(filename)
 
-					berechnungsStart = steady_clock::now();
+						berechnungsStart = steady_clock::now();
 
-					anz = Benchmarking(filename, minN, anz);
+						anz = Benchmarking(filename, minN, anz);
 
-					berechnungsEnde = steady_clock::now();
-					cout << "Gesamtzahl an geprüften Bits: " << anz << '\n';					_PRINTVAR_4_(anz)
-					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
-					cout << "Laufzeit: " << Dauer << "s\n\n";
+						berechnungsEnde = steady_clock::now();
+						cout << "Gesamtzahl an geprüften Bits: " << anz << '\n';					_PRINTVAR_4_(anz)
+						Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+						cout << "Laufzeit: " << Dauer << "s\n\n";
+					#else
+						cout << "[Error] FLINTxx not enabled while compiling!" << endl;
+					#endif // _DISABLELIBFLINTXX_
 					break;
 				case 2:
 					cout << "min n eingeben: ";
@@ -4841,152 +4868,156 @@ int main(int argc, const char** argv)
 					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
 					break;
 				case 23:
-					cout << "min n eingeben: ";
-					cin >> minN;				_PRINTVAR_4_(minN)
-					cout << "max n eingeben: ";
-					cin >> maxN;				_PRINTVAR_4_(maxN)
-				    cout << "Anzahl der PR je Lampenanzahl: ";
-					cin >> anz;					_PRINTVAR_4_(anz)
-					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
-					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
+					#ifndef _DISABLELIBFLINTXX_
+						cout << "min n eingeben: ";
+						cin >> minN;				_PRINTVAR_4_(minN)
+						cout << "max n eingeben: ";
+						cin >> maxN;				_PRINTVAR_4_(maxN)
+						cout << "Anzahl der PR je Lampenanzahl: ";
+						cin >> anz;					_PRINTVAR_4_(anz)
+						cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
+						cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
 
-					cout << "Datei speichern unter: ";
-					cin >> filename;			_PRINTVAR_4_(filename)
-					cout << "Zwischenstand speichern unter: ";
-					cin >> Session;				_PRINTVAR_4_(Session)
+						cout << "Datei speichern unter: ";
+						cin >> filename;			_PRINTVAR_4_(filename)
+						cout << "Zwischenstand speichern unter: ";
+						cin >> Session;				_PRINTVAR_4_(Session)
 
-					berechnungsStartHR = std::chrono::high_resolution_clock::now();
-					StartTimeGlobal = berechnungsStartHR;
+						berechnungsStartHR = std::chrono::high_resolution_clock::now();
+						StartTimeGlobal = berechnungsStartHR;
 
-					delN = maxN - minN + 1;			// = maxN - minN + 1
-					diffN = delN - 1;				// = maxN - minN
+						delN = maxN - minN + 1;			// = maxN - minN + 1
+						diffN = delN - 1;				// = maxN - minN
 
-					output_fstream.open(filename, ios_base::out);
-					if (!output_fstream.is_open())
-					{
-						cout << "Fehler: Failed to open " << filename << '\n';
-
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
-						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
-					}
-					else {
-						// erstelle Ordner für die Session
-						erstelleVerzeichnis(Session.c_str());
-
-						initscr();
-						start_color();
-						cbreak();
-						noecho();
-						curs_set(0);
-						flint_set_num_threads((int)AnzThreadsUnterstützt);
-
-						// Erstelle ein Fenster für die Titelzeile
-						constexpr int titleWinHeight = 2;
-						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
-						wrefresh(titleWin);
-
-						// Create an array to store pointers to ncurses windows
-						WINDOW *threadWins[delN];
-						for (int i = 0; i < delN; i++) {
-							threadWins[i] = newwin(4, COLS, i * 4 + titleWinHeight, 0);
-							box(threadWins[i], 0, 0);
-							if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
-							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
-							wrefresh(threadWins[i]);
-						}
-
-						const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
-						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
-						constexpr int timerOrty = 1;
-						constexpr int timerOrtx = 0;
-
-						// Vector to store futures
-						std::vector<std::future<void>> futures;
-
-						for (size_t i = maxN; i >= minN; i--)					// falsch rum für besseres Zeitmanagement
+						output_fstream.open(filename, ios_base::out);
+						if (!output_fstream.is_open())
 						{
-							// Use async to run the function asynchronously
-							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
-							{
-								string elapsed;
-								#pragma GCC diagnostic push
-								#pragma GCC diagnostic ignored "-Wformat"
-								adt(berechnungsStartHR, elapsed);
-								#pragma GCC diagnostic pop
-								{
-									lock_cout;
-									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
-									wrefresh(threadWins[i - minN]);
-								}
+							cout << "Fehler: Failed to open " << filename << '\n';
 
-								// Perform the slow operation in the async thread
-								vector<fmpzxx> PositiveRunden = LampenSimulierenFLINT(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
+							#pragma GCC diagnostic push
+							#pragma GCC diagnostic ignored "-Wformat"
+							dt(berechnungsStartHR, durHR);
+							#pragma GCC diagnostic pop
+						}
+						else {
+							// erstelle Ordner für die Session
+							erstelleVerzeichnis(Session.c_str());
 
-								std::ostringstream oss2;
-								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<fmpzxx>(oss2, "\n"));
-								oss2 << PositiveRunden.back();
+							initscr();
+							start_color();
+							cbreak();
+							noecho();
+							curs_set(0);
+							flint_set_num_threads((int)AnzThreadsUnterstützt);
 
-								// Synchronize file output with a mutex
-								lock_output;
-								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
+							// Erstelle ein Fenster für die Titelzeile
+							constexpr int titleWinHeight = 2;
+							WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
+							wrefresh(titleWin);
 
-								// Close the ncurses window when the thread finishes
-								//delwin(threadWins[i - minN]);
-							});
-
-							// Store the future for later retrieval
-							futures.push_back(std::move(fut));
-
-							// Check if the number of active threads exceeds the limit
-							while (futures.size() >= AnzThreads)
-							{
-								auto it = std::find_if(futures.begin(), futures.end(), [](const std::future<void>& f)
-								{
-									return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
-								});
-
-								// Remove completed futures
-								if (it != futures.end())
-								{
-									it->wait();
-									futures.erase(it);
-								}
+							// Create an array to store pointers to ncurses windows
+							WINDOW *threadWins[delN];
+							for (int i = 0; i < delN; i++) {
+								threadWins[i] = newwin(4, COLS, i * 4 + titleWinHeight, 0);
+								box(threadWins[i], 0, 0);
+								if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+								mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
+								wrefresh(threadWins[i]);
 							}
 
-							finishedThreads = 0;
-							if (i <= maxN - AnzThreads + 1) finishedThreads = (maxN - i) - AnzThreads + 2;
-							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+							const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
+							const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
+							constexpr int timerOrty = 1;
+							constexpr int timerOrtx = 0;
+
+							// Vector to store futures
+							std::vector<std::future<void>> futures;
+
+							for (size_t i = maxN; i >= minN; i--)					// falsch rum für besseres Zeitmanagement
+							{
+								// Use async to run the function asynchronously
+								auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
+								{
+									string elapsed;
+									#pragma GCC diagnostic push
+									#pragma GCC diagnostic ignored "-Wformat"
+									adt(berechnungsStartHR, elapsed);
+									#pragma GCC diagnostic pop
+									{
+										lock_cout;
+										mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
+										wrefresh(threadWins[i - minN]);
+									}
+
+									// Perform the slow operation in the async thread
+									vector<fmpzxx> PositiveRunden = LampenSimulierenFLINT(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
+
+									std::ostringstream oss2;
+									std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<fmpzxx>(oss2, "\n"));
+									oss2 << PositiveRunden.back();
+
+									// Synchronize file output with a mutex
+									lock_output;
+									output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
+
+									// Close the ncurses window when the thread finishes
+									//delwin(threadWins[i - minN]);
+								});
+
+								// Store the future for later retrieval
+								futures.push_back(std::move(fut));
+
+								// Check if the number of active threads exceeds the limit
+								while (futures.size() >= AnzThreads)
+								{
+									auto it = std::find_if(futures.begin(), futures.end(), [](const std::future<void>& f)
+									{
+										return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+									});
+
+									// Remove completed futures
+									if (it != futures.end())
+									{
+										it->wait();
+										futures.erase(it);
+									}
+								}
+
+								finishedThreads = 0;
+								if (i <= maxN - AnzThreads + 1) finishedThreads = (maxN - i) - AnzThreads + 2;
+								auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+								printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+							}
+
+							// Wait for the remaining threads to finish
+							for (auto& fut : futures)
+							{
+								fut.wait();
+								finishedThreads++;
+								auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+								printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+							}
+
+							#pragma GCC diagnostic push
+							#pragma GCC diagnostic ignored "-Wformat"
+							dt(berechnungsStartHR, durHR);
+							#pragma GCC diagnostic pop
+
+							if(!tty)
+							{
+								cout << gotoZeileDrunter << "\nBerechnungen beendet! Taste drücken, um ins Menü zurückzukommen." << endl;
+								cin.get();
+								cin.get();
+							}
+							endwin();	// end ncurses
+
+							if(tty) cout << gotoZeileDrunter;
+							cout << "Datei gespeichert als " << filename << '!' << endl;
 						}
-
-						// Wait for the remaining threads to finish
-						for (auto& fut : futures)
-						{
-							fut.wait();
-							finishedThreads++;
-							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
-						}
-
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
-						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
-
-						if(!tty)
-						{
-							cout << gotoZeileDrunter << "\nBerechnungen beendet! Taste drücken, um ins Menü zurückzukommen." << endl;
-							cin.get();
-							cin.get();
-						}
-						endwin();	// end ncurses
-
-						if(tty) cout << gotoZeileDrunter;
-						cout << "Datei gespeichert als " << filename << '!' << endl;
-					}
-					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
+						cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
+					#else
+						cout << "[Error] FLINTxx not enabled while compiling!" << endl;
+					#endif // _DISABLELIBFLINTXX_
 					break;
 				default:
 					cout << "\aFehlerhafte Eingabe!\n\n";
