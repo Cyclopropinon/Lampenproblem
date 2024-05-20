@@ -4,10 +4,10 @@
     #warning "Is [Boost](https://www.boost.org/) installed? If yes, is it correctly modified to support bigints? Compiling without bigints..."
 #endif
 
-#ifndef _DISABLELIBFLINT_
+#ifdef _DISABLELIBFLINT_
     #warning "[FLINT](https://flintlib.org/) not found! Compiling without FLINT..."
 #endif
 
-#ifndef _DISABLELIBFLINTXX_
+#ifdef _DISABLELIBFLINTXX_
     #warning "[FLINTxx](https://github.com/flintlib/flintxx) not found! Compiling without FLINTxx..."
 #endif
