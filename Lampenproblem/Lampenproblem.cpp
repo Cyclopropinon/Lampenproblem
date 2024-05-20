@@ -98,7 +98,10 @@
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;
-using flint::fmpzxx;
+
+#ifndef _DISABLELIBFLINTXX_
+	using flint::fmpzxx;
+#endif // !ifndef _DISABLELIBFLINTXX_
 
 #ifdef _ENABLEBIGINTS_
 using namespace boost::multiprecision;
@@ -3090,6 +3093,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 {
 	_PRINTINPUT_3_("Funktionsaufruf: Benchmarking")
 	const fmpzxx n_flintlib(n);
+	fmpz_init_set_ui(global_puffer_fmpz_t5, n);
 	string durHR;
 	string durCPU;
 	uint64_t currentSchritteBits = 0;
@@ -3103,6 +3107,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 		mpz_init(global_puffer_mpz_t1);
 		mpz_init(global_puffer_mpz_t2);
 		mpz_init(global_puffer_mpz_t3);
+		fmpz_init(global_puffer_fmpz_t4);
 
 		for (size_t f = 0; f < anzLSvarianten; f++)
 		{
@@ -3112,6 +3117,9 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			fmpz_get_mpz(global_puffer_mpz_t1, (AnzRunden)._fmpz());
 			fmpz_get_mpz(global_puffer_mpz_t2, (Schritte)._fmpz());
 			fmpz_get_mpz(global_puffer_mpz_t3, (maxSchritte)._fmpz());
+			fmpz_init_set(global_puffer_fmpz_t1, (AnzRunden)._fmpz());
+			fmpz_init_set(global_puffer_fmpz_t2, (Schritte)._fmpz());
+			fmpz_init_set(global_puffer_fmpz_t3, (maxSchritte)._fmpz());
 			auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
 			auto berechnungsStartCPU = CPUProfiler::cpuTimeTs();
 				while (LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt, &maxSchritte));
@@ -3121,13 +3129,18 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			#pragma GCC diagnostic ignored "-Wformat"
 			dt(berechnungsStartHR, durHR);
 			#pragma GCC diagnostic pop
+			fmpz_clear(global_puffer_fmpz_t1);
+			fmpz_clear(global_puffer_fmpz_t2);
+			fmpz_clear(global_puffer_fmpz_t3);
 			cout << "[Benchmark] Bits: " << minSchritteBits << " - " << maxSchritteBits << "\tVariante: " << f << "\tZeit (Wanduhr): " << durHR << "\tZeit (CPU): " << durCPU << endl;
 		}
-		mpz_init(global_puffer_mpz_t1);
-		mpz_init(global_puffer_mpz_t2);
-		mpz_init(global_puffer_mpz_t3);
+		mpz_clear(global_puffer_mpz_t1);
+		mpz_clear(global_puffer_mpz_t2);
+		mpz_clear(global_puffer_mpz_t3);
+		fmpz_clear(global_puffer_fmpz_t4);
 		cout << endl;
 	}
+	fmpz_clear(global_puffer_fmpz_t5);
 	UserInterrupt = 0;
 	InterruptRequiredByApp = false;
 	return currentSchritteBits;

@@ -70,29 +70,29 @@ inline bool weiterlaufen4(unsigned long long *n, const flint::fmpzxx *n_flintlib
 	return *Schritte <= *maxSchritte;
 }
 
-/*inline void weiterlaufen5AnzRunden(unsigned long long *n, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
+/*inline void weiterlaufen5AAnzRunden(unsigned long long *n, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
 {
 	fmpz_tdiv_q_ui((*AnzRunden)._fmpz(), (*Schritte)._fmpz(), *n);
 	*AnzRunden += 1;
 }
 
-inline void weiterlaufen5Lampejetzt(unsigned long long *n, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
+inline void weiterlaufen5ALampejetzt(unsigned long long *n, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
 {
 	*Lampejetzt = fmpz_tdiv_ui((*Schritte)._fmpz(), *n);
 }
 
-inline bool weiterlaufen5(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
+inline bool weiterlaufen5A(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
 {
 	*Schritte += *AnzRunden;
-	std::thread wl5a(weiterlaufen5AnzRunden, n, AnzRunden, Schritte, Lampejetzt);
-	std::thread wl5l(weiterlaufen5Lampejetzt, n, AnzRunden, Schritte, Lampejetzt);
+	std::thread wl5a(weiterlaufen5AAnzRunden, n, AnzRunden, Schritte, Lampejetzt);
+	std::thread wl5l(weiterlaufen5ALampejetzt, n, AnzRunden, Schritte, Lampejetzt);
     // Warten auf Threads
     wl5a.join();
     wl5l.join();
 	return *Schritte <= *maxSchritte;
 }
 
-inline void weiterlaufen6thread(bool var, unsigned long long *n, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
+inline void weiterlaufen6Athread(bool var, unsigned long long *n, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt)
 {
 	if (var)
 	{
@@ -103,24 +103,51 @@ inline void weiterlaufen6thread(bool var, unsigned long long *n, flint::fmpzxx *
 	}
 }
 
-inline bool weiterlaufen6(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
+inline bool weiterlaufen6A(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
 {
 	*Schritte += *AnzRunden;
 	flint_parallel_do(weiterlaufen6thread, n, AnzRunden, Schritte, Lampejetzt, 3, 2, FLINT_PARALLEL_UNIFORM);
-	// std::thread wl5a(weiterlaufen5AnzRunden, n, AnzRunden, Schritte, Lampejetzt);
-	// std::thread wl5l(weiterlaufen5Lampejetzt, n, AnzRunden, Schritte, Lampejetzt);
+	// std::thread wl5a(weiterlaufen5AAnzRunden, n, AnzRunden, Schritte, Lampejetzt);
+	// std::thread wl5l(weiterlaufen5ALampejetzt, n, AnzRunden, Schritte, Lampejetzt);
     // Warten auf Threads
     // wl5a.join();
     // wl5l.join();
 	return *Schritte <= *maxSchritte;
 }*/
 
-inline bool weiterlaufen7(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
+inline bool weiterlaufen5(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
 {
 	mpz_add(global_puffer_mpz_t2, global_puffer_mpz_t1, global_puffer_mpz_t2);
 	*Lampejetzt = mpz_tdiv_q_ui(global_puffer_mpz_t1, global_puffer_mpz_t2, *n);
 	mpz_add_ui(global_puffer_mpz_t1, global_puffer_mpz_t1, 1);
 	return mpz_cmp(global_puffer_mpz_t2, global_puffer_mpz_t3) <= 0;
+}
+
+inline bool weiterlaufen6(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
+{
+	fmpz_add(global_puffer_fmpz_t2, global_puffer_fmpz_t1, global_puffer_fmpz_t2);
+	fmpz_tdiv_q_ui(global_puffer_fmpz_t1, global_puffer_fmpz_t2, *n);
+	*Lampejetzt = fmpz_tdiv_ui(global_puffer_fmpz_t2, *n);
+	fmpz_add_ui(global_puffer_fmpz_t1, global_puffer_fmpz_t1, 1);
+	return fmpz_cmp(global_puffer_fmpz_t2, global_puffer_fmpz_t3) <= 0;
+}
+
+inline bool weiterlaufen7(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
+{
+	*Schritte += *AnzRunden;
+	fmpz_tdiv_qr((*AnzRunden)._fmpz(), global_puffer_fmpz_t4, (*Schritte)._fmpz(), (*n_flintlib)._fmpz());
+	*AnzRunden += 1;
+	*Lampejetzt = fmpz_get_ui(global_puffer_fmpz_t4);
+	return *Schritte <= *maxSchritte;
+}
+
+inline bool weiterlaufen8(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
+{
+	fmpz_add(global_puffer_fmpz_t2, global_puffer_fmpz_t1, global_puffer_fmpz_t2);
+	fmpz_tdiv_qr(global_puffer_fmpz_t1, global_puffer_fmpz_t4, global_puffer_fmpz_t2, global_puffer_fmpz_t5);
+	*Lampejetzt = fmpz_get_ui(global_puffer_fmpz_t4);
+	fmpz_add_ui(global_puffer_fmpz_t1, global_puffer_fmpz_t1, 1);
+	return fmpz_cmp(global_puffer_fmpz_t2, global_puffer_fmpz_t3) <= 0;
 }
 
 // Definiere eine Typalias für die Funktion
@@ -136,9 +163,10 @@ const std::vector<LampenSchrittVariante> LSvarianten = {
 	weiterlaufen2,
 	weiterlaufen3,
 	weiterlaufen4,
-	//weiterlaufen5,
-	//weiterlaufen6,
-	weiterlaufen7
+	weiterlaufen5,
+	weiterlaufen6,
+	weiterlaufen7,
+	weiterlaufen8
 };
 
 const auto anzLSvarianten = LSvarianten.size();
