@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.17"
+#define _V "0.1.18"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -350,6 +350,8 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 	}
 }
 
+#ifndef _DISABLELIBFLINTXX_
+
 void CheckpointLSF(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, fmpzxx& AnzRunden, vector<bool>& Lampen, vector<fmpzxx>& PositiveRunden, fmpzxx& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: CheckpointLSF")
@@ -396,6 +398,8 @@ void CheckpointLSF(const std::string& ordner, const bool retrieve, unsigned long
 		saveVar(Laufzeit);
 	}
 }
+
+#endif // !ifndef _DISABLELIBFLINTXX_
 
 vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
 {
@@ -3277,7 +3281,7 @@ int main(int argc, const char** argv)
 					+ "19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
 					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
 					+ "23 = optimierte & erweiterte Simulation mit FLINT\n"
-					+ "\n-1 = Benchmark für die Schritte"
+					+ "\n-1 = Benchmark für die Schritte\n"
 					+ '\n';
 				cout << menu;
 				cin >> prüfart;					_PRINTVAR_2_(prüfart)
