@@ -2712,21 +2712,42 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 
     Lampen[0] = false;
 
-    while (AnzPR < anz)
+	// 1. Stufe
+    while (AnzRunden <= n_gmplib)
     {
         Schritte += AnzRunden;
-        if (AnzRunden > n_gmplib || AnzRunden < 1 + Schritte / n_gmplib)
+        if (AnzRunden < 1 + Schritte / n_gmplib)
         {
             if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
             {
                 PositiveRunden.push_back(AnzRunden);
 				AnzPR = PositiveRunden.size();
+				_PRINTINPUT_1_("!!!WICHTIG!!! PR gefunden (n,k): (" << n << ", " << AnzRunden << ") WIE IST DAS MÖGLICH?????\nBITTE OBIGES SOFORT MELDEN!!!")
             }
 
             AnzRunden = 1 + Schritte / n_gmplib;
         }
         Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
         Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+
+        print++;
+	}
+
+	// 2. Stufe
+    while (AnzPR < anz)
+    {
+        Schritte += AnzRunden;
+
+		if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+		{
+			PositiveRunden.push_back(AnzRunden);
+			AnzPR = PositiveRunden.size();
+			_PRINTINPUT_4_("PR gefunden für n = " << n << "; Größe: " << mpz_sizeinbase(AnzRunden.get_mpz_t(), 265) << " Bytes")
+		}
+
+		Lampejetzt = mpz_tdiv_q_ui(AnzRunden.get_mpz_t(), Schritte.get_mpz_t(), n);
+        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+		AnzRunden++;
 
         print++;
 
@@ -5499,4 +5520,3 @@ int main(int argc, const char** argv)
 
 	}
 }
-
