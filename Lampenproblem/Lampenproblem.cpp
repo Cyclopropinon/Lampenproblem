@@ -205,7 +205,7 @@ void signalHandler(int signum)
 {
 	AnzInterrupts++;
 	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
-	if (AnzInterrupts > 25)	// Killswitch
+	if (AnzInterrupts > 100)	// Killswitch
 	{
 		endwin();	// end ncurses
 	    std::cerr << "\033[0m\n\033[1;4;31mFehler: zu viele Interrupts erhalten.\nLetztes Signal:    " << signum << "\nVorletztes Signal: " << UserInterrupt << "\nProgramm läuft nicht weiter.\033[0m" << std::endl;
@@ -2647,9 +2647,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
-vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
+vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
-	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv6")
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv7")
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
     vector<mpz_class> PositiveRunden;
@@ -3302,15 +3302,16 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 }
 
 // @return Anzahl der bits die es geprüft hat
-uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batchSize)
+uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t Start, uint64_t batchSize)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: Benchmarking")
 	const fmpzxx n_flintlib(n);
 	fmpz_init_set_ui(global_puffer_fmpz_t5, n);
 	string durHR;
 	string durCPU;
-	uint64_t currentSchritteBits = 0;
+	uint64_t currentSchritteBits = Start;
 	InterruptRequiredByApp = true;
+	UserInterrupt = 0;
 	while (UserInterrupt == 0)
 	{
 		uint64_t minSchritteBits = currentSchritteBits;
@@ -3333,6 +3334,12 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t batch
 			fmpz_init_set(global_puffer_fmpz_t1, (AnzRunden)._fmpz());
 			fmpz_init_set(global_puffer_fmpz_t2, (Schritte)._fmpz());
 			fmpz_init_set(global_puffer_fmpz_t3, (maxSchritte)._fmpz());
+			mpz_class tmp1(global_puffer_mpz_t1);
+			mpz_class tmp2(global_puffer_mpz_t2);
+			mpz_class tmp3(global_puffer_mpz_t3);
+			global_puffer_mpz_c1 = tmp1;
+			global_puffer_mpz_c2 = tmp2;
+			global_puffer_mpz_c3 = tmp3;
 			auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
 			auto berechnungsStartCPU = CPUProfiler::cpuTimeTs();
 				while (LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt, &maxSchritte));
@@ -3490,7 +3497,7 @@ int main(int argc, const char** argv)
 					+ "19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
 					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
 					+ "23 = optimierte & erweiterte Simulation mit FLINT\n"
-					+ "\n-1 = Benchmark für die Schritte\n"
+					+ "\n-1 = Benchmark für die Schritte\n\n"
 					+ '\n';
 				cout << menu;
 				cin >> prüfart;					_PRINTVAR_2_(prüfart)
@@ -3544,6 +3551,8 @@ int main(int argc, const char** argv)
 					#ifndef _DISABLELIBFLINTXX_
 						cout << "n eingeben: ";
 						cin >> minN;				_PRINTVAR_4_(minN)
+						cout << "Start: ";
+						cin >> mkb;					_PRINTVAR_4_(mkb)
 						cout << "anzahl bits für Testpacktet: ";
 						cin >> anz;					_PRINTVAR_4_(anz)
 						cout << "Ausgabe von den Ergebnissen: ";
@@ -3551,7 +3560,7 @@ int main(int argc, const char** argv)
 
 						berechnungsStart = steady_clock::now();
 
-						anz = Benchmarking(filename, minN, anz);
+						anz = Benchmarking(filename, minN, mkb, anz);
 
 						berechnungsEnde = steady_clock::now();
 						cout << "Gesamtzahl an geprüften Bits: " << anz << '\n';					_PRINTVAR_4_(anz)

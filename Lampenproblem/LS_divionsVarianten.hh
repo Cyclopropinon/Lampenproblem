@@ -150,6 +150,22 @@ inline bool weiterlaufen8(unsigned long long *n, const flint::fmpzxx *n_flintlib
 	return fmpz_cmp(global_puffer_fmpz_t2, global_puffer_fmpz_t3) <= 0;
 }
 
+inline bool weiterlaufen9(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
+{
+	mpz_add(global_puffer_mpz_c2.get_mpz_t(), global_puffer_mpz_c1.get_mpz_t(), global_puffer_mpz_c2.get_mpz_t());
+	*Lampejetzt = mpz_tdiv_q_ui(global_puffer_mpz_c1.get_mpz_t(), global_puffer_mpz_c2.get_mpz_t(), *n);
+	mpz_add_ui(global_puffer_mpz_c1.get_mpz_t(), global_puffer_mpz_c1.get_mpz_t(), 1);
+	return mpz_cmp(global_puffer_mpz_c2.get_mpz_t(), global_puffer_mpz_c3.get_mpz_t()) <= 0;
+}
+
+inline bool weiterlaufen10(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)
+{
+	mpz_add(global_puffer_mpz_c2.get_mpz_t(), global_puffer_mpz_c1.get_mpz_t(), global_puffer_mpz_c2.get_mpz_t());
+	*Lampejetzt = mpz_tdiv_q_ui(global_puffer_mpz_c1.get_mpz_t(), global_puffer_mpz_c2.get_mpz_t(), *n);
+	mpz_add_ui(global_puffer_mpz_c1.get_mpz_t(), global_puffer_mpz_c1.get_mpz_t(), 1);
+	return global_puffer_mpz_c2 <= global_puffer_mpz_c3;
+}
+
 // Definiere eine Typalias für die Funktion
 //using LampenSchrittVariante = std::function<void(unsigned long long*, flint::fmpzxx*, flint::fmpzxx*, flint::fmpzxx*, unsigned long long*)>;
 #define LampenSchrittVariante std::function<bool(unsigned long long *n, const flint::fmpzxx *n_flintlib, flint::fmpzxx *AnzRunden, flint::fmpzxx *Schritte, unsigned long long *Lampejetzt, flint::fmpzxx *maxSchritte)>
@@ -158,15 +174,17 @@ inline bool weiterlaufen8(unsigned long long *n, const flint::fmpzxx *n_flintlib
 //#define LampenSchrittVariante std::function<void(unsigned long long*, const flint::fmpzxx*, flint::fmpzxx*, flint::fmpzxx*, unsigned long long*)>
 
 const std::vector<LampenSchrittVariante> LSvarianten = {
-	weiterlaufen0,
-	weiterlaufen1,
-	weiterlaufen2,
-	weiterlaufen3,
-	weiterlaufen4,
+	//weiterlaufen0,
+	//weiterlaufen1,
+	//weiterlaufen2,
+	//weiterlaufen3,
+	//weiterlaufen4,
 	weiterlaufen5,
-	weiterlaufen6,
-	weiterlaufen7,
-	weiterlaufen8
+	//weiterlaufen6,
+	//weiterlaufen7,
+	//weiterlaufen8,
+	weiterlaufen9,
+	weiterlaufen10
 };
 
 const auto anzLSvarianten = LSvarianten.size();
