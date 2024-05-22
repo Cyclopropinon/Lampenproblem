@@ -3517,7 +3517,7 @@ int main(int argc, const char** argv)
 					+ "17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n"
 					+ "19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
 					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
-					+ "23 = optimierte & erweiterte Simulation mit FLINT\n"
+					+ "23 = optimierte & erweiterte Simulation mit FLINT\t\t24 = optimierte & erweiterte Simulation mit GMPLIB V7\n"
 					+ "\n-1 = Benchmark für die Schritte\n\n"
 					+ '\n';
 				cout << menu;
@@ -5275,7 +5275,7 @@ int main(int argc, const char** argv)
 						cout << "[Error] FLINTxx not enabled while compiling!" << endl;
 					#endif // _DISABLELIBFLINTXX_
 					break;
-				case 22:
+				case 24:
 					cout << "min n eingeben: ";
 					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
@@ -5356,7 +5356,7 @@ int main(int argc, const char** argv)
 								}
 
 								// Perform the slow operation in the async thread
-								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv6(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv7(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
 
 								std::ostringstream oss2;
 								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
