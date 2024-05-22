@@ -174,15 +174,15 @@ inline bool weiterlaufen10(unsigned long long *n, const flint::fmpzxx *n_flintli
 //#define LampenSchrittVariante std::function<void(unsigned long long*, const flint::fmpzxx*, flint::fmpzxx*, flint::fmpzxx*, unsigned long long*)>
 
 const std::vector<LampenSchrittVariante> LSvarianten = {
-	//weiterlaufen0,
-	//weiterlaufen1,
-	//weiterlaufen2,
-	//weiterlaufen3,
-	//weiterlaufen4,
+	weiterlaufen0,
+	weiterlaufen1,
+	weiterlaufen2,
+	weiterlaufen3,
+	weiterlaufen4,
 	weiterlaufen5,
-	//weiterlaufen6,
-	//weiterlaufen7,
-	//weiterlaufen8,
+	weiterlaufen6,
+	weiterlaufen7,
+	weiterlaufen8,
 	weiterlaufen9,
 	weiterlaufen10
 };
