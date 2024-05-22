@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.19"
+#define _V "0.1.20"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -205,10 +205,11 @@ void signalHandler(int signum)
 {
 	AnzInterrupts++;
 	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
-	if (AnzInterrupts > 100)	// Killswitch
+	if (AnzInterrupts > MaxInterrupts)	// Killswitch
 	{
 		endwin();	// end ncurses
 	    std::cerr << "\033[0m\n\033[1;4;31mFehler: zu viele Interrupts erhalten.\nLetztes Signal:    " << signum << "\nVorletztes Signal: " << UserInterrupt << "\nProgramm läuft nicht weiter.\033[0m" << std::endl;
+		_PRINTINPUT_1_("Fehler: zu viele Interrupts erhalten.\n\nLetztes Signal:    " << signum << "\nVorletztes Signal: " << UserInterrupt << "\nProgramm läuft nicht weiter.\n")
 		exit(signum);
 	} else if (signum == SIGINT && UserInterrupt != 0) {
 		endwin();	// end ncurses
@@ -3489,6 +3490,8 @@ int main(int argc, const char** argv)
 
 		uint64_t							AnzThreads;
 
+		bool								FileUnopenable;
+
 		//	vector<vector<unsigned long long>>	Vectorliste;
 
 		/*	for (size_t i = 0; i < AnzThreads; i++)
@@ -5280,33 +5283,30 @@ int main(int argc, const char** argv)
 					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
 					cin >> maxN;				_PRINTVAR_4_(maxN)
-				    cout << "Anzahl der PR je Lampenanzahl: ";
+					cout << "Anzahl der PR je Lampenanzahl: ";
 					cin >> anz;					_PRINTVAR_4_(anz)
 					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
 					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
 
-					cout << "Datei speichern unter: ";
-					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
 
-					berechnungsStartHR = std::chrono::high_resolution_clock::now();
-					StartTimeGlobal = berechnungsStartHR;
+					FileUnopenable = false;
+					do {
+						if (FileUnopenable) cout << "Fehler beim öffnen der Datei! Gib eine andere, noch nicht verwendete Datei ein.\n";
+						cout << "Datei speichern unter: ";
+						cin >> filename;		_PRINTVAR_4_(filename)
+						output_fstream.open(filename, ios_base::out);
+						FileUnopenable = true;
+					} while (!output_fstream.is_open());
 
-					delN = maxN - minN + 1;			// = maxN - minN + 1
-					diffN = delN - 1;				// = maxN - minN
-
-					output_fstream.open(filename, ios_base::out);
-					if (!output_fstream.is_open())
 					{
-						cout << "Fehler: Failed to open " << filename << '\n';
+						berechnungsStartHR = std::chrono::high_resolution_clock::now();
+						StartTimeGlobal = berechnungsStartHR;
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
-						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
-					}
-					else {
+						delN = maxN - minN + 1;			// = maxN - minN + 1
+						diffN = delN - 1;				// = maxN - minN
+
 						// erstelle Ordner für die Session
 						erstelleVerzeichnis(Session.c_str());
 
