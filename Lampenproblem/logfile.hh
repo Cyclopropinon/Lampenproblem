@@ -11,7 +11,7 @@
     // 3: Funktionsaufrufe
     // 4: Zwischenwerte
     // 5: Funktionsaufrufe in zeitkritischen Schleifen
-    #define LOGLEVEL 7
+    #define LOGLEVEL 4
 #endif
 
 // Maximum Filename Length
