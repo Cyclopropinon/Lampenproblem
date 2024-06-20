@@ -44,7 +44,7 @@ You move only clockwise.
 
 Initial conditions:
 -> Round number k=1
--> Number of lamps m=1
+-> Lampnumber m=1
 -> You start at lamp 1
 -> All lamps are off
 
