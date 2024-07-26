@@ -29,5 +29,7 @@ mpz_class				global_puffer_mpz_c1,	global_puffer_mpz_c2,	global_puffer_mpz_c3;
 #endif
 
 // Fenster die in ncurses geöffnet sind
+bool					FensterAktiviert = false;
 WINDOW 					*TitelFenster;
 std::vector<WINDOW *> 	ThreadFenster;
+std::vector<bool>		FensterExistiert;

@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.20"
+#define _V "0.1.21"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -209,13 +209,13 @@ void signalHandler(int signum)
 {
 	AnzInterrupts++;
 	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
-	if (signum == SIGWINCH) // = 28; soll jedes mal passend den Bildschirm aktualisieren
+	if (signum == SIGWINCH && FensterAktiviert) // = 28; soll jedes mal passend den Bildschirm aktualisieren
 	{
 		endwin();
 		clear();
 		// Redraw screen
 		wrefresh(TitelFenster);
-		for(auto Fenster : ThreadFenster) if(Fenster != nullptr) wrefresh(Fenster);
+		for(size_t i = 0; i < ThreadFenster.size(); i++) if(FensterExistiert[i] && ThreadFenster[i] != nullptr) wrefresh(ThreadFenster[i]);
 		refresh();
 	} else if (AnzInterrupts > MaxInterrupts)	// Killswitch
 	{
@@ -5332,6 +5332,7 @@ int main(int argc, const char** argv)
 						constexpr int titleWinHeight = 2;
 						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
 						wrefresh(titleWin);
+						FensterAktiviert = true;
 
 						// Create an array to store pointers to ncurses windows
 						vector<WINDOW *> threadWins;
@@ -5347,6 +5348,7 @@ int main(int argc, const char** argv)
 						// mache daraus globale variablen
 						TitelFenster = titleWin;
 						ThreadFenster = threadWins;
+						FensterExistiert.resize(delN,false);
 
 						const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
@@ -5366,14 +5368,17 @@ int main(int argc, const char** argv)
 								#pragma GCC diagnostic ignored "-Wformat"
 								adt(berechnungsStartHR, elapsed);
 								#pragma GCC diagnostic pop
+
+								auto index = i - minN;
 								{
 									lock_cout;
-									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
-									wrefresh(threadWins[i - minN]);
+									mvwprintw(threadWins[index], 1, 72, "Startzeit: %s", elapsed.c_str());
+									wrefresh(threadWins[index]);
+									FensterExistiert[index] = true;
 								}
 
 								// Perform the slow operation in the async thread
-								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv7(i, anz, false, Session + "/" + std::to_string(i), threadWins[i - minN], titleWin, timerOrtx, timerOrty, tty);
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv7(i, anz, false, Session + "/" + std::to_string(i), threadWins[index], titleWin, timerOrtx, timerOrty, tty);
 
 								std::ostringstream oss2;
 								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
@@ -5384,7 +5389,8 @@ int main(int argc, const char** argv)
 								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
 
 								// Close the ncurses window when the thread finishes
-								//delwin(threadWins[i - minN]);
+								//delwin(threadWins[index]);
+								//FensterExistiert[index] = false;
 							});
 
 							// Store the future for later retrieval
@@ -5432,6 +5438,7 @@ int main(int argc, const char** argv)
 							cin.get();
 							cin.get();
 						}
+						FensterAktiviert = false;
 						endwin();	// end ncurses
 
 						if(tty) cout << gotoZeileDrunter;
