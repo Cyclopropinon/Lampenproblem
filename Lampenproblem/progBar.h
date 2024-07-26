@@ -607,3 +607,29 @@ void pnarc(std::string msg)  // printNumberAndResetCursor
     // Zurücksetzen des Cursors auf die gespeicherte Position
     std::cout.seekp(currentPosition);
 }
+
+void refreshScreen()
+{
+    try { if(FensterAktiviert) // nur wenn ncurses auch aktiviert ist
+    {
+        lock_cout;
+		endwin();
+		clear();
+		// Redraw screen
+		wrefresh(TitelFenster);
+		for(size_t i = 0; i < ThreadFenster.size(); i++) if(FensterExistiert[i] && ThreadFenster[i] != nullptr)
+		{
+			wresize(ThreadFenster[i], Fensterhöhe, COLS);
+			box(ThreadFenster[i], 0, 0);
+			if(!ttyGlobal) wborder_set(ThreadFenster[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+			wrefresh(ThreadFenster[i]);
+		}
+		refresh();
+
+    }}
+    catch(const std::exception& e)
+    {
+        _PRINTERROR_
+        std::cerr << e.what() << '\n';
+    }
+}

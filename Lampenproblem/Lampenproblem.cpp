@@ -108,7 +108,7 @@ using namespace chrono_literals;
 #endif // !ifndef _DISABLELIBFLINTXX_
 
 #ifdef _ENABLEBIGINTS_
-using namespace boost::multiprecision;
+	using namespace boost::multiprecision;
 #endif
 
 #include "makrocheks.h"
@@ -209,14 +209,13 @@ void signalHandler(int signum)
 {
 	AnzInterrupts++;
 	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
-	if (signum == SIGWINCH && FensterAktiviert) // = 28; soll jedes mal passend den Bildschirm aktualisieren
+	if (signum == SIGSEGV) // = 11; jedes mal wenn auf illegalem Speicher zugegriffen wurde
 	{
-		endwin();
-		clear();
-		// Redraw screen
-		wrefresh(TitelFenster);
-		for(size_t i = 0; i < ThreadFenster.size(); i++) if(FensterExistiert[i] && ThreadFenster[i] != nullptr) wrefresh(ThreadFenster[i]);
-		refresh();
+		// do something!
+	}
+	if (signum == SIGWINCH) // = 28; soll jedes mal passend den Bildschirm aktualisieren
+	{
+		refreshScreen();
 	} else if (AnzInterrupts > MaxInterrupts)	// Killswitch
 	{
 		endwin();	// end ncurses
@@ -3421,6 +3420,7 @@ int main(int argc, const char** argv)
 	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
 	char								usePresetLang;												// Ob die vorgegebene Sprache benutzt werden soll
 
+	ttyGlobal = tty; // Aktualisiere globale Variable
 	cout << "Language detected: \"" << Sprache << "\" Use this language? (y/n) ";
 	cin >> usePresetLang;
 	if(usePresetLang!='n')
@@ -3445,7 +3445,6 @@ int main(int argc, const char** argv)
 	uint64_t							finishedThreads;											// Anzahl der bereits fertigen Threads
 
 	// Unicode-Zeichen für abgerundete Ecken
-	cchar_t ls, rs, ts, bs, tl, tr, bl, br;
 	setcchar(&ls, L"│", 0, 0, NULL);
 	setcchar(&rs, L"│", 0, 0, NULL);
 	setcchar(&ts, L"─", 0, 0, NULL);
@@ -5330,6 +5329,7 @@ int main(int argc, const char** argv)
 
 						// Erstelle ein Fenster für die Titelzeile
 						constexpr int titleWinHeight = 2;
+						Titelfensterhöhe = titleWinHeight;
 						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
 						wrefresh(titleWin);
 						FensterAktiviert = true;
@@ -5337,20 +5337,21 @@ int main(int argc, const char** argv)
 						// Create an array to store pointers to ncurses windows
 						vector<WINDOW *> threadWins;
 						threadWins.resize(delN);
+						FensterExistiert.resize(delN,false);
 						for (int i = 0; i < delN; i++) {
-							threadWins[i] = newwin(4, COLS, i * 4 + titleWinHeight, 0);
+							threadWins[i] = newwin(Fensterhöhe, COLS, i * Fensterhöhe + titleWinHeight, 0);
 							box(threadWins[i], 0, 0);
 							if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
 							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
 							wrefresh(threadWins[i]);
+							FensterExistiert[i] = true;
 						}
 
 						// mache daraus globale variablen
 						TitelFenster = titleWin;
 						ThreadFenster = threadWins;
-						FensterExistiert.resize(delN,false);
 
-						const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
+						const int zeileDrunter = Fensterhöhe * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
 						constexpr int timerOrty = 1;
 						constexpr int timerOrtx = 0;
@@ -5369,12 +5370,12 @@ int main(int argc, const char** argv)
 								adt(berechnungsStartHR, elapsed);
 								#pragma GCC diagnostic pop
 
-								auto index = i - minN;
+								const auto index = i - minN;
 								{
 									lock_cout;
 									mvwprintw(threadWins[index], 1, 72, "Startzeit: %s", elapsed.c_str());
 									wrefresh(threadWins[index]);
-									FensterExistiert[index] = true;
+									//FensterExistiert[index] = true;
 								}
 
 								// Perform the slow operation in the async thread

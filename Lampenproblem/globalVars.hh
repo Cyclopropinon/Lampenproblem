@@ -33,3 +33,10 @@ bool					FensterAktiviert = false;
 WINDOW 					*TitelFenster;
 std::vector<WINDOW *> 	ThreadFenster;
 std::vector<bool>		FensterExistiert;
+constexpr int			Fensterhöhe = 4;
+int						Titelfensterhöhe;
+
+bool					ttyGlobal;
+
+// Unicode-Zeichen für abgerundete Ecken
+cchar_t ls, rs, ts, bs, tl, tr, bl, br;
