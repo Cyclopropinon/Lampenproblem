@@ -27,3 +27,7 @@ mpz_class				global_puffer_mpz_c1,	global_puffer_mpz_c2,	global_puffer_mpz_c3;
 	fmpz_t				global_puffer_fmpz_t1,	global_puffer_fmpz_t2,	global_puffer_fmpz_t3, global_puffer_fmpz_t4, global_puffer_fmpz_t5;
 	flint::fmpzxx		global_puffer_mpzxx1;
 #endif
+
+// Fenster die in ncurses geöffnet sind
+WINDOW 					*TitelFenster;
+std::vector<WINDOW *> 	ThreadFenster;

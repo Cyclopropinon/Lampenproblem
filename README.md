@@ -69,3 +69,6 @@ Theorems (unproven)
 Ein paar Screenshots:
 ![grafik](./readme/Screenshot%20from%202024-04-13%2023-43-39.png)
 ![grafik](./readme/Screenshot%20from%202024-04-14%2018-26-42.png)
+
+## TODO
+* make it an option to fit onto a mobile screen

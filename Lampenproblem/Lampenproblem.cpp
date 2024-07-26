@@ -67,8 +67,6 @@
 #include <thread>
 #include <unistd.h>
 #include <vector>
-#include "cpu.h"
-#include "zwischenVar.h"
 
 //#include <ncurses.h>
 //#include <stdexcept>
@@ -83,6 +81,12 @@
 
 // für globale Variablen
 #include "globalVars.hh"
+
+// Für CPU-Profiler
+#include "cpu.h"
+
+// Für Veriablenspeicherung
+#include "zwischenVar.h"
 
 // für die unterschiedlichen Divisionsverfahren beim Schrittegehen an den Lampen
 #ifndef _DISABLELIBFLINTXX_
@@ -205,7 +209,15 @@ void signalHandler(int signum)
 {
 	AnzInterrupts++;
 	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
-	if (AnzInterrupts > MaxInterrupts)	// Killswitch
+	if (signum == SIGWINCH) // = 28; soll jedes mal passend den Bildschirm aktualisieren
+	{
+		endwin();
+		clear();
+		// Redraw screen
+		wrefresh(TitelFenster);
+		for(auto Fenster : ThreadFenster) if(Fenster != nullptr) wrefresh(Fenster);
+		refresh();
+	} else if (AnzInterrupts > MaxInterrupts)	// Killswitch
 	{
 		endwin();	// end ncurses
 	    std::cerr << "\033[0m\n\033[1;4;31mFehler: zu viele Interrupts erhalten.\nLetztes Signal:    " << signum << "\nVorletztes Signal: " << UserInterrupt << "\nProgramm läuft nicht weiter.\033[0m" << std::endl;
@@ -5322,7 +5334,8 @@ int main(int argc, const char** argv)
 						wrefresh(titleWin);
 
 						// Create an array to store pointers to ncurses windows
-						WINDOW *threadWins[delN];
+						vector<WINDOW *> threadWins;
+						threadWins.resize(delN);
 						for (int i = 0; i < delN; i++) {
 							threadWins[i] = newwin(4, COLS, i * 4 + titleWinHeight, 0);
 							box(threadWins[i], 0, 0);
@@ -5330,6 +5343,10 @@ int main(int argc, const char** argv)
 							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
 							wrefresh(threadWins[i]);
 						}
+
+						// mache daraus globale variablen
+						TitelFenster = titleWin;
+						ThreadFenster = threadWins;
 
 						const int zeileDrunter = 4 * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
