@@ -35,6 +35,8 @@ std::vector<WINDOW *> 	ThreadFenster;
 std::vector<bool>		FensterExistiert;
 constexpr int			Fensterhöhe = 4;
 int						Titelfensterhöhe;
+std::atomic<bool>		redrawInProgress = false;
+std::atomic<bool>		redrawAgain = false;
 
 bool					ttyGlobal;
 

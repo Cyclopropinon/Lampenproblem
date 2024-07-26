@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.21"
+#define _V "0.1.22"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -205,6 +205,22 @@ bool isTTY(std::string TERM)
 	return false;
 }
 
+// Funktion zur Überwachung der Nutzereingabe
+void input_listener() {
+    int ch;
+    while (ch = getch())// != 'q') {
+    {
+        if (ch == 82) // 82 = R (Groß)
+        { // 18 ist der ASCII-Code für Strg+R
+            refreshScreen();
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    // Beende ncurses-Modus wenn 'q' gedrückt wird
+    endwin();
+    exit(0); // Beende das Programm
+}
+
 void signalHandler(int signum)
 {
 	AnzInterrupts++;
@@ -215,7 +231,7 @@ void signalHandler(int signum)
 	}
 	if (signum == SIGWINCH) // = 28; soll jedes mal passend den Bildschirm aktualisieren
 	{
-		refreshScreen();
+		//refreshScreen();
 	} else if (AnzInterrupts > MaxInterrupts)	// Killswitch
 	{
 		endwin();	// end ncurses
@@ -2788,6 +2804,10 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 					wattron(titelWin, A_BOLD);  		// Fett
 					wattron(outputWin, A_BOLD);  		// Fett
 
+					wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+					mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titel
+					wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
 					wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 					mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
 					wattron(outputWin, A_DIM);          // Halbdurchsichtig
@@ -5326,6 +5346,7 @@ int main(int argc, const char** argv)
 						cbreak();
 						noecho();
 						curs_set(0);
+						std::thread input_thread(input_listener); // Starte Eingabe-Thread
 
 						// Erstelle ein Fenster für die Titelzeile
 						constexpr int titleWinHeight = 2;
@@ -5432,6 +5453,8 @@ int main(int argc, const char** argv)
 						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
 						#pragma GCC diagnostic pop
+
+						input_thread.join();
 
 						if(!tty)
 						{

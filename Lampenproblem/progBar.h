@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <cstring>
 #include <ctime>
@@ -610,26 +611,38 @@ void pnarc(std::string msg)  // printNumberAndResetCursor
 
 void refreshScreen()
 {
-    try { if(FensterAktiviert) // nur wenn ncurses auch aktiviert ist
+    _PRINTINPUT_3_("Funktionsaufruf: refreshScreen")
+    try { if(FensterAktiviert && !redrawInProgress) // nur wenn ncurses auch aktiviert ist und keine andere Bildschirmaktualisierung gerade im Gange ist
     {
-        lock_cout;
-		endwin();
-		clear();
-		// Redraw screen
-		wrefresh(TitelFenster);
-		for(size_t i = 0; i < ThreadFenster.size(); i++) if(FensterExistiert[i] && ThreadFenster[i] != nullptr)
-		{
-			wresize(ThreadFenster[i], Fensterhöhe, COLS);
-			box(ThreadFenster[i], 0, 0);
-			if(!ttyGlobal) wborder_set(ThreadFenster[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
-			wrefresh(ThreadFenster[i]);
-		}
-		refresh();
+        do
+        {
+            redrawAgain = false;
+            redrawInProgress = true;
+            _PRINTWAYPOINT_5_
+            //std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-    }}
+            lock_cout;
+            endwin();
+            clear();
+
+            // Redraw screen
+            wrefresh(TitelFenster);
+            for(size_t i = 0; i < ThreadFenster.size(); i++) if(FensterExistiert[i] && ThreadFenster[i] != nullptr)
+            {
+                wresize(ThreadFenster[i], Fensterhöhe, COLS);
+                //box(ThreadFenster[i], 0, 0);
+                if(!ttyGlobal) wborder_set(ThreadFenster[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+                wrefresh(ThreadFenster[i]);
+            }
+            refresh();
+        } while (false); //(redrawAgain);
+        redrawInProgress = false;
+    } else redrawAgain = true;
+    }
     catch(const std::exception& e)
     {
         _PRINTERROR_
         std::cerr << e.what() << '\n';
+        redrawInProgress = false;
     }
 }
