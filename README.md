@@ -73,3 +73,5 @@ Ein paar Screenshots:
 ## TODO
 * make it an option to fit onto a mobile screen
 * add a notify-window for system messages
+* Settings file
+* Emergency-save when power failure
