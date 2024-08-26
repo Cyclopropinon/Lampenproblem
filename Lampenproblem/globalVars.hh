@@ -31,10 +31,12 @@ mpz_class				global_puffer_mpz_c1,	global_puffer_mpz_c2,	global_puffer_mpz_c3;
 // Fenster die in ncurses geöffnet sind
 bool					FensterAktiviert = false;
 WINDOW 					*TitelFenster;
+WINDOW 					*NachrichtenFenster;
 std::vector<WINDOW *> 	ThreadFenster;
 std::vector<bool>		FensterExistiert;
 constexpr int			Fensterhöhe = 4;
 int						Titelfensterhöhe;
+int						Nachrichtenfensterhöhe;
 std::atomic<bool>		redrawInProgress = false;
 std::atomic<bool>		redrawAgain = false;
 

@@ -3552,6 +3552,7 @@ int main(int argc, const char** argv)
 					+ "19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
 					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
 					+ "23 = optimierte & erweiterte Simulation mit FLINT\t\t24 = optimierte & erweiterte Simulation mit GMPLIB V7\n"
+					+ "25 = optimierte & erweiterte Simulation mit GMPLIB V8 (Jetzt mit Nachrichtenfenster!)\n"
 					+ "\n-1 = Benchmark für die Schritte\n\n"
 					+ '\n';
 				cout << menu;
@@ -5507,6 +5508,7 @@ int main(int argc, const char** argv)
 						cbreak();
 						noecho();
 						curs_set(0);
+					    init_pair(1, COLOR_RED, COLOR_BLACK);
 						std::thread input_thread(input_listener); // Starte Eingabe-Thread
 
 						// Erstelle ein Fenster für die Titelzeile
@@ -5516,12 +5518,23 @@ int main(int argc, const char** argv)
 						wrefresh(titleWin);
 						FensterAktiviert = true;
 
+						// Erstelle ein Fenster für die Titelzeile
+						constexpr int NotifsWinHeight = 4;
+						Nachrichtenfensterhöhe = NotifsWinHeight;
+						WINDOW *notifWin = newwin(NotifsWinHeight, COLS, titleWinHeight, 0);
+						wattron(notifWin, A_BOLD | COLOR_PAIR(1)); // Set bold and red color
+						box(notifWin, 0, 0);
+						if(!tty) wborder_set(notifWin, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+						mvwprintw(notifWin, 0, 2, " Nachrichten ");
+					    wattroff(notifWin, A_BOLD | COLOR_PAIR(1)); // Turn off bold and red color
+						wrefresh(notifWin);
+
 						// Create an array to store pointers to ncurses windows
 						vector<WINDOW *> threadWins;
 						threadWins.resize(delN);
 						FensterExistiert.resize(delN,false);
 						for (int i = 0; i < delN; i++) {
-							threadWins[i] = newwin(Fensterhöhe, COLS, i * Fensterhöhe + titleWinHeight, 0);
+							threadWins[i] = newwin(Fensterhöhe, COLS, i * Fensterhöhe + titleWinHeight + NotifsWinHeight, 0);
 							box(threadWins[i], 0, 0);
 							if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
 							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
@@ -5531,6 +5544,7 @@ int main(int argc, const char** argv)
 
 						// mache daraus globale variablen
 						TitelFenster = titleWin;
+						NachrichtenFenster = notifWin;
 						ThreadFenster = threadWins;
 
 						const int zeileDrunter = Fensterhöhe * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
