@@ -2909,6 +2909,240 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
+vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
+{
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv7")
+    mpz_class AnzRunden = 2;
+    vector<bool> Lampen(n, true);
+    vector<mpz_class> PositiveRunden;
+    mpz_t tmp_n_gmplib;
+    mpz_init_set_ui(tmp_n_gmplib, n);
+    mpz_class Schritte(tmp_n_gmplib);
+    const mpz_class n_gmplib(tmp_n_gmplib);
+    unsigned long long Lampejetzt;
+    unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
+    unsigned long long cPrint = 0;		// Checkpoint für print
+    unsigned long long dPrint = 0;		// Anz Iterationen zwischen den 2 letzten Sicherungen
+	bool increasedBackupFrequency = false;
+    auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
+    auto berechnungsEndeHR = berechnungsStartHR;
+    auto berechnungsZwCP_HR = berechnungsStartHR;
+	std::chrono::nanoseconds Laufzeit;
+    string durHR;
+    string CP_HR;
+    string CPdHR;
+	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
+
+	if (std::filesystem::exists(Session))
+	{
+		// Lade die Vorherige Session falls eine existiert
+		CheckpointLSGv6(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
+		berechnungsStartHR -= Laufzeit;
+	}
+
+    vector<bool> AlleLampenAn(n, true);
+    vector<bool> AlleLampenAus(n, false);
+
+    PositiveRunden.reserve(anz);
+    if (einsenAnzeigen)
+    {
+        PositiveRunden.push_back(1);
+    }
+
+	start_color();  // Aktiviert die Farbunterstützung
+	init_pair(0, COLOR_WHITE, COLOR_BLACK);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(2, COLOR_CYAN, COLOR_BLACK);
+	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(5, COLOR_GREEN, COLOR_BLACK);
+	init_pair(6, COLOR_BLUE, COLOR_BLACK);
+
+	{
+		lock_cout;
+		wattron(outputWin, A_BOLD);			// Fett
+		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern; Indikator für den Start
+		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+		wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
+		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+		mvwprintw(outputWin, 2, 76, "AnzPR: 0");						// Anzahl der bereits gefundendn positiver Runden (hier: 0)
+		wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
+		wattroff(outputWin, A_BOLD);
+		wrefresh(outputWin);
+	}
+
+    Lampen[0] = false;
+
+	// 1. Stufe
+    while (AnzRunden <= n_gmplib)
+    {
+        Schritte += AnzRunden;
+        if (AnzRunden < 1 + Schritte / n_gmplib)
+        {
+            if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+            {
+                PositiveRunden.push_back(AnzRunden);
+				AnzPR = PositiveRunden.size();
+				_PRINTINPUT_1_("!!!WICHTIG!!! PR gefunden (n,k): (" << n << ", " << AnzRunden << ") WIE IST DAS MÖGLICH?????\nBITTE OBIGES SOFORT MELDEN!!!")
+            }
+
+            AnzRunden = 1 + Schritte / n_gmplib;
+        }
+        Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
+        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+
+        print++;
+	}
+
+	// 2. Stufe
+    while (AnzPR < anz)
+    {
+        Schritte += AnzRunden;
+
+		if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
+		{
+			PositiveRunden.push_back(AnzRunden);
+			AnzPR = PositiveRunden.size();
+			_PRINTINPUT_4_("PR gefunden für n = " << n << "; Größe: " << mpz_sizeinbase(AnzRunden.get_mpz_t(), 265) << " Bytes")
+		}
+
+		Lampejetzt = mpz_tdiv_q_ui(AnzRunden.get_mpz_t(), Schritte.get_mpz_t(), n);
+        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
+		AnzRunden++;
+
+        print++;
+
+		if(print % 32768 == 0)
+		{
+			if (increasedBackupFrequency || print % 1048576 == 0)
+			{
+				dPrint = print - cPrint;
+				cPrint = print;
+				Laufzeit = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
+				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
+				berechnungsZwCP_HR = berechnungsEndeHR;
+				#pragma GCC diagnostic push
+				#pragma GCC diagnostic ignored "-Wformat"
+				dt(berechnungsStartHR, durHR);
+				dt(berechnungsZwCP_HR, CP_HR);
+				Pdt(berechnungsZwCP_HR, CPdHR);
+				#pragma GCC diagnostic pop
+
+				// Redirect output to the ncurses window
+				
+				{
+					lock_cout;
+
+					wattron(titelWin, A_BOLD);  		// Fett
+					wattron(outputWin, A_BOLD);  		// Fett
+
+					wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+					mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titel
+					wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+					mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
+					wattron(outputWin, A_DIM);          // Halbdurchsichtig
+					if(tty) mvwprintw(outputWin, 2, 30, "dt: %s    ", CP_HR.c_str());				// tty unterstützt nicht so viele unicode zeichen
+					else    mvwprintw(outputWin, 2, 30, "Δt: %s    ", CP_HR.c_str());
+					// if(tty) mvwprintw(outputWin, 2, 30, "dn: %llu dt: %s", dPrint, CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+					// else    mvwprintw(outputWin, 2, 30, "Δn: %llu Δt: %s", dPrint, CP_HR.c_str());
+					wattron(outputWin, A_ITALIC);       // Kursiv
+					mvwprintw(outputWin, 2, 55, "dt/dn: %s    ", CPdHR.c_str());
+					wattroff(outputWin, A_DIM);
+					wattroff(outputWin, A_ITALIC);
+					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wformat"
+					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+					#pragma GCC diagnostic pop
+					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+					mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+					wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+					wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+					mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
+					wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+
+					wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
+					printCurrentTime(titelWin, timerOrty, timerOrtx);
+					wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
+
+					wattroff(titelWin, A_BOLD);
+					wattroff(outputWin, A_BOLD);
+
+					wrefresh(titelWin);
+					wrefresh(outputWin);
+				}
+			}
+		}
+	}
+
+	dPrint = print - cPrint;
+	cPrint = print;
+
+	berechnungsZwCP_HR = berechnungsEndeHR;
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wformat"
+	dt(berechnungsStartHR, durHR);
+	// dt(berechnungsZwCP_HR, CP_HR);
+	Pdt(berechnungsZwCP_HR, CPdHR);
+	#pragma GCC diagnostic pop
+
+	{
+		lock_cout;
+
+		wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
+		mvwprintw(outputWin, 2, 2, "Zeit: %s", durHR.c_str());
+		wattron(outputWin, A_DIM);          // Halbdurchsichtig
+		// if(tty) mvwprintw(outputWin, 2, 30, "dt: %s", CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
+		// else    mvwprintw(outputWin, 2, 30, "Δt: %s", CP_HR.c_str());
+		wattron(outputWin, A_ITALIC);       // Kursiv
+		mvwprintw(outputWin, 2, 55, "dt/dn: %s      ", CPdHR.c_str());
+		wattroff(outputWin, A_DIM);
+		wattroff(outputWin, A_ITALIC);
+		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wformat"
+		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		#pragma GCC diagnostic pop
+		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
+		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
+		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(2));  // Cyan auf Schwarz
+		mvwprintw(outputWin, 1, 20, "Iteration: %llu", print);
+		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
+
+		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
+		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
+
+		wrefresh(outputWin);
+
+		wattron(titelWin, A_BOLD);  		// Fett
+		wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
+		printCurrentTime(titelWin, timerOrty, timerOrtx);
+		wattroff(titelWin, COLOR_PAIR(6));	// Farbe deaktivieren
+		wattroff(titelWin, A_BOLD);
+
+		wrefresh(titelWin);
+	}
+
+    return PositiveRunden;
+}
+
 #ifndef _DISABLELIBFLINTXX_
 
 vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
