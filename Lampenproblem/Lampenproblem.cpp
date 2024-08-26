@@ -225,7 +225,7 @@ void signalHandler(int signum)
 {
 	AnzInterrupts++;
 	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
-	if (NachrichtenAktiviert)
+	/*if (NachrichtenAktiviert)
 	{
 		// Get the current time
 		time_t now = time(0);
@@ -247,7 +247,7 @@ void signalHandler(int signum)
 		wattroff(NachrichtenFenster, COLOR_PAIR(1));
 
 		wrefresh(NachrichtenFenster);
-	}
+	}*/
 
 	if (signum == SIGSEGV) // = 11; jedes mal wenn auf illegalem Speicher zugegriffen wurde
 	{
