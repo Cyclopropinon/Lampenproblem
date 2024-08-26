@@ -5470,6 +5470,167 @@ int main(int argc, const char** argv)
 					}
 					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
 					break;
+				case 25:
+					cout << "min n eingeben: ";
+					cin >> minN;				_PRINTVAR_4_(minN)
+					cout << "max n eingeben: ";
+					cin >> maxN;				_PRINTVAR_4_(maxN)
+					cout << "Anzahl der PR je Lampenanzahl: ";
+					cin >> anz;					_PRINTVAR_4_(anz)
+					cout << AnzThreadsUnterstützt << " Threads werden unterstützt. Anzahl gewünschter Threads eingeben: ";
+					cin >> AnzThreads;			_PRINTVAR_4_(AnzThreads)
+
+					cout << "Zwischenstand speichern unter: ";
+					cin >> Session;				_PRINTVAR_4_(Session)
+
+					FileUnopenable = false;
+					do {
+						if (FileUnopenable) cout << "Fehler beim öffnen der Datei! Gib eine andere, noch nicht verwendete Datei ein.\n";
+						cout << "Datei speichern unter: ";
+						cin >> filename;		_PRINTVAR_4_(filename)
+						output_fstream.open(filename, ios_base::out);
+						FileUnopenable = true;
+					} while (!output_fstream.is_open());
+
+					{
+						berechnungsStartHR = std::chrono::high_resolution_clock::now();
+						StartTimeGlobal = berechnungsStartHR;
+
+						delN = maxN - minN + 1;			// = maxN - minN + 1
+						diffN = delN - 1;				// = maxN - minN
+
+						// erstelle Ordner für die Session
+						erstelleVerzeichnis(Session.c_str());
+
+						initscr();
+						start_color();
+						cbreak();
+						noecho();
+						curs_set(0);
+						std::thread input_thread(input_listener); // Starte Eingabe-Thread
+
+						// Erstelle ein Fenster für die Titelzeile
+						constexpr int titleWinHeight = 2;
+						Titelfensterhöhe = titleWinHeight;
+						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
+						wrefresh(titleWin);
+						FensterAktiviert = true;
+
+						// Create an array to store pointers to ncurses windows
+						vector<WINDOW *> threadWins;
+						threadWins.resize(delN);
+						FensterExistiert.resize(delN,false);
+						for (int i = 0; i < delN; i++) {
+							threadWins[i] = newwin(Fensterhöhe, COLS, i * Fensterhöhe + titleWinHeight, 0);
+							box(threadWins[i], 0, 0);
+							if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
+							wrefresh(threadWins[i]);
+							FensterExistiert[i] = true;
+						}
+
+						// mache daraus globale variablen
+						TitelFenster = titleWin;
+						ThreadFenster = threadWins;
+
+						const int zeileDrunter = Fensterhöhe * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
+						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
+						constexpr int timerOrty = 1;
+						constexpr int timerOrtx = 0;
+
+						// Vector to store futures
+						std::vector<std::future<void>> futures;
+
+						for (size_t i = maxN; i >= minN; i--)					// falsch rum für besseres Zeitmanagement
+						{
+							// Use async to run the function asynchronously
+							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
+							{
+								string elapsed;
+								#pragma GCC diagnostic push
+								#pragma GCC diagnostic ignored "-Wformat"
+								adt(berechnungsStartHR, elapsed);
+								#pragma GCC diagnostic pop
+
+								const auto index = i - minN;
+								{
+									lock_cout;
+									mvwprintw(threadWins[index], 1, 72, "Startzeit: %s", elapsed.c_str());
+									wrefresh(threadWins[index]);
+									//FensterExistiert[index] = true;
+								}
+
+								// Perform the slow operation in the async thread
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv7(i, anz, false, Session + "/" + std::to_string(i), threadWins[index], titleWin, timerOrtx, timerOrty, tty);
+
+								std::ostringstream oss2;
+								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
+								oss2 << PositiveRunden.back();
+
+								// Synchronize file output with a mutex
+								lock_output;
+								output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << std::endl;
+
+								// Close the ncurses window when the thread finishes
+								//delwin(threadWins[index]);
+								//FensterExistiert[index] = false;
+							});
+
+							// Store the future for later retrieval
+							futures.push_back(std::move(fut));
+
+							// Check if the number of active threads exceeds the limit
+							while (futures.size() >= AnzThreads)
+							{
+								auto it = std::find_if(futures.begin(), futures.end(), [](const std::future<void>& f)
+								{
+									return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+								});
+
+								// Remove completed futures
+								if (it != futures.end())
+								{
+									it->wait();
+									futures.erase(it);
+								}
+							}
+
+							finishedThreads = 0;
+							if (i <= maxN - AnzThreads + 1) finishedThreads = (maxN - i) - AnzThreads + 2;
+							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+						}
+
+						// Wait for the remaining threads to finish
+						for (auto& fut : futures)
+						{
+							fut.wait();
+							finishedThreads++;
+							auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+						}
+
+						#pragma GCC diagnostic push
+						#pragma GCC diagnostic ignored "-Wformat"
+						dt(berechnungsStartHR, durHR);
+						#pragma GCC diagnostic pop
+
+						input_thread.join();
+
+						if(!tty)
+						{
+							cout << gotoZeileDrunter << "\nBerechnungen beendet! Taste drücken, um ins Menü zurückzukommen." << endl;
+							cin.get();
+							cin.get();
+						}
+						FensterAktiviert = false;
+						endwin();	// end ncurses
+
+						if(tty) cout << gotoZeileDrunter;
+						cout << "Datei gespeichert als " << filename << '!' << endl;
+					}
+					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
+					break;
 				default:
 					cout << "\aFehlerhafte Eingabe!\n\n";
 					break;
