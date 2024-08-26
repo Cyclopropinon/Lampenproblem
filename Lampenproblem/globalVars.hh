@@ -37,8 +37,10 @@ std::vector<bool>		FensterExistiert;
 constexpr int			Fensterhöhe = 4;
 int						Titelfensterhöhe;
 int						Nachrichtenfensterhöhe;
+int						ThreadFensterShift;
 std::atomic<bool>		redrawInProgress = false;
 std::atomic<bool>		redrawAgain = false;
+std::atomic<bool>		NachrichtenAktiviert = false;
 
 bool					ttyGlobal;
 

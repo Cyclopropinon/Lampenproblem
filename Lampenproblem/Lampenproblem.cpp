@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.22"
+#define _V "0.1.23"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -225,6 +225,30 @@ void signalHandler(int signum)
 {
 	AnzInterrupts++;
 	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
+	if (NachrichtenAktiviert)
+	{
+		// Get the current time
+		time_t now = time(0);
+		
+		// Convert it to tm struct for local timezone
+		tm* localtm = localtime(&now);
+
+		lock_cout;
+		wattron(NachrichtenFenster, COLOR_PAIR(1));
+		mvwprintw(NachrichtenFenster, 1, 2, "Signal %i erhalten; #interrupts = %llu ;Zeit: %04d-%02d-%02d %02d:%02d:%02d\n",
+		   signum,
+		   AnzInterrupts,
+           localtm->tm_year + 1900, // tm_year is years since 1900
+           localtm->tm_mon + 1, // tm_mon is months since January (0-11)
+           localtm->tm_mday,
+           localtm->tm_hour,
+           localtm->tm_min,
+           localtm->tm_sec);
+		wattroff(NachrichtenFenster, COLOR_PAIR(1));
+
+		wrefresh(NachrichtenFenster);
+	}
+
 	if (signum == SIGSEGV) // = 11; jedes mal wenn auf illegalem Speicher zugegriffen wurde
 	{
 		// do something!
@@ -247,7 +271,10 @@ void signalHandler(int signum)
 		{
 			std::cout << "Signal received! Stopping soon :)\r" << flush;
 		} else {		
-	    	std::cerr << "\nSignal " << signum << " erhalten. Programm läuft noch weiter.\nZum Anhalten bitte Strg+C drücken! (SIGINT wird benötigt)" << std::endl;
+	    	if(!NachrichtenAktiviert)
+			{
+				std::cerr << "\nSignal " << signum << " erhalten. Programm läuft noch weiter.\nZum Anhalten bitte Strg+C drücken! (SIGINT wird benötigt)" << std::endl;
+			}
 		}
 		UserInterrupt = signum;
 		// mach etwas
@@ -2909,9 +2936,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
     return PositiveRunden;
 }
 
-vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
+vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
-	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv7")
+	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv8")
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
     vector<mpz_class> PositiveRunden;
@@ -5762,13 +5789,16 @@ int main(int argc, const char** argv)
 						mvwprintw(notifWin, 0, 2, " Nachrichten ");
 					    wattroff(notifWin, A_BOLD | COLOR_PAIR(1)); // Turn off bold and red color
 						wrefresh(notifWin);
+						NachrichtenAktiviert = true;
+
+						ThreadFensterShift = titleWinHeight + NotifsWinHeight;
 
 						// Create an array to store pointers to ncurses windows
 						vector<WINDOW *> threadWins;
 						threadWins.resize(delN);
 						FensterExistiert.resize(delN,false);
 						for (int i = 0; i < delN; i++) {
-							threadWins[i] = newwin(Fensterhöhe, COLS, i * Fensterhöhe + titleWinHeight + NotifsWinHeight, 0);
+							threadWins[i] = newwin(Fensterhöhe, COLS, i * Fensterhöhe + ThreadFensterShift, 0);
 							box(threadWins[i], 0, 0);
 							if(!tty) wborder_set(threadWins[i], &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
 							mvwprintw(threadWins[i], 0, 2, " n = %lld ", minN + i);
@@ -5781,7 +5811,7 @@ int main(int argc, const char** argv)
 						NachrichtenFenster = notifWin;
 						ThreadFenster = threadWins;
 
-						const int zeileDrunter = Fensterhöhe * delN + titleWinHeight + 1;	// die Zeile unter den Ganzen Fenstern
+						const int zeileDrunter = Fensterhöhe * delN + ThreadFensterShift + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
 						constexpr int timerOrty = 1;
 						constexpr int timerOrtx = 0;
@@ -5809,7 +5839,7 @@ int main(int argc, const char** argv)
 								}
 
 								// Perform the slow operation in the async thread
-								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv7(i, anz, false, Session + "/" + std::to_string(i), threadWins[index], titleWin, timerOrtx, timerOrty, tty);
+								vector<mpz_class> PositiveRunden = LampenSimulierenGMPLIBv8(i, anz, false, Session + "/" + std::to_string(i), threadWins[index], titleWin, timerOrtx, timerOrty, tty);
 
 								std::ostringstream oss2;
 								std::copy(PositiveRunden.begin(), PositiveRunden.end() - 1, std::ostream_iterator<mpz_class>(oss2, "\n"));
@@ -5872,6 +5902,7 @@ int main(int argc, const char** argv)
 							cin.get();
 						}
 						FensterAktiviert = false;
+						NachrichtenAktiviert = false;
 						endwin();	// end ncurses
 
 						if(tty) cout << gotoZeileDrunter;
