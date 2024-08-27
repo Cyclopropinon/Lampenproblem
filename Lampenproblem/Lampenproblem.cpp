@@ -50,6 +50,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cinttypes>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
@@ -225,7 +226,7 @@ void signalHandler(int signum)
 {
 	AnzInterrupts++;
 	_PRINTINPUT_1_("INTERRUPT-SIGNAL RECEIVED: " << signum << "; #interrupts = " << AnzInterrupts)
-	/*if (NachrichtenAktiviert)
+	if (NachrichtenAktiviert)
 	{
 		// Get the current time
 		time_t now = time(0);
@@ -233,11 +234,13 @@ void signalHandler(int signum)
 		// Convert it to tm struct for local timezone
 		tm* localtm = localtime(&now);
 
+		uint64_t AnzI = AnzInterrupts.load();
+
 		lock_cout;
 		wattron(NachrichtenFenster, COLOR_PAIR(1));
-		mvwprintw(NachrichtenFenster, 1, 2, "Signal %i erhalten; #interrupts = %llu ;Zeit: %04d-%02d-%02d %02d:%02d:%02d\n",
+		mvwprintw(NachrichtenFenster, 1, 2, "Signal %i erhalten; #interrupts = %" PRIu64 "; Zeit: %04d-%02d-%02d %02d:%02d:%02d\n",
 		   signum,
-		   AnzInterrupts,
+		   AnzI,
            localtm->tm_year + 1900, // tm_year is years since 1900
            localtm->tm_mon + 1, // tm_mon is months since January (0-11)
            localtm->tm_mday,
@@ -247,7 +250,7 @@ void signalHandler(int signum)
 		wattroff(NachrichtenFenster, COLOR_PAIR(1));
 
 		wrefresh(NachrichtenFenster);
-	}*/
+	}
 
 	if (signum == SIGSEGV) // = 11; jedes mal wenn auf illegalem Speicher zugegriffen wurde
 	{
@@ -2052,12 +2055,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 		{
 			CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wformat"
 			dt(berechnungsStartHR, durHR);
 			dt(berechnungsZwCP_HR, CP_HR);
 			ddt(berechnungsZwCP_HR, CPdHR);
-		    #pragma GCC diagnostic pop
 			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "  \033[3;93mdt/dn: " << CPdHR << "\033[0m             \r" << flush;
 		}
     }
@@ -2127,12 +2127,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 		{
 			CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
 			berechnungsZwCP_HR = berechnungsEndeHR;
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wformat"
 			dt(berechnungsStartHR, durHR);
 			dt(berechnungsZwCP_HR, CP_HR);
 			ddt(berechnungsZwCP_HR, CPdHR);
-		    #pragma GCC diagnostic pop
 			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "  \033[3;93mdt/dn: " << CPdHR << "\033[0m             \r" << flush;
 		}
     }
@@ -2217,12 +2214,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
         {
             CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
             berechnungsZwCP_HR = berechnungsEndeHR;
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wformat"
 			dt(berechnungsStartHR, durHR);
 			dt(berechnungsZwCP_HR, CP_HR);
 			ddt(berechnungsZwCP_HR, CPdHR);
-		    #pragma GCC diagnostic pop
 
             // Redirect output to the ncurses window
 			
@@ -2242,10 +2236,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 				wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 				wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-				#pragma GCC diagnostic push
-				#pragma GCC diagnostic ignored "-Wformat"
 				mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
-				#pragma GCC diagnostic pop
 				mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 				wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -2265,12 +2256,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
     }
 
 	berechnungsZwCP_HR = berechnungsEndeHR;
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
 	dt(berechnungsZwCP_HR, CP_HR);
 	pdt(berechnungsZwCP_HR, CPdHR);
-	#pragma GCC diagnostic pop
 
 	{
 		lock_cout;
@@ -2286,10 +2274,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wformat"
 		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
-		#pragma GCC diagnostic pop
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -2385,12 +2370,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
         {
             CheckpointLSGv4(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print);
             berechnungsZwCP_HR = berechnungsEndeHR;
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wformat"
 			dt(berechnungsStartHR, durHR);
 			dt(berechnungsZwCP_HR, CP_HR);
 			ddt(berechnungsZwCP_HR, CPdHR);
-		    #pragma GCC diagnostic pop
 
             // Redirect output to the ncurses window
 			
@@ -2412,10 +2394,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 				wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 				wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-				#pragma GCC diagnostic push
-				#pragma GCC diagnostic ignored "-Wformat"
 				mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
-				#pragma GCC diagnostic pop
 				mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 				wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -2441,12 +2420,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
     }
 
 	berechnungsZwCP_HR = berechnungsEndeHR;
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
 	dt(berechnungsZwCP_HR, CP_HR);
 	pdt(berechnungsZwCP_HR, CPdHR);
-	#pragma GCC diagnostic pop
 
 	{
 		lock_cout;
@@ -2463,10 +2439,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wformat"
 		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
-		#pragma GCC diagnostic pop
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -2586,12 +2559,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
 				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
-				#pragma GCC diagnostic push
-				#pragma GCC diagnostic ignored "-Wformat"
 				dt(berechnungsStartHR, durHR);
 				dt(berechnungsZwCP_HR, CP_HR);
 				Pdt(berechnungsZwCP_HR, CPdHR);
-				#pragma GCC diagnostic pop
 
 				// Redirect output to the ncurses window
 				
@@ -2615,10 +2585,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
 					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
-					#pragma GCC diagnostic pop
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -5764,12 +5731,14 @@ int main(int argc, const char** argv)
 						// erstelle Ordner für die Session
 						erstelleVerzeichnis(Session.c_str());
 
+						cout_mutex.lock();
+
 						initscr();
 						start_color();
 						cbreak();
 						noecho();
 						curs_set(0);
-					    init_pair(1, COLOR_RED, COLOR_BLACK);
+						//init_pair(1, COLOR_RED, COLOR_BLACK);
 						std::thread input_thread(input_listener); // Starte Eingabe-Thread
 
 						// Erstelle ein Fenster für die Titelzeile
@@ -5783,11 +5752,11 @@ int main(int argc, const char** argv)
 						constexpr int NotifsWinHeight = 4;
 						Nachrichtenfensterhöhe = NotifsWinHeight;
 						WINDOW *notifWin = newwin(NotifsWinHeight, COLS, titleWinHeight, 0);
-						wattron(notifWin, A_BOLD | COLOR_PAIR(1)); // Set bold and red color
 						box(notifWin, 0, 0);
 						if(!tty) wborder_set(notifWin, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+						//wattron(notifWin, /*A_BOLD |*/ COLOR_PAIR(1)); // Set bold and red color
 						mvwprintw(notifWin, 0, 2, " Nachrichten ");
-					    wattroff(notifWin, A_BOLD | COLOR_PAIR(1)); // Turn off bold and red color
+						//wattroff(notifWin, /*A_BOLD |*/ COLOR_PAIR(1)); // Turn off bold and red color
 						wrefresh(notifWin);
 						NachrichtenAktiviert = true;
 
@@ -5810,6 +5779,8 @@ int main(int argc, const char** argv)
 						TitelFenster = titleWin;
 						NachrichtenFenster = notifWin;
 						ThreadFenster = threadWins;
+
+						cout_mutex.unlock();
 
 						const int zeileDrunter = Fensterhöhe * delN + ThreadFensterShift + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";

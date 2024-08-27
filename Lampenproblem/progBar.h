@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cinttypes>
 #include <cstring>
 #include <ctime>
 #include <fstream>
@@ -46,7 +47,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / 1'000'000'000;\
 			    			uint64_t remaining_ns = duration.count() % 1'000'000'000;\
-			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 
@@ -57,7 +58,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(adt_BEHR__ - Start);\
 			    			uint64_t total_seconds = duration.count() / 1'000'000'000;\
 			    			uint64_t remaining_ns = duration.count() % 1'000'000'000;\
-			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 
@@ -68,7 +69,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / 1'048'576'000'000'000;\
 			    			uint64_t remaining_ns = (duration.count() % 1'048'576'000'000'000) / 1'048'576;\
-			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
                         
@@ -80,7 +81,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / (1'000'000'000 * p);\
 			    			uint64_t remaining_ns = (duration.count() / p) % 1'000'000'000;\
-			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 
@@ -91,7 +92,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / (1'000'000'000UL * dPrint);\
 			    			uint64_t remaining_ns = (duration.count() / dPrint) % 1'000'000'000UL;\
-			    			sprintf(buffer, "%llu,%09llus", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 			    			//sprintf(buffer, "%llu,%09llus = %llu / %llu dPrint", total_seconds, remaining_ns, duration.count(), dPrint);
@@ -217,10 +218,7 @@ void printCurrentTime(WINDOW* win, int y = 0, int x = 50)
 
     // Bisher Verstrichene Zeit
     std::string durHR;
-    #pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
 	adt(StartTimeGlobal, durHR);
-	#pragma GCC diagnostic pop
 
     std::string durCPU = CPUProfiler::cpuFamilyTimeStr();
 
@@ -361,10 +359,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     if (pos >= static_cast<int>(currentStr.length()))
     {
         wattron(outputWin, COLOR_PAIR(2));              // Cyan auf Schwarz
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wformat"
         mvwprintw(outputWin, 0, 1, "%llu", current);    // embed Zahl
-        #pragma GCC diagnostic pop
         wattroff(outputWin, COLOR_PAIR(2));             // Farbe deaktivieren
     }
     
@@ -462,10 +457,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     if (pos >= static_cast<int>(currentStr.length()))
     {
         wattron(outputWin, COLOR_PAIR(2));              // Cyan auf Schwarz
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wformat"
         mvwprintw(outputWin, 0, 1, "%llu", current);    // embed Zahl
-        #pragma GCC diagnostic pop
         wattroff(outputWin, COLOR_PAIR(2));             // Farbe deaktivieren
     }
     
@@ -559,10 +551,7 @@ void printProgressBar(uint64_t current, uint64_t total, int barWidth, const std:
     if (pos >= static_cast<int>(currentStr.length()))
     {
         wattron(outputWin, COLOR_PAIR(2));              // Cyan auf Schwarz
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wformat"
         mvwprintw(outputWin, 0, 1, "%llu", current);    // embed Zahl
-        #pragma GCC diagnostic pop
         wattroff(outputWin, COLOR_PAIR(2));             // Farbe deaktivieren
     }
     
