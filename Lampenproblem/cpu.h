@@ -103,10 +103,7 @@ public:
 
                 // Umrechnung in Nanosekunden
             char buffer[50];
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wformat"
-            sprintf(buffer, "%llu,%09llus", static_cast<uint64_t>(ts.tv_sec), static_cast<uint64_t>(ts.tv_nsec));
-            #pragma GCC diagnostic pop
+            sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", static_cast<uint64_t>(ts.tv_sec), static_cast<uint64_t>(ts.tv_nsec));
             return buffer;
         #endif
     }
@@ -137,10 +134,7 @@ public:
             }
             
             char buffer[50];
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wformat"
-            sprintf(buffer, "%llu,%09llus", (ns - ss), (nn - sn));
-            #pragma GCC diagnostic pop
+            sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", (ns - ss), (nn - sn));
             return buffer;
         #endif
     }
@@ -188,10 +182,7 @@ public:
             uint64_t micsecs = static_cast<uint64_t>(usage.ru_utime.tv_usec) + usage.ru_stime.tv_usec;  // Mikrosekunden
 
             char buffer[50];
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wformat"
-            sprintf(buffer, "%llu,%06llus (%lluh)", seconds, micsecs, seconds / 3600);
-            #pragma GCC diagnostic pop
+            sprintf(buffer, "%" PRIu64 ",%06" PRIu64 "s (%" PRIu64 "h)", seconds, micsecs, seconds / 3600);
             return buffer;
         #endif
     }

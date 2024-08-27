@@ -2616,12 +2616,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 	cPrint = print;
 
 	berechnungsZwCP_HR = berechnungsEndeHR;
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
 	// dt(berechnungsZwCP_HR, CP_HR);
 	Pdt(berechnungsZwCP_HR, CPdHR);
-	#pragma GCC diagnostic pop
 
 	{
 		lock_cout;
@@ -2638,10 +2635,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wformat"
 		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
-		#pragma GCC diagnostic pop
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -2783,12 +2777,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
 				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
-				#pragma GCC diagnostic push
-				#pragma GCC diagnostic ignored "-Wformat"
 				dt(berechnungsStartHR, durHR);
 				dt(berechnungsZwCP_HR, CP_HR);
 				Pdt(berechnungsZwCP_HR, CPdHR);
-				#pragma GCC diagnostic pop
 
 				// Redirect output to the ncurses window
 				
@@ -2816,10 +2807,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
 					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
-					#pragma GCC diagnostic pop
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -2850,12 +2838,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 	cPrint = print;
 
 	berechnungsZwCP_HR = berechnungsEndeHR;
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
 	// dt(berechnungsZwCP_HR, CP_HR);
 	Pdt(berechnungsZwCP_HR, CPdHR);
-	#pragma GCC diagnostic pop
 
 	{
 		lock_cout;
@@ -2872,10 +2857,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wformat"
 		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
-		#pragma GCC diagnostic pop
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -3017,12 +2999,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
 				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
-				#pragma GCC diagnostic push
-				#pragma GCC diagnostic ignored "-Wformat"
 				dt(berechnungsStartHR, durHR);
 				dt(berechnungsZwCP_HR, CP_HR);
 				Pdt(berechnungsZwCP_HR, CPdHR);
-				#pragma GCC diagnostic pop
 
 				// Redirect output to the ncurses window
 				
@@ -3050,10 +3029,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
 					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
-					#pragma GCC diagnostic pop
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -3084,12 +3060,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 	cPrint = print;
 
 	berechnungsZwCP_HR = berechnungsEndeHR;
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
 	// dt(berechnungsZwCP_HR, CP_HR);
 	Pdt(berechnungsZwCP_HR, CPdHR);
-	#pragma GCC diagnostic pop
 
 	{
 		lock_cout;
@@ -3106,10 +3079,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wformat"
 		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
-		#pragma GCC diagnostic pop
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -3230,12 +3200,9 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
 				CheckpointLSF(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
-				#pragma GCC diagnostic push
-				#pragma GCC diagnostic ignored "-Wformat"
 				dt(berechnungsStartHR, durHR);
 				dt(berechnungsZwCP_HR, CP_HR);
 				Pdt(berechnungsZwCP_HR, CPdHR);
-				#pragma GCC diagnostic pop
 
 				// Redirect output to the ncurses window
 				
@@ -3259,10 +3226,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
 					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
-					#pragma GCC diagnostic pop
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -3293,12 +3257,9 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 	cPrint = print;
 
 	berechnungsZwCP_HR = berechnungsEndeHR;
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
 	// dt(berechnungsZwCP_HR, CP_HR);
 	Pdt(berechnungsZwCP_HR, CPdHR);
-	#pragma GCC diagnostic pop
 
 	{
 		lock_cout;
@@ -3315,10 +3276,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wformat"
 		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
-		#pragma GCC diagnostic pop
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -3466,12 +3424,9 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
 				CheckpointLSF(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
-				#pragma GCC diagnostic push
-				#pragma GCC diagnostic ignored "-Wformat"
 				dt(berechnungsStartHR, durHR);
 				dt(berechnungsZwCP_HR, CP_HR);
 				Pdt(berechnungsZwCP_HR, CPdHR);
-				#pragma GCC diagnostic pop
 
 				// Redirect output to the ncurses window
 				
@@ -3495,10 +3450,7 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
 					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
-					#pragma GCC diagnostic pop
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -3529,12 +3481,9 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 	cPrint = print;
 
 	berechnungsZwCP_HR = berechnungsEndeHR;
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat"
 	dt(berechnungsStartHR, durHR);
 	// dt(berechnungsZwCP_HR, CP_HR);
 	Pdt(berechnungsZwCP_HR, CPdHR);
-	#pragma GCC diagnostic pop
 
 	{
 		lock_cout;
@@ -3551,10 +3500,7 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wformat"
 		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
-		#pragma GCC diagnostic pop
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -3626,10 +3572,7 @@ uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t Start
 				while (LSvarianten[f](&n, &n_flintlib, &AnzRunden, &Schritte, &Lampejetzt, &maxSchritte));
 			auto berechnungsEndeHR = std::chrono::high_resolution_clock::now();
 			durCPU = CPUProfiler::cpuTimeStrDiff(berechnungsStartCPU);
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wformat"
 			dt(berechnungsStartHR, durHR);
-			#pragma GCC diagnostic pop
 			fmpz_clear(global_puffer_fmpz_t1);
 			fmpz_clear(global_puffer_fmpz_t2);
 			fmpz_clear(global_puffer_fmpz_t3);
@@ -4642,10 +4585,7 @@ int main(int argc, const char** argv)
 						}
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
 					dt(berechnungsStartHR, durHR);
-				    #pragma GCC diagnostic pop
 					cout << "Laufzeit: " << durHR << "\n\n";		_PRINTVAR_2_(durHR)
 					break;
 				case -16:
@@ -4710,10 +4650,7 @@ int main(int argc, const char** argv)
 						output_fstream << "Lampenanzahl: " << i << "; positive Runde(n) :\n" << oss2.str() << "\n" << endl;
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
 					dt(berechnungsStartHR, durHR);
-				    #pragma GCC diagnostic pop
 					cout << "Laufzeit: " << durHR << "\n\n";		_PRINTVAR_2_(durHR)
 					break;
 				case 18:
@@ -4751,10 +4688,7 @@ int main(int argc, const char** argv)
 							auto fut = std::async(std::launch::async, [i, anz, &output_fstream, Session, berechnungsStartHR]()
 							{
 								string elapsed;
-								#pragma GCC diagnostic push
-								#pragma GCC diagnostic ignored "-Wformat"
 								adt(berechnungsStartHR, elapsed);
-								#pragma GCC diagnostic pop
 								{
 									lock_cout;
 									cout << "[Thread] Launched Thread Nr. " << i << "\tTime: " << elapsed << endl;
@@ -4800,10 +4734,7 @@ int main(int argc, const char** argv)
 
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wformat"
 					dt(berechnungsStartHR, durHR);
-				    #pragma GCC diagnostic pop
 					cout << "Laufzeit: " << durHR << "\n\n";		_PRINTVAR_2_(durHR)
 					break;
 				case 19:
@@ -4831,10 +4762,7 @@ int main(int argc, const char** argv)
 					{
 						cout << "Fehler: Failed to open " << filename << '\n';
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 					}
 					else {
 						// erstelle Ordner für die Session
@@ -4871,10 +4799,7 @@ int main(int argc, const char** argv)
 							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, &minN, &diffN]()
 							{
 								string elapsed;
-								#pragma GCC diagnostic push
-								#pragma GCC diagnostic ignored "-Wformat"
 								adt(berechnungsStartHR, elapsed);
-								#pragma GCC diagnostic pop
 								{
 									lock_cout;
 									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
@@ -4930,10 +4855,7 @@ int main(int argc, const char** argv)
 							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType);
 						}
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 
 						if(!tty)
 						{
@@ -4973,10 +4895,7 @@ int main(int argc, const char** argv)
 					{
 						cout << "Fehler: Failed to open " << filename << '\n';
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 					}
 					else {
 						// erstelle Ordner für die Session
@@ -5016,10 +4935,7 @@ int main(int argc, const char** argv)
 							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
 							{
 								string elapsed;
-								#pragma GCC diagnostic push
-								#pragma GCC diagnostic ignored "-Wformat"
 								adt(berechnungsStartHR, elapsed);
-								#pragma GCC diagnostic pop
 								{
 									lock_cout;
 									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
@@ -5075,10 +4991,7 @@ int main(int argc, const char** argv)
 							printProgressBar(minN, finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 						}
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 
 						if(!tty)
 						{
@@ -5118,10 +5031,7 @@ int main(int argc, const char** argv)
 					{
 						cout << "Fehler: Failed to open " << filename << '\n';
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 					}
 					else {
 						// erstelle Ordner für die Session
@@ -5162,10 +5072,7 @@ int main(int argc, const char** argv)
 							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
 							{
 								string elapsed;
-								#pragma GCC diagnostic push
-								#pragma GCC diagnostic ignored "-Wformat"
 								adt(berechnungsStartHR, elapsed);
-								#pragma GCC diagnostic pop
 								{
 									lock_cout;
 									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
@@ -5221,10 +5128,7 @@ int main(int argc, const char** argv)
 							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 						}
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 
 						if(!tty)
 						{
@@ -5265,10 +5169,7 @@ int main(int argc, const char** argv)
 					{
 						cout << "Fehler: Failed to open " << filename << '\n';
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 					}
 					else {
 						// erstelle Ordner für die Session
@@ -5309,10 +5210,7 @@ int main(int argc, const char** argv)
 							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
 							{
 								string elapsed;
-								#pragma GCC diagnostic push
-								#pragma GCC diagnostic ignored "-Wformat"
 								adt(berechnungsStartHR, elapsed);
-								#pragma GCC diagnostic pop
 								{
 									lock_cout;
 									mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
@@ -5368,10 +5266,7 @@ int main(int argc, const char** argv)
 							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 						}
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 
 						if(!tty)
 						{
@@ -5413,10 +5308,7 @@ int main(int argc, const char** argv)
 						{
 							cout << "Fehler: Failed to open " << filename << '\n';
 
-							#pragma GCC diagnostic push
-							#pragma GCC diagnostic ignored "-Wformat"
 							dt(berechnungsStartHR, durHR);
-							#pragma GCC diagnostic pop
 						}
 						else {
 							// erstelle Ordner für die Session
@@ -5458,10 +5350,7 @@ int main(int argc, const char** argv)
 								auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
 								{
 									string elapsed;
-									#pragma GCC diagnostic push
-									#pragma GCC diagnostic ignored "-Wformat"
 									adt(berechnungsStartHR, elapsed);
-									#pragma GCC diagnostic pop
 									{
 										lock_cout;
 										mvwprintw(threadWins[i - minN], 1, 72, "Startzeit: %s", elapsed.c_str());
@@ -5517,10 +5406,7 @@ int main(int argc, const char** argv)
 								printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 							}
 
-							#pragma GCC diagnostic push
-							#pragma GCC diagnostic ignored "-Wformat"
 							dt(berechnungsStartHR, durHR);
-							#pragma GCC diagnostic pop
 
 							if(!tty)
 							{
@@ -5615,10 +5501,7 @@ int main(int argc, const char** argv)
 							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
 							{
 								string elapsed;
-								#pragma GCC diagnostic push
-								#pragma GCC diagnostic ignored "-Wformat"
 								adt(berechnungsStartHR, elapsed);
-								#pragma GCC diagnostic pop
 
 								const auto index = i - minN;
 								{
@@ -5678,10 +5561,7 @@ int main(int argc, const char** argv)
 							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 						}
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 
 						input_thread.join();
 
@@ -5796,10 +5676,7 @@ int main(int argc, const char** argv)
 							auto fut = std::async(std::launch::async, [i, &anz, &output_fstream, Session, berechnungsStartHR, &threadWins, titleWin, &minN, &diffN, &timerOrtx, &timerOrty, &tty]()
 							{
 								string elapsed;
-								#pragma GCC diagnostic push
-								#pragma GCC diagnostic ignored "-Wformat"
 								adt(berechnungsStartHR, elapsed);
-								#pragma GCC diagnostic pop
 
 								const auto index = i - minN;
 								{
@@ -5859,10 +5736,7 @@ int main(int argc, const char** argv)
 							printProgressBar(finishedThreads, delN, delN, elapsed, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 						}
 
-						#pragma GCC diagnostic push
-						#pragma GCC diagnostic ignored "-Wformat"
 						dt(berechnungsStartHR, durHR);
-						#pragma GCC diagnostic pop
 
 						input_thread.join();
 
