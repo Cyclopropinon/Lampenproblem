@@ -5618,29 +5618,33 @@ int main(int argc, const char** argv)
 						cbreak();
 						noecho();
 						curs_set(0);
-						//init_pair(1, COLOR_RED, COLOR_BLACK);
+						init_pair(1, COLOR_RED, COLOR_BLACK);
 						std::thread input_thread(input_listener); // Starte Eingabe-Thread
+
+						ThreadFensterShift = 0;
 
 						// Erstelle ein Fenster für die Titelzeile
 						constexpr int titleWinHeight = 2;
 						Titelfensterhöhe = titleWinHeight;
-						WINDOW *titleWin = newwin(titleWinHeight, COLS, 0, 0);
+						WINDOW *titleWin = newwin(titleWinHeight, COLS, ThreadFensterShift, 0);
 						wrefresh(titleWin);
 						FensterAktiviert = true;
+
+						ThreadFensterShift += titleWinHeight;
 
 						// Erstelle ein Fenster für die Titelzeile
 						constexpr int NotifsWinHeight = 4;
 						Nachrichtenfensterhöhe = NotifsWinHeight;
-						WINDOW *notifWin = newwin(NotifsWinHeight, COLS, titleWinHeight, 0);
+						WINDOW *notifWin = newwin(NotifsWinHeight, COLS, ThreadFensterShift, 0);
+						wattron(notifWin, /*A_BOLD |*/ COLOR_PAIR(1)); // Set bold and red color
 						box(notifWin, 0, 0);
 						if(!tty) wborder_set(notifWin, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
-						//wattron(notifWin, /*A_BOLD |*/ COLOR_PAIR(1)); // Set bold and red color
 						mvwprintw(notifWin, 0, 2, " Nachrichten ");
-						//wattroff(notifWin, /*A_BOLD |*/ COLOR_PAIR(1)); // Turn off bold and red color
+						wattroff(notifWin, /*A_BOLD |*/ COLOR_PAIR(1)); // Turn off bold and red color
 						wrefresh(notifWin);
 						NachrichtenAktiviert = true;
 
-						ThreadFensterShift = titleWinHeight + NotifsWinHeight;
+						ThreadFensterShift += NotifsWinHeight;
 
 						// Create an array to store pointers to ncurses windows
 						vector<WINDOW *> threadWins;
@@ -5660,12 +5664,14 @@ int main(int argc, const char** argv)
 						NachrichtenFenster = notifWin;
 						ThreadFenster = threadWins;
 
-						cout_mutex.unlock();
-
 						const int zeileDrunter = Fensterhöhe * delN + ThreadFensterShift + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
 						constexpr int timerOrty = 1;
 						constexpr int timerOrtx = 0;
+
+						printProgressBar(finishedThreads, delN, delN, std::chrono::nanoseconds(1), 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+
+						cout_mutex.unlock();
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
