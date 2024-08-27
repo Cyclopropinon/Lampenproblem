@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.23"
+#define _V "0.1.24"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -5636,11 +5636,11 @@ int main(int argc, const char** argv)
 						constexpr int NotifsWinHeight = 4;
 						Nachrichtenfensterhöhe = NotifsWinHeight;
 						WINDOW *notifWin = newwin(NotifsWinHeight, COLS, ThreadFensterShift, 0);
-						wattron(notifWin, /*A_BOLD |*/ COLOR_PAIR(1)); // Set bold and red color
+						wattron(notifWin, A_BOLD | COLOR_PAIR(1)); // Set bold and red color
 						box(notifWin, 0, 0);
 						if(!tty) wborder_set(notifWin, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
 						mvwprintw(notifWin, 0, 2, " Nachrichten ");
-						wattroff(notifWin, /*A_BOLD |*/ COLOR_PAIR(1)); // Turn off bold and red color
+						wattroff(notifWin, A_BOLD | COLOR_PAIR(1)); // Turn off bold and red color
 						wrefresh(notifWin);
 						NachrichtenAktiviert = true;
 
@@ -5664,14 +5664,15 @@ int main(int argc, const char** argv)
 						NachrichtenFenster = notifWin;
 						ThreadFenster = threadWins;
 
+						cout_mutex.unlock();
+
 						const int zeileDrunter = Fensterhöhe * delN + ThreadFensterShift + 1;	// die Zeile unter den Ganzen Fenstern
 						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
 						constexpr int timerOrty = 1;
 						constexpr int timerOrtx = 0;
 
-						printProgressBar(finishedThreads, delN, delN, std::chrono::nanoseconds(1), 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
-
-						cout_mutex.unlock();
+						auto el = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+						printProgressBar(finishedThreads, delN, delN, el, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
