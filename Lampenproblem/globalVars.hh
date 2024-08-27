@@ -42,6 +42,8 @@ std::atomic<bool>		redrawInProgress = false;
 std::atomic<bool>		redrawAgain = false;
 std::atomic<bool>		NachrichtenAktiviert = false;
 
+std::string				gotoZeileDrunter = "\n";
+
 bool					ttyGlobal;
 
 // Unicode-Zeichen für abgerundete Ecken

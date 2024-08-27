@@ -267,7 +267,7 @@ void signalHandler(int signum)
 		exit(signum);
 	} else if (signum == SIGINT && UserInterrupt != 0) {
 		endwin();	// end ncurses
-	    std::cerr << "\nSignal " << UserInterrupt << " erhalten und Exekution vom Nutzer befohlen. Programm läuft nicht weiter." << std::endl;
+	    std::cerr << gotoZeileDrunter << "Signal " << UserInterrupt << " erhalten und Exekution vom Nutzer befohlen. Programm läuft nicht weiter." << std::endl;
 		exit(UserInterrupt);
 	} else {
 		if (InterruptRequiredByApp)
@@ -5639,7 +5639,7 @@ int main(int argc, const char** argv)
 						wattron(notifWin, A_BOLD | COLOR_PAIR(1)); // Set bold and red color
 						box(notifWin, 0, 0);
 						if(!tty) wborder_set(notifWin, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
-						mvwprintw(notifWin, 0, 2, " Nachrichten ");
+						mvwprintw(notifWin, 0, 2, " Systemnachrichten ");
 						wattroff(notifWin, A_BOLD | COLOR_PAIR(1)); // Turn off bold and red color
 						wrefresh(notifWin);
 						NachrichtenAktiviert = true;
@@ -5667,7 +5667,7 @@ int main(int argc, const char** argv)
 						cout_mutex.unlock();
 
 						const int zeileDrunter = Fensterhöhe * delN + ThreadFensterShift + 1;	// die Zeile unter den Ganzen Fenstern
-						const auto gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
+						gotoZeileDrunter = "\033[" + std::to_string(zeileDrunter) + ";1H";
 						constexpr int timerOrty = 1;
 						constexpr int timerOrtx = 0;
 
@@ -5758,6 +5758,7 @@ int main(int argc, const char** argv)
 						endwin();	// end ncurses
 
 						if(tty) cout << gotoZeileDrunter;
+						gotoZeileDrunter = "\n";
 						cout << "Datei gespeichert als " << filename << '!' << endl;
 					}
 					cout << "Laufzeit: " << durHR << "                                                      \n\n";	_PRINTVAR_2_(durHR)
