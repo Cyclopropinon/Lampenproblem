@@ -47,7 +47,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / 1'000'000'000;\
 			    			uint64_t remaining_ns = duration.count() % 1'000'000'000;\
-			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 
@@ -58,7 +58,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(adt_BEHR__ - Start);\
 			    			uint64_t total_seconds = duration.count() / 1'000'000'000;\
 			    			uint64_t remaining_ns = duration.count() % 1'000'000'000;\
-			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 
@@ -69,7 +69,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / 1'048'576'000'000'000;\
 			    			uint64_t remaining_ns = (duration.count() % 1'048'576'000'000'000) / 1'048'576;\
-			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
                         
@@ -81,7 +81,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / (1'000'000'000 * p);\
 			    			uint64_t remaining_ns = (duration.count() / p) % 1'000'000'000;\
-			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 
@@ -92,7 +92,7 @@ struct Zeitpacket
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
 			    			uint64_t total_seconds = duration.count() / (1'000'000'000UL * dPrint);\
 			    			uint64_t remaining_ns = (duration.count() / dPrint) % 1'000'000'000UL;\
-			    			sprintf(buffer, "%llu,%09" PRIu64 "s", total_seconds, remaining_ns);\
+			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
 			    			out = buffer;\
 			    		}
 			    			//sprintf(buffer, "%llu,%09llus = %llu / %llu dPrint", total_seconds, remaining_ns, duration.count(), dPrint);
@@ -359,7 +359,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     if (pos >= static_cast<int>(currentStr.length()))
     {
         wattron(outputWin, COLOR_PAIR(2));              // Cyan auf Schwarz
-        mvwprintw(outputWin, 0, 1, "%llu", current);    // embed Zahl
+        mvwprintw(outputWin, 0, 1, "%" PRIu64, current);// embed Zahl
         wattroff(outputWin, COLOR_PAIR(2));             // Farbe deaktivieren
     }
     
@@ -457,7 +457,7 @@ void printProgressBar(uint64_t min, uint64_t current, uint64_t total, int barWid
     if (pos >= static_cast<int>(currentStr.length()))
     {
         wattron(outputWin, COLOR_PAIR(2));              // Cyan auf Schwarz
-        mvwprintw(outputWin, 0, 1, "%llu", current);    // embed Zahl
+        mvwprintw(outputWin, 0, 1, "%" PRIu64, current);// embed Zahl
         wattroff(outputWin, COLOR_PAIR(2));             // Farbe deaktivieren
     }
     
@@ -551,7 +551,7 @@ void printProgressBar(uint64_t current, uint64_t total, int barWidth, const std:
     if (pos >= static_cast<int>(currentStr.length()))
     {
         wattron(outputWin, COLOR_PAIR(2));              // Cyan auf Schwarz
-        mvwprintw(outputWin, 0, 1, "%llu", current);    // embed Zahl
+        mvwprintw(outputWin, 0, 1, "%" PRIu64, current);// embed Zahl
         wattroff(outputWin, COLOR_PAIR(2));             // Farbe deaktivieren
     }
     

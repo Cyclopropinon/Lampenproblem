@@ -2236,7 +2236,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 				wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 				wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-				mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+				mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, AnzPR);	// Anzahl der bereits gefundendn positiver Runden
 				mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 				wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -2274,7 +2274,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -2394,7 +2394,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 				wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 				wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-				mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+				mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, AnzPR);	// Anzahl der bereits gefundendn positiver Runden
 				mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 				wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -2439,7 +2439,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -2585,7 +2585,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+					mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, AnzPR);	// Anzahl der bereits gefundendn positiver Runden
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -2635,7 +2635,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -2807,7 +2807,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+					mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, AnzPR);	// Anzahl der bereits gefundendn positiver Runden
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -2857,7 +2857,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -3029,7 +3029,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+					mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, AnzPR);	// Anzahl der bereits gefundendn positiver Runden
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -3079,7 +3079,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -3226,7 +3226,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+					mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, AnzPR);	// Anzahl der bereits gefundendn positiver Runden
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -3276,7 +3276,7 @@ vector<fmpzxx> LampenSimulierenFLINT(unsigned long long n, uint64_t anz, bool ei
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
@@ -3450,7 +3450,7 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 					wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(1));  // Rot auf Schwarz
-					mvwprintw(outputWin, 2, 76, "AnzPR: %llu", AnzPR);	// Anzahl der bereits gefundendn positiver Runden
+					mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, AnzPR);	// Anzahl der bereits gefundendn positiver Runden
 					mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 					wattroff(outputWin, COLOR_PAIR(1)); // Farbe deaktivieren
 
@@ -3500,7 +3500,7 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 		wattroff(outputWin, COLOR_PAIR(4)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(5));  // Grün auf Schwarz
-		mvwprintw(outputWin, 2, 76, "AnzPR: %llu", anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
+		mvwprintw(outputWin, 2, 76, "AnzPR: %" PRIu64, anz);				// Anzahl der bereits gefundendn positiver Runden (hier: alle)
 		mvwprintw(outputWin, 1, 2, "RAM: %s", giveRAM('k').c_str());
 		mvwprintw(outputWin, 0, 2, " n = %llu ", n);					// Titelfarbe ändern
 		wattroff(outputWin, COLOR_PAIR(5)); // Farbe deaktivieren
