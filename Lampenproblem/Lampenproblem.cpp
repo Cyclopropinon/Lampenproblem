@@ -5672,7 +5672,7 @@ int main(int argc, const char** argv)
 						constexpr int timerOrtx = 0;
 
 						auto el = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
-						printProgressBar(finishedThreads, delN, delN, el, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
+						printProgressBar(0, delN, delN, el, 'k', titleWin, cout_mutex, termType, timerOrtx, timerOrty);
 
 						// Vector to store futures
 						std::vector<std::future<void>> futures;
