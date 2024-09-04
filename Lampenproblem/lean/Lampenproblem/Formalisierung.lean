@@ -11,6 +11,13 @@ def flip_at : Vec Bool n → m → Vec Bool n := sorry
 inductive LampState : Vec Bool n  → (m : Nat) → (k : Nat) → Type where
   | start : LampState all_off 1 1
   | step :  LampState v m k → LampState (flip_at v m) (m + k) (m / n)
-def positive  (_ : LampState v n m) : Prop := v = all_on ∨ v = all_off
+
+def step_n {n: Nat} {v: Vec Bool n} (NumSteps: Nat) (ls: LampState v m k) : Σ (v': Vec Bool n) (m' k' : Nat), LampState v' m' k' :=
+  match NumSteps with
+  | 0 => ⟨_, _, _, ls⟩
+  | Nat.succ x => sorry -- LampState.step (step_n x ls)
+
+def positiveRunde  (_ : LampState v n m) : Prop := v = all_on ∨ v = all_off
+
 
 --
