@@ -1,1 +1,2 @@
-import Mathlib.Tactic.Find
+import Lampenproblem.Formalisierung
+--
