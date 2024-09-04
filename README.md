@@ -21,7 +21,7 @@ Schritt:
 -> Gehe k Lampen weiter
 -> Jedes mal wenn du an einer Lampe vorbeiläufst (die, die du umschaltest mitgezählt), erhöhst du m um 1
 -> Jedes mal wenn du die grüne Linie überquerst, erhöhst du k um 1
--> das heißt soviel wie k=m/n (integer division) und die jetzige Lampennummer = m%n
+-> das heißt soviel wie k = m/n + 1 (integer division) und die jetzige Lampennummer = m%n
 -> Jedes mal wenn du die grüne Linie überquerst, prüfst du, ob es eine positive Runde ist
 
 positive Runden (PR):
@@ -53,7 +53,7 @@ Step:
 -> Move k lamps forward
 -> Each time you pass by a lamp (including the one you toggle), increase m by 1
 -> Each time you cross the green line, increase k by 1
--> That means k=m/n (integer division), and the current lamp number = m%n
+-> That means k = m/n + 1 (integer division), and the current lamp number = m%n
 -> Each time you cross the green line, check if it's a positive round
 
 Positive rounds (PR):
