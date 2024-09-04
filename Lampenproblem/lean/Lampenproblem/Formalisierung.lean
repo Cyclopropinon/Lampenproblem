@@ -29,12 +29,19 @@ def PrintLampState (ls: @LampState n v m k): String :=
   "\nSchritte: " ++ ToString.toString m ++
   "\nRunden:   " ++ ToString.toString k ++ "\n"
 
-def step_n {n: Nat} {v: BitVec n} (NumSteps: Nat) (ls: LampState v m k) : Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k' :=
+def step_n_sum {n: Nat} {v: BitVec n} (NumSteps: Nat) (ls: LampState v m k):
+  Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k' :=
   match NumSteps with
   | 0 => ⟨_, _, _, ls⟩
-  | Nat.succ x => match step_n x ls with
+  | Nat.succ x => match step_n_sum x ls with
     --| ⟨_, m', _, ls'⟩ => ⟨_, _, m'/n, ls'.step⟩
     | ⟨v', m', k', ls'⟩ => ⟨@flip_at n v' m', m' + k', m'/n, ls'.step⟩
+
+def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
+  x.snd.snd.snd
+
+--def step_n {n: Nat} {v: BitVec n} (NumSteps: Nat) (ls: LampState v m k):=
+  --step_extract (step_n_sum _ _)
 
 #print LampState.start
 #check BitVec
@@ -44,7 +51,8 @@ def step_n {n: Nat} {v: BitVec n} (NumSteps: Nat) (ls: LampState v m k) : Σ (v'
 #check ToString
 
 #eval IO.println (PrintLampState (@LampState.start 7))
-#eval IO.println (PrintLampState (step_n 5 (@LampState.start 7)))
+#eval IO.println (PrintLampState (step_n_sum 5 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (extract_ls (step_n_sum 5 (@LampState.start 7))))
 
 --#print BitVec.zero 3
 --#print BitVec.allOnes 3
