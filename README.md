@@ -12,7 +12,7 @@ Du läufst nur im Uhrzeigersinn
 
 Startbedingungen:
 -> Rundenzahl k=1
--> Lampenzahl m=1
+-> Schrittzahl m=1
 -> Du stehst bei Lampe 1
 -> Alle Lampen sind aus
 
@@ -30,7 +30,7 @@ positive Runden (PR):
 -> PRs haben eine besondere Bedeutung
 -> Format: (n,k)
 
-Theoreme (unbewiesen)
+Vermutungen
 -> die Vermutung von Krabbenhöft-Taschner: für k<=n gibt es nur die PR (n,1) und (3,3)
 -> die Vermutung von Taschner-Krabbenhöft: es gibt für jedes n unendlich viele PR
 ```
@@ -44,7 +44,7 @@ You move only clockwise.
 
 Initial conditions:
 -> Round number k=1
--> Lamp number m=1
+-> number of Steps m=1
 -> You start at lamp 1
 -> All lamps are off
 
@@ -62,7 +62,7 @@ Positive rounds (PR):
 -> PRs have a special significance
 -> Format: (n,k)
 
-Theorems (unproven)
+Conjectures
 -> Krabbenhöft-Taschner-conjecture: for k<=n, there are only PRs (n,1) and (3,3)
 -> Taschner-Krabbenhöft-conjecture: there are infinitely many PRs for each n
 ```
