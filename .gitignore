@@ -43,6 +43,9 @@ Lampenproblem/testumgebung/Lampenproblem
 1_split
 IDA
 
+# lean
+Lampenproblem/lean/.lake
+
 # User-specific files
 *.rsuser
 *.suo
