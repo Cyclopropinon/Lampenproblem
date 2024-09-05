@@ -18,9 +18,17 @@ inductive LampState: BitVec n  → (m: Nat) → (k: Nat) → Type where
   | step:  LampState v m k → LampState (flip_at m) (m + k) (m/n + 1)
   deriving Repr
 
+def BetterToStr (v: BitVec n) (i: Nat := n): String :=
+  if i ≤ 0 then ""
+  else
+    if BitVec.getLsb v (n - i) = true then
+      "☒" ++ BetterToStr v (i-1)
+    else
+      "☐" ++ BetterToStr v (i-1)
+
 def PrintLampState (ls: @LampState n v m k): String :=
-  "n:          " ++ ToString.toString n ++
-  "\nDaten:    " ++ ToString.toString v ++
+    "n:        " ++ ToString.toString n ++
+  "\nDaten:    " ++ BetterToStr v ++
   "\nSchritte: " ++ ToString.toString m ++
   "\nRunden:   " ++ ToString.toString k ++ "\n"
 
@@ -36,6 +44,8 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
   x.snd.snd.snd
 
 
+
+#print BetterToStr
 
 #eval IO.println (PrintLampState (@LampState.start 7))
 #eval IO.println (PrintLampState (step_n_sum 5 (@LampState.start 7)).snd.snd.snd)
