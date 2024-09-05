@@ -11,10 +11,10 @@ def flip_at_helper {n: Nat} (m: Nat): (BitVec n) :=
 
 def all_on: BitVec n := BitVec.allOnes n
 def all_off: BitVec n := BitVec.zero n
-def flip_at {v: BitVec n} (m: Nat): (BitVec n) := BitVec.xor v (flip_at_helper ((m-1) % n))
+def flip_at {v: BitVec n} (m: Nat): (BitVec n) := BitVec.xor v (flip_at_helper ((m) % n))
 
 inductive LampState: BitVec n  → (m: Nat) → (k: Nat) → Type where
-  | start: LampState all_off 1 1
+  | start: LampState all_off 0 1
   | step:  LampState v m k → LampState (flip_at m) (m + k) (m/n + 1)
   deriving Repr
 
@@ -59,9 +59,6 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
 #eval IO.println (PrintLampState (step_n_sum 5 (@LampState.start 7)).snd.snd.snd)
 
 
-#eval IO.println (PrintLampState (extract_ls (step_n_sum 50 (@LampState.start 7))))
-
-
 #eval IO.println (PrintLampState (step_n_sum 0 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 1 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 2 (@LampState.start 7)).snd.snd.snd)
@@ -74,6 +71,9 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
 #eval IO.println (PrintLampState (step_n_sum 9 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 10 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 11 (@LampState.start 7)).snd.snd.snd)
+
+
+/-
 #eval IO.println (PrintLampState (step_n_sum 12 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 13 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 14 (@LampState.start 7)).snd.snd.snd)
@@ -93,6 +93,10 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
 #eval IO.println (PrintLampState (step_n_sum 28 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 29 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 30 (@LampState.start 7)).snd.snd.snd)
+
+
+#eval IO.println (PrintLampState (extract_ls (step_n_sum 50 (@LampState.start 7))))
+
 --/
 
 def positiveRunde  (_ : LampState v n m) : Prop := v = all_on ∨ v = all_off

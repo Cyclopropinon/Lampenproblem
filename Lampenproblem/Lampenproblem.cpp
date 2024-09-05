@@ -140,11 +140,11 @@ void PrintProgressBar(double progress,int barWidth)
 std::string PrintLampenStatus(vector<bool> Lampen)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: PrintLampenStatus")
-	string Ausgabe = "";
+	string Ausgabe = " ";
 	for (bool Lampe: Lampen)
 	{
-		if (Lampe)	Ausgabe += "☒";
-		else		Ausgabe += "☐";
+		if (Lampe)	Ausgabe += "☒ ";
+		else		Ausgabe += "☐ ";
 	}
 	_PRINTVAR_4_(Ausgabe)
 	return Ausgabe;
@@ -517,10 +517,10 @@ vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long 
 std::string LampenVerbosSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: LampenVerbosSimulieren")
-	unsigned long long				AnzRunden = 2;				// Aktuelle Runde
+	unsigned long long				AnzRunden = 1;				// Aktuelle Runde
     vector<bool>					Lampen;
 	vector<unsigned long long>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
-	unsigned long long				Schritte = n;				// Anzahl der Schritte, die schon gelaufen sind
+	unsigned long long				Schritte = 0;				// Anzahl der Schritte, die schon gelaufen sind
 
 	vector<bool>	AlleLampenAn;
 	vector<bool>	AlleLampenAus;
@@ -529,7 +529,7 @@ std::string LampenVerbosSimulieren(unsigned long long n, unsigned long long k, b
 
 	for (size_t i = 0; i < n; i++)						// n Lampen, die aus sind erstellen
 	{
-		Lampen.push_back(true);
+		Lampen.push_back(false);
 		AlleLampenAn.push_back(true);
 		AlleLampenAus.push_back(false);
 	}
@@ -538,7 +538,7 @@ std::string LampenVerbosSimulieren(unsigned long long n, unsigned long long k, b
 		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
 	}
 
-	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
+	Lampen[0] = true;									// erste Lampe der 2. Runde wird umgeschalten
 
 	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
 	{
