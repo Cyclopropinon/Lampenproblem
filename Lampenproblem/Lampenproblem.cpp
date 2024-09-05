@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.24"
+#define _V "0.1.25"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -135,6 +135,19 @@ void PrintProgressBar(double progress,int barWidth)
 	}
 	std::cout << "] " << int(progress * 100.0) << " %\r";
 	std::cout.flush();
+}
+
+std::string PrintLampenStatus(vector<bool> Lampen)
+{
+	_PRINTINPUT_3_("Funktionsaufruf: PrintLampenStatus")
+	string Ausgabe = "";
+	for (bool Lampe: Lampen)
+	{
+		if (Lampe)	Ausgabe += "☒";
+		else		Ausgabe += "☐";
+	}
+	_PRINTVAR_4_(Ausgabe)
+	return Ausgabe;
 }
 
 string VectorenZuString(unsigned long long n, vector<vector<unsigned long long>> v)
@@ -501,7 +514,7 @@ vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long 
 	return PositiveRunden;
 }
 
-vector<std::string> LampenVerbosSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
+std::string LampenVerbosSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: LampenVerbosSimulieren")
 	unsigned long long				AnzRunden = 2;				// Aktuelle Runde
@@ -529,12 +542,14 @@ vector<std::string> LampenVerbosSimulieren(unsigned long long n, unsigned long l
 
 	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
 	{
+		Ausgabe += std::string("\nSchritte: ") + to_string(Schritte) + "\tAnzRunden: " + to_string(AnzRunden) + "\tLampen: " + PrintLampenStatus(Lampen);
 		Schritte += AnzRunden;
 		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
 		{
 			if (Lampen==AlleLampenAn||Lampen==AlleLampenAus)
 			{
 				PositiveRunden.push_back(AnzRunden);	// Runde vermerken
+				Ausgabe += "\t OMG Positive Runde gefunden!!!!!!";
 			}
 
 			AnzRunden = 1 + Schritte / n;
@@ -542,7 +557,7 @@ vector<std::string> LampenVerbosSimulieren(unsigned long long n, unsigned long l
 		Lampen[Schritte%n] = !Lampen[Schritte%n];		// Lampe umschalten
 	}
 
-	return PositiveRunden;
+	return Ausgabe;
 }
 
 vector<unsigned long long> LampenEinzelnPrüfen(unsigned long long n, unsigned long long maxK, unsigned long long testLampen/*, bool nurNNprüfen*/)		//testLampen <= n
@@ -3830,21 +3845,8 @@ int main(int argc, const char** argv)
 
 					for (size_t i = minN; i <= maxN; i++)
 					{
-						string		Ausgabe;
-						vector<unsigned long long> PositiveRunden = LampenSimulieren(i, maxK, false);
 
-						ostringstream oss;
-
-						if (!PositiveRunden.empty())					//vetor to string
-						{
-							// Convert all but the last element to avoid a trailing ","
-							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<unsigned long long>(oss, ","));
-
-							// Now add the last element with no delimiter
-							oss << PositiveRunden.back();
-
-							cout << "Lampenanzahl: " << i << "; positive Runde(n) :" << oss.str() << "\n";
-						}
+						cout << LampenVerbosSimulieren(i, maxK, false) << "\n\n";
 
 					}
 
