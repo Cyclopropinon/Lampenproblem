@@ -26,11 +26,18 @@ def BetterToStr (v: BitVec n) (i: Nat := n): String :=
     else
       "☐" ++ BetterToStr v (i-1)
 
+def CheckPR (v: BitVec n): Bool :=
+  (Decidable.decide (v = BitVec.allOnes n)) ∨ (Decidable.decide (v = BitVec.zero n))
+  --if BitVec.decEq v (BitVec.allOnes n) then true
+  --else if BitVec.decEq v (BitVec.zero n) then true
+  --else false
+
 def PrintLampState (ls: @LampState n v m k): String :=
     "n:        " ++ ToString.toString n ++
   "\nDaten:    " ++ BetterToStr v ++
   "\nSchritte: " ++ ToString.toString m ++
-  "\nRunden:   " ++ ToString.toString k ++ "\n"
+  "\nRunden:   " ++ ToString.toString k ++
+  "\nPositiv?  " ++ ToString.toString (CheckPR v) ++ "\n"
 
 def step_n_sum {n: Nat} {v: BitVec n} (NumSteps: Nat) (ls: LampState v m k):
   Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k' :=
@@ -50,6 +57,8 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
 
 #eval IO.println (PrintLampState (@LampState.start 7))
 #eval IO.println (PrintLampState (step_n_sum 5 (@LampState.start 7)).snd.snd.snd)
+
+
 #eval IO.println (PrintLampState (extract_ls (step_n_sum 50 (@LampState.start 7))))
 
 
@@ -74,6 +83,16 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
 #eval IO.println (PrintLampState (step_n_sum 18 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 19 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 20 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 21 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 22 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 23 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 24 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 25 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 26 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 27 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 28 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 29 (@LampState.start 7)).snd.snd.snd)
+#eval IO.println (PrintLampState (step_n_sum 30 (@LampState.start 7)).snd.snd.snd)
 --/
 
 def positiveRunde  (_ : LampState v n m) : Prop := v = all_on ∨ v = all_off
