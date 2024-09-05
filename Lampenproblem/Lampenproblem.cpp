@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.25"
+#define _V "0.1.26"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -3839,7 +3839,7 @@ int main(int argc, const char** argv)
 					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
 					cin >> maxN;				_PRINTVAR_4_(maxN)
-					cout << "max k eingeben: ";
+					cout << "Anz. Iterationen eingeben: ";
 					cin >> maxK;				_PRINTVAR_4_(maxK)
 
 					berechnungsStart = steady_clock::now();
