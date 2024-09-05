@@ -11,11 +11,11 @@ def flip_at_helper {n: Nat} (m: Nat): (BitVec n) :=
 
 def all_on: BitVec n := BitVec.allOnes n
 def all_off: BitVec n := BitVec.zero n
-def flip_at {v: BitVec n} (m: Nat): (BitVec n) := BitVec.xor v (flip_at_helper ((m) % n))
+def flip_at {v: BitVec n} (m: Nat): (BitVec n) := BitVec.xor v (flip_at_helper (m % n))
 
 inductive LampState: BitVec n  → (m: Nat) → (k: Nat) → Type where
   | start: LampState all_off 0 1
-  | step:  LampState v m k → LampState (flip_at m) (m + k) (m/n + 1)
+  | step:  LampState v m k → LampState (flip_at m) (m + k) ((m+k)/n + 1)
   deriving Repr
 
 def BetterToStr (v: BitVec n) (i: Nat := n): String :=
@@ -45,7 +45,7 @@ def step_n_sum {n: Nat} {v: BitVec n} (NumSteps: Nat) (ls: LampState v m k):
   | 0 => ⟨_, _, _, ls⟩
   | Nat.succ x => match step_n_sum x ls with
     --| ⟨_, m', _, ls'⟩ => ⟨_, _, m'/n, ls'.step⟩
-    | ⟨v', m', k', ls'⟩ => ⟨@flip_at n v' m', m' + k', m'/n + 1, ls'.step⟩
+    | ⟨v', m', k', ls'⟩ => ⟨@flip_at n v' m', m' + k', (m'+k')/n + 1, ls'.step⟩
     --| ⟨v', m', k', ls'⟩ => ⟨@flip_at n v' (m' % n), m' + k', m'/n + 1, ls'.step⟩
 
 def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
@@ -71,9 +71,6 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
 #eval IO.println (PrintLampState (step_n_sum 9 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 10 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 11 (@LampState.start 7)).snd.snd.snd)
-
-
-/-
 #eval IO.println (PrintLampState (step_n_sum 12 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 13 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 14 (@LampState.start 7)).snd.snd.snd)

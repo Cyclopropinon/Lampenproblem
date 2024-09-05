@@ -514,7 +514,7 @@ vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long 
 	return PositiveRunden;
 }
 
-std::string LampenVerbosSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
+std::string LampenVerbosSimulieren(unsigned long long n, unsigned long long Anz, bool einsenAnzeigen)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: LampenVerbosSimulieren")
 	unsigned long long				AnzRunden = 1;				// Aktuelle Runde
@@ -540,9 +540,10 @@ std::string LampenVerbosSimulieren(unsigned long long n, unsigned long long k, b
 
 	Lampen[0] = true;									// erste Lampe der 2. Runde wird umgeschalten
 
-	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
+	//while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
+	for (size_t i = 0; i < Anz; i++)
 	{
-		Ausgabe += std::string("\nSchritte: ") + to_string(Schritte) + "\tAnzRunden: " + to_string(AnzRunden) + "\tLampen: " + PrintLampenStatus(Lampen);
+		Ausgabe += std::string("\nIteration: ") + to_string(i) + "\tSchritte: " + to_string(Schritte) + "\tAnzRunden: " + to_string(AnzRunden) + "\tLampen: " + PrintLampenStatus(Lampen);
 		Schritte += AnzRunden;
 		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
 		{
