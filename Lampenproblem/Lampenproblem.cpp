@@ -501,6 +501,50 @@ vector<unsigned long long> LampenSimulieren(unsigned long long n, unsigned long 
 	return PositiveRunden;
 }
 
+vector<std::string> LampenVerbosSimulieren(unsigned long long n, unsigned long long k, bool einsenAnzeigen)
+{
+	_PRINTINPUT_3_("Funktionsaufruf: LampenVerbosSimulieren")
+	unsigned long long				AnzRunden = 2;				// Aktuelle Runde
+    vector<bool>					Lampen;
+	vector<unsigned long long>		PositiveRunden;				// Liste der Runden nachdem alle Lampen an/aus sind
+	unsigned long long				Schritte = n;				// Anzahl der Schritte, die schon gelaufen sind
+
+	vector<bool>	AlleLampenAn;
+	vector<bool>	AlleLampenAus;
+
+	std::string		Ausgabe = "";
+
+	for (size_t i = 0; i < n; i++)						// n Lampen, die aus sind erstellen
+	{
+		Lampen.push_back(true);
+		AlleLampenAn.push_back(true);
+		AlleLampenAus.push_back(false);
+	}
+	if (einsenAnzeigen)
+	{
+		PositiveRunden.push_back(1);					// 1. Runde ist immer positiv
+	}
+
+	Lampen[0] = false;									// erste Lampe der 2. Runde wird umgeschalten
+
+	while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
+	{
+		Schritte += AnzRunden;
+		if (AnzRunden > n || AnzRunden < 1 + Schritte / n)
+		{
+			if (Lampen==AlleLampenAn||Lampen==AlleLampenAus)
+			{
+				PositiveRunden.push_back(AnzRunden);	// Runde vermerken
+			}
+
+			AnzRunden = 1 + Schritte / n;
+		}
+		Lampen[Schritte%n] = !Lampen[Schritte%n];		// Lampe umschalten
+	}
+
+	return PositiveRunden;
+}
+
 vector<unsigned long long> LampenEinzelnPrüfen(unsigned long long n, unsigned long long maxK, unsigned long long testLampen/*, bool nurNNprüfen*/)		//testLampen <= n
 {
 	_PRINTINPUT_3_("Funktionsaufruf: LampenEinzelnPrüfen")
@@ -3724,7 +3768,7 @@ int main(int argc, const char** argv)
 					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
 					+ "23 = optimierte & erweiterte Simulation mit FLINT\t\t24 = optimierte & erweiterte Simulation mit GMPLIB V7\n"
 					+ "25 = optimierte & erweiterte Simulation mit GMPLIB V8 (Jetzt mit Nachrichtenfenster!)\n"
-					+ "\n-1 = Benchmark für die Schritte\n\n"
+					+ "\n-1 = Benchmark für die Schritte\t-2 = Verbose simulation\n\n"
 					+ '\n';
 				cout << menu;
 				cin >> prüfart;					_PRINTVAR_2_(prüfart)
@@ -3740,6 +3784,41 @@ int main(int argc, const char** argv)
 					return 0;
 					break;
 				case 1:
+					cout << "min n eingeben: ";
+					cin >> minN;				_PRINTVAR_4_(minN)
+					cout << "max n eingeben: ";
+					cin >> maxN;				_PRINTVAR_4_(maxN)
+					cout << "max k eingeben: ";
+					cin >> maxK;				_PRINTVAR_4_(maxK)
+
+					berechnungsStart = steady_clock::now();
+
+					for (size_t i = minN; i <= maxN; i++)
+					{
+						string		Ausgabe;
+						vector<unsigned long long> PositiveRunden = LampenSimulieren(i, maxK, false);
+
+						ostringstream oss;
+
+						if (!PositiveRunden.empty())					//vetor to string
+						{
+							// Convert all but the last element to avoid a trailing ","
+							copy(PositiveRunden.begin(), PositiveRunden.end() - 1, ostream_iterator<unsigned long long>(oss, ","));
+
+							// Now add the last element with no delimiter
+							oss << PositiveRunden.back();
+
+							cout << "Lampenanzahl: " << i << "; positive Runde(n) :" << oss.str() << "\n";
+						}
+
+					}
+
+					berechnungsEnde = steady_clock::now();
+					//			cout << "Laufzeit: " << nanoseconds{ berechnungsEnde - berechnungsStart }.count() << "ns\n";
+					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
+					cout << "Laufzeit: " << Dauer << "s\n\n";
+					break;
+				case -2:
 					cout << "min n eingeben: ";
 					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
