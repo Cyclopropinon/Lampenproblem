@@ -58,7 +58,7 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
 #eval IO.println (PrintLampState (@LampState.start 7))
 #eval IO.println (PrintLampState (step_n_sum 5 (@LampState.start 7)).snd.snd.snd)
 
-
+/-
 #eval IO.println (PrintLampState (step_n_sum 0 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 1 (@LampState.start 7)).snd.snd.snd)
 #eval IO.println (PrintLampState (step_n_sum 2 (@LampState.start 7)).snd.snd.snd)

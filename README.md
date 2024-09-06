@@ -75,3 +75,7 @@ Ein paar Screenshots:
 * add a notify-window for system messages
 * Settings file
 * Emergency-save when power failure
+### Formalisierung
+* Formalisiere die beiden Vermutungen
+* Beweise/Wiederlege die beiden Vermutungen LOL
+* Setzte mögliche Unterziele für die Beweise
