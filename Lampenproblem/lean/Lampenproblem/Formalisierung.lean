@@ -54,10 +54,20 @@ def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
 def CheckPRLS (ls: @LampState n v m k): Bool :=
   CheckPR v
 
+-- wie CheckPRLS, aber nur falls k ≤ f(n)
+def CheckPRLSf (ls: @LampState n v m k) (f: Nat → Nat): Bool :=
+  if k ≤ f n then CheckPR v
+  else false
+
 def CheckPRFromStart (n Iterationen: Nat): Bool :=
   CheckPRLS (extract_ls (step_n_sum Iterationen (@LampState.start n)))
 
+-- wie CheckPRFromStart, aber nur falls k ≤ f(n)
+def CheckPRFromStartF (n Iterationen: Nat) (f: Nat → Nat): Bool :=
+  CheckPRLSf (extract_ls (step_n_sum Iterationen (@LampState.start n))) f
 
+def CheckAllPRFromStartF (n: Nat) (f: Nat → Nat): Bool :=
+  sorry
 
 #print BetterToStr
 
