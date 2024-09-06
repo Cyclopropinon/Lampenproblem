@@ -76,6 +76,6 @@ Ein paar Screenshots:
 * Settings file
 * Emergency-save when power failure
 ### Formalisierung
-* Formalisiere die beiden Vermutungen
+* Formalisiere die Vermutung von Krabbenhöft-Taschner
 * Beweise/Wiederlege die beiden Vermutungen LOL
 * Setzte mögliche Unterziele für die Beweise

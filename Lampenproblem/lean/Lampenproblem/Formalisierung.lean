@@ -66,6 +66,12 @@ def CheckPRFromStart (n Iterationen: Nat): Bool :=
 def CheckPRFromStartF (n Iterationen: Nat) (f: Nat → Nat): Bool :=
   CheckPRLSf (extract_ls (step_n_sum Iterationen (@LampState.start n))) f
 
+def CheckAllPRFromStartF_sum {n: Nat} {v: BitVec n} (f: Nat → Nat) (ls: LampState v m k):
+  --Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k' :=
+  sorry:=
+  --⟨v', m', k', ls'⟩ => ⟨@flip_at n v' m', m' + k', (m'+k')/n + 1, ls'.step⟩
+  sorry
+
 def CheckAllPRFromStartF (n: Nat) (f: Nat → Nat): Bool :=
   sorry
 
