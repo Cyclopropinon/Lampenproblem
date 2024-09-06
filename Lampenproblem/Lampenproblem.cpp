@@ -541,7 +541,7 @@ std::string LampenVerbosSimulieren(unsigned long long n, unsigned long long Anz,
 	Lampen[0] = true;									// erste Lampe der 2. Runde wird umgeschalten
 
 	//while (1 + Schritte / n <= k)						// bis Rundenanzahl erreicht
-	for (size_t i = 0; i < Anz; i++)
+	for (size_t i = 1; i <= Anz; i++)
 	{
 		Ausgabe += std::string("\nIteration: ") + to_string(i) + "\tSchritte: " + to_string(Schritte) + "\tAnzRunden: " + to_string(AnzRunden) + "\tLampen: " + PrintLampenStatus(Lampen);
 		Schritte += AnzRunden;

@@ -51,12 +51,20 @@ def step_n_sum {n: Nat} {v: BitVec n} (NumSteps: Nat) (ls: LampState v m k):
 def extract_ls (x: Σ (v': BitVec n) (m' k' : Nat), LampState v' m' k'):=
   x.snd.snd.snd
 
+def CheckPRLS (ls: @LampState n v m k): Bool :=
+  CheckPR v
+
+def CheckPRFromStart (n Iterationen: Nat): Bool :=
+  CheckPRLS (extract_ls (step_n_sum Iterationen (@LampState.start n)))
+
 
 
 #print BetterToStr
 
 #eval IO.println (PrintLampState (@LampState.start 7))
 #eval IO.println (PrintLampState (step_n_sum 5 (@LampState.start 7)).snd.snd.snd)
+
+#eval CheckPRFromStart 9 76 -- sollte true sein
 
 /-
 #eval IO.println (PrintLampState (step_n_sum 0 (@LampState.start 7)).snd.snd.snd)
