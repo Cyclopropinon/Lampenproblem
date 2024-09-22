@@ -55,6 +55,7 @@ bool					ttyGlobal;
 std::map<std::string, std::string> Einstellungen;
 constexpr auto			EinstellungsDateiname = "Einstellungen.ini";
 constexpr auto			__EINST_LANG__ = "Lang";
+constexpr auto			__EINST_OFFS__ = "Zeilenoffset";
 
 // Unicode-Zeichen für abgerundete Ecken
 cchar_t ls, rs, ts, bs, tl, tr, bl, br;

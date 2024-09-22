@@ -3685,7 +3685,7 @@ int main(int argc, const char** argv)
 	ttyGlobal = tty; // Aktualisiere globale Variable
 	if (einstellungExistiert(__EINST_LANG__))
 	{
-		std::locale::global(std::locale(leseEinstellung(__EINST_LANG__, "")));
+		std::locale::global(std::locale(leseEinstellung(__EINST_LANG__, Sprache, EinstellungsDateiname)));
 	} else {
 		cout << "Language detected: \"" << Sprache << "\" Use this language? (y/n) ";
 		cin >> usePresetLang;
@@ -5722,8 +5722,7 @@ int main(int argc, const char** argv)
 						init_pair(1, COLOR_RED, COLOR_BLACK);
 						std::thread input_thread(input_listener); // Starte Eingabe-Thread
 
-						ThreadFensterShift = 0;
-
+						ThreadFensterShift = leseZahlAusEinstellung(__EINST_OFFS__, 0, EinstellungsDateiname);
 						// Erstelle ein Fenster für die Titelzeile
 						constexpr int titleWinHeight = 2;
 						Titelfensterhöhe = titleWinHeight;

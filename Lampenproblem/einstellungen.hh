@@ -86,7 +86,7 @@ void leseEinstellungenAusDatei(const std::string& dateiName)
 }
 
 // Funktion zum Lesen einer einzelnen Einstellung
-std::string leseEinstellung(const std::string& schluessel, const std::string& defaultWert)
+std::string leseEinstellung(const std::string& schluessel, const std::string& defaultWert, const std::string& dateiName)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: leseEinstellung")
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
@@ -98,8 +98,61 @@ std::string leseEinstellung(const std::string& schluessel, const std::string& de
     } else {
         // Einstellung existiert nicht, auf Default-Wert setzen
         Einstellungen[schluessel] = defaultWert;
+        schreibeEinstellungenInDatei(dateiName, true);
         return defaultWert;
     }
+}
+
+// Funktion zum Lesen einer einzelnen Einstellung
+int leseZahlAusEinstellung(const std::string& schluessel, const int& defaultWert, const std::string& dateiName)
+{
+	_PRINTINPUT_3_("Funktionsaufruf: leseZahlAusEinstellung")
+    std::string Zahl = leseEinstellung(schluessel, std::to_string(defaultWert), dateiName);
+    try
+    {
+        int num = std::stoi(Zahl);
+        return num;
+    } catch (const std::invalid_argument& e)
+    {
+        _PRINTERROR_
+        std::cerr << "Invalid Setting " << schluessel << ": \"" << Zahl << "\" is not a number" << std::endl;
+    } catch (const std::out_of_range& e)
+    {
+        _PRINTERROR_
+        std::cerr << "Input (" << Zahl << ") is out of range for an int" << std::endl;
+    } catch (const std::exception& e)
+    {
+        _PRINTERROR_
+		std::cerr << "\aFehler:\n" << e.what() << std::endl;
+    }
+
+    return defaultWert;
+}
+
+// Funktion zum Lesen einer einzelnen Einstellung
+uint64_t leseZahlAusEinstellung(const std::string& schluessel, const uint64_t& defaultWert, const std::string& dateiName)
+{
+	_PRINTINPUT_3_("Funktionsaufruf: leseZahlAusEinstellung")
+    std::string Zahl = leseEinstellung(schluessel, std::to_string(defaultWert), dateiName);
+    try
+    {
+        uint64_t num = std::stoull(Zahl);
+        return num;
+    } catch (const std::invalid_argument& e)
+    {
+        _PRINTERROR_
+        std::cerr << "Invalid Setting " << schluessel << ": \"" << Zahl << "\" is not a number" << std::endl;
+    } catch (const std::out_of_range& e)
+    {
+        _PRINTERROR_
+        std::cerr << "Input (" << Zahl << ") is out of range for an int" << std::endl;
+    } catch (const std::exception& e)
+    {
+        _PRINTERROR_
+		std::cerr << "\aFehler:\n" << e.what() << std::endl;
+    }
+    
+    return defaultWert;
 }
 
 // Funktion zum Schreiben einer einzelnen Einstellung
