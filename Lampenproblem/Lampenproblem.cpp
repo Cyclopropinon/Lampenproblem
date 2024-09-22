@@ -222,12 +222,16 @@ bool isTTY(std::string TERM)
 // Funktion zur Überwachung der Nutzereingabe
 void input_listener() {
     int ch;
+	EingabeAktiviert = true;
     while (ch = getch())// != 'q') {
     {
         if (ch == 82) // 82 = R (Groß)
         { // 18 ist der ASCII-Code für Strg+R
             refreshScreen();
         }
+
+		if (!EingabeAktiviert) return;
+
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     // Beende ncurses-Modus wenn 'q' gedrückt wird
@@ -5646,6 +5650,7 @@ int main(int argc, const char** argv)
 
 						dt(berechnungsStartHR, durHR);
 
+						EingabeAktiviert = false;
 						input_thread.join();
 
 						if(!tty)
@@ -5828,6 +5833,7 @@ int main(int argc, const char** argv)
 
 						dt(berechnungsStartHR, durHR);
 
+						EingabeAktiviert = false;
 						input_thread.join();
 
 						if(!tty)
