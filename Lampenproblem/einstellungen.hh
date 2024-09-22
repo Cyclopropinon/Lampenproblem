@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -8,13 +9,41 @@
 
 #include "globalVars.hh"
 
+// Funktion zum Überprüfen, ob eine Datei existiert
+bool dateiExistiert(const std::string& dateiName)
+{
+    return std::filesystem::exists(dateiName); // C++17 Funktion zum Überprüfen der Existenz
+}
+
+// Funktion zum Erstellen einer neuen Datei
+void erstelleLeereDatei(const std::string& dateiName)
+{
+    std::ofstream datei(dateiName); // Erstellt eine leere Datei
+    if (datei.is_open())
+    {
+        datei.close();
+        std::cout << "Neue Einstellungsdatei erstellt: " << dateiName << std::endl;
+    } else {
+        std::cerr << "Konnte die Datei nicht erstellen: " << dateiName << std::endl;
+    }
+}
+
+void touchDatei(const std::string& dateiName)
+{
+    if (!dateiExistiert(dateiName)) erstelleLeereDatei(dateiName);
+}
+
 // Funktion zum Schreiben aller Einstellungen in eine .ini-Datei
-void schreibeEinstellungenInDatei(const std::string& dateiName) {
-    std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
+void schreibeEinstellungenInDatei(const std::string& dateiName, bool MutexAktiv)
+{
+    if (!MutexAktiv) std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
+    touchDatei(dateiName);
     std::ofstream datei(dateiName);
 
-    if (datei.is_open()) {
-        for (const auto& einstellung : Einstellungen) {
+    if (datei.is_open())
+    {
+        for (const auto& einstellung : Einstellungen)
+        {
             datei << einstellung.first << "=" << einstellung.second << std::endl;
         }
         datei.close();
@@ -24,16 +53,21 @@ void schreibeEinstellungenInDatei(const std::string& dateiName) {
 }
 
 // Funktion zum Lesen aller Einstellungen aus einer .ini-Datei
-void leseEinstellungenAusDatei(const std::string& dateiName) {
+void leseEinstellungenAusDatei(const std::string& dateiName)
+{
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
+    touchDatei(dateiName);
     std::ifstream datei(dateiName);
     std::string zeile;
 
-    if (datei.is_open()) {
-        while (std::getline(datei, zeile)) {
+    if (datei.is_open())
+    {
+        while (std::getline(datei, zeile))
+        {
             // Suche nach dem Trennzeichen '='
             size_t trennPos = zeile.find('=');
-            if (trennPos != std::string::npos) {
+            if (trennPos != std::string::npos)
+            {
                 std::string schluessel = zeile.substr(0, trennPos);
                 std::string wert = zeile.substr(trennPos + 1);
                 Einstellungen[schluessel] = wert; // Einstellung in die Map laden
@@ -46,11 +80,13 @@ void leseEinstellungenAusDatei(const std::string& dateiName) {
 }
 
 // Funktion zum Lesen einer einzelnen Einstellung
-std::string leseEinstellung(const std::string& schluessel, const std::string& defaultWert) {
+std::string leseEinstellung(const std::string& schluessel, const std::string& defaultWert)
+{
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
 
     auto it = Einstellungen.find(schluessel);
-    if (it != Einstellungen.end()) {
+    if (it != Einstellungen.end())
+    {
         return it->second; // Einstellung gefunden
     } else {
         // Einstellung existiert nicht, auf Default-Wert setzen
@@ -60,18 +96,20 @@ std::string leseEinstellung(const std::string& schluessel, const std::string& de
 }
 
 // Funktion zum Schreiben einer einzelnen Einstellung
-void schreibeEinstellung(const std::string& schluessel, const std::string& wert, const std::string& dateiName) {
+void schreibeEinstellung(const std::string& schluessel, const std::string& wert, const std::string& dateiName)
+{
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
 
     // Einstellung in die Map einfügen oder aktualisieren
     Einstellungen[schluessel] = wert;
 
     // Aktualisierte Map in die Datei schreiben
-    schreibeEinstellungenInDatei(dateiName);
+    schreibeEinstellungenInDatei(dateiName, true);
 }
 
 // Funktion, um zu prüfen, ob eine bestimmte Einstellung existiert
-bool einstellungExistiert(const std::string& schluessel) {
+bool einstellungExistiert(const std::string& schluessel)
+{
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
 
     // Verwende die Methode `find`, um nach dem Schlüssel zu suchen
