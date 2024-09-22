@@ -421,6 +421,53 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 	}
 }
 
+void CheckpointLSGv8(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
+{
+	_PRINTINPUT_3_("Funktionsaufruf: CheckpointLSGv6")
+	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
+	{
+		uint64_t n;
+		uint64_t Lampejetzt;
+		uint64_t print;
+		uint64_t cPrint;
+		uint64_t dPrint;
+		readVar(n);
+		readVar(anz);
+		readVar(einsenAnzeigen);
+		readVar(AnzRunden);
+		readVar(Lampen);
+		readVar(PositiveRunden);
+		readVar(Schritte);
+		readVar(Lampejetzt);
+		readVar(print);
+		readVar(cPrint);
+		readVar(dPrint);
+		readVar(Laufzeit);
+		n_ULL = (unsigned long long)n;
+		Lampejetzt_ULL = (unsigned long long)Lampejetzt;
+		print_ULL = (unsigned long long)print;
+	} else {
+		erstelleVerzeichnis(ordner.c_str());
+		uint64_t n = (uint64_t)n_ULL;
+		uint64_t Lampejetzt = (uint64_t)Lampejetzt_ULL;
+		uint64_t print = (uint64_t)print_ULL;
+		uint64_t cPrint = (uint64_t)cPrint_ULL;
+		uint64_t dPrint = (uint64_t)dPrint_ULL;
+		saveVar(n);
+		saveVar(anz);
+		saveVar(einsenAnzeigen);
+		saveVar(AnzRunden);
+		saveVar(Lampen);
+		saveVar(PositiveRunden);
+		saveVar(Schritte);
+		saveVar(Lampejetzt);
+		saveVar(print);
+		saveVar(cPrint);
+		saveVar(dPrint);
+		saveVar(Laufzeit);
+	}
+}
+
 #ifndef _DISABLELIBFLINTXX_
 
 void CheckpointLSF(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, fmpzxx& AnzRunden, vector<bool>& Lampen, vector<fmpzxx>& PositiveRunden, fmpzxx& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
