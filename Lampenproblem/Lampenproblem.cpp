@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.26"
+#define _V "0.1.27"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -375,53 +375,6 @@ void CheckpointLSGv4(const std::string& ordner, const bool retrieve, unsigned lo
 }
 
 void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
-{
-	_PRINTINPUT_3_("Funktionsaufruf: CheckpointLSGv6")
-	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
-	{
-		uint64_t n;
-		uint64_t Lampejetzt;
-		uint64_t print;
-		uint64_t cPrint;
-		uint64_t dPrint;
-		readVar(n);
-		readVar(anz);
-		readVar(einsenAnzeigen);
-		readVar(AnzRunden);
-		readVar(Lampen);
-		readVar(PositiveRunden);
-		readVar(Schritte);
-		readVar(Lampejetzt);
-		readVar(print);
-		readVar(cPrint);
-		readVar(dPrint);
-		readVar(Laufzeit);
-		n_ULL = (unsigned long long)n;
-		Lampejetzt_ULL = (unsigned long long)Lampejetzt;
-		print_ULL = (unsigned long long)print;
-	} else {
-		erstelleVerzeichnis(ordner.c_str());
-		uint64_t n = (uint64_t)n_ULL;
-		uint64_t Lampejetzt = (uint64_t)Lampejetzt_ULL;
-		uint64_t print = (uint64_t)print_ULL;
-		uint64_t cPrint = (uint64_t)cPrint_ULL;
-		uint64_t dPrint = (uint64_t)dPrint_ULL;
-		saveVar(n);
-		saveVar(anz);
-		saveVar(einsenAnzeigen);
-		saveVar(AnzRunden);
-		saveVar(Lampen);
-		saveVar(PositiveRunden);
-		saveVar(Schritte);
-		saveVar(Lampejetzt);
-		saveVar(print);
-		saveVar(cPrint);
-		saveVar(dPrint);
-		saveVar(Laufzeit);
-	}
-}
-
-void CheckpointLSGv8(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, vector<bool>& Lampen, vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: CheckpointLSGv6")
 	if (retrieve)				// wenn true, dann wird die datei gelesen, sonst geschrieben
@@ -3011,6 +2964,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
     auto berechnungsEndeHR = berechnungsStartHR;
     auto berechnungsZwCP_HR = berechnungsStartHR;
 	std::chrono::nanoseconds Laufzeit;
+	std::chrono::nanoseconds ZeitAuserhalbDieserSession(0);
     string durHR;
     string CP_HR;
     string CPdHR;
@@ -3019,8 +2973,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 	if (std::filesystem::exists(Session))
 	{
 		// Lade die Vorherige Session falls eine existiert
-		CheckpointLSGv6(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
-		berechnungsStartHR -= Laufzeit;
+		CheckpointLSGv6(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, ZeitAuserhalbDieserSession);
+		//berechnungsStartHR -= Laufzeit;
 	}
 
     vector<bool> AlleLampenAn(n, true);
@@ -3102,13 +3056,13 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 			{
 				dPrint = print - cPrint;
 				cPrint = print;
-				Laufzeit = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR);
+				Laufzeit = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR) + ZeitAuserhalbDieserSession;
 				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
 				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
 				berechnungsZwCP_HR = berechnungsEndeHR;
-				dt(berechnungsStartHR, durHR);
-				dt(berechnungsZwCP_HR, CP_HR);
-				Pdt(berechnungsZwCP_HR, CPdHR);
+				zdt(berechnungsStartHR, durHR);
+				zdt(berechnungsZwCP_HR, CP_HR);
+				zPdt(berechnungsZwCP_HR, CPdHR);
 
 				// Redirect output to the ncurses window
 				
@@ -3167,9 +3121,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 	cPrint = print;
 
 	berechnungsZwCP_HR = berechnungsEndeHR;
-	dt(berechnungsStartHR, durHR);
+	zdt(berechnungsStartHR, durHR);
 	// dt(berechnungsZwCP_HR, CP_HR);
-	Pdt(berechnungsZwCP_HR, CPdHR);
+	zPdt(berechnungsZwCP_HR, CPdHR);
 
 	{
 		lock_cout;

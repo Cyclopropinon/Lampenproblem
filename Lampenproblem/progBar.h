@@ -62,6 +62,17 @@ struct Zeitpacket
 			    			out = buffer;\
 			    		}
 
+// wie dt(), aber mit ZeitAuserhalbDieserSession
+#define zdt(Start, out)	{\
+                			char buffer[50];\
+			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
+			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start) + ZeitAuserhalbDieserSession;\
+			    			uint64_t total_seconds = duration.count() / 1'000'000'000;\
+			    			uint64_t remaining_ns = duration.count() % 1'000'000'000;\
+			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
+			    			out = buffer;\
+			    		}
+
 // wie dt(), aber zeit ist durch 2^20 = 1'048'576 geteilt.
 #define ddt(Start, out)	{\
                 			char buffer[50];\
@@ -90,6 +101,18 @@ struct Zeitpacket
                 			char buffer[50];\
 			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
 			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start);\
+			    			uint64_t total_seconds = duration.count() / (1'000'000'000UL * dPrint);\
+			    			uint64_t remaining_ns = (duration.count() / dPrint) % 1'000'000'000UL;\
+			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
+			    			out = buffer;\
+			    		}
+			    			//sprintf(buffer, "%llu,%09llus = %llu / %llu dPrint", total_seconds, remaining_ns, duration.count(), dPrint);
+
+// wie Pdt(), aber mit ZeitAuserhalbDieserSession.
+#define zPdt(Start, out)	{\
+                			char buffer[50];\
+			    			berechnungsEndeHR = std::chrono::high_resolution_clock::now();\
+			    			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - Start) + ZeitAuserhalbDieserSession;\
 			    			uint64_t total_seconds = duration.count() / (1'000'000'000UL * dPrint);\
 			    			uint64_t remaining_ns = (duration.count() / dPrint) % 1'000'000'000UL;\
 			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
