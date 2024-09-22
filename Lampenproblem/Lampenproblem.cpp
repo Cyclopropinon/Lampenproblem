@@ -3680,20 +3680,29 @@ int main(int argc, const char** argv)
 	const bool							tty						= isTTY(termType);					// Ob es ein TTY Terminal oder eine Terminal-App ist
 	char								usePresetLang;												// Ob die vorgegebene Sprache benutzt werden soll
 
+	leseEinstellungenAusDatei(EinstellungsDateiname);
+
 	ttyGlobal = tty; // Aktualisiere globale Variable
-	cout << "Language detected: \"" << Sprache << "\" Use this language? (y/n) ";
-	cin >> usePresetLang;
-	if(usePresetLang!='n')
+	if (einstellungExistiert(__EINST_LANG__))
 	{
-		_PRINTINPUT_2_("Language: " << Sprache)
-		// Setze die Locale auf die gewünschte Sprache (z.B. "de_DE.UTF-8")
-		std::locale::global(std::locale(Sprache));
+		std::locale::global(std::locale(leseEinstellung(__EINST_LANG__, "")));
 	} else {
-		string alternateLang;
-		cout << "enter alternative language: ";
-		cin >> alternateLang;
-		_PRINTINPUT_2_("Language: " << alternateLang)
-		std::locale::global(std::locale(alternateLang));
+		cout << "Language detected: \"" << Sprache << "\" Use this language? (y/n) ";
+		cin >> usePresetLang;
+		if(usePresetLang!='n')
+		{
+			_PRINTINPUT_2_("Language: " << Sprache)
+			// Setze die Locale auf die gewünschte Sprache (z.B. "de_DE.UTF-8")
+			std::locale::global(std::locale(Sprache));
+			schreibeEinstellung(__EINST_LANG__, Sprache, EinstellungsDateiname);
+		} else {
+			string alternateLang;
+			cout << "enter alternative language: ";
+			cin >> alternateLang;
+			_PRINTINPUT_2_("Language: " << alternateLang)
+			std::locale::global(std::locale(alternateLang));
+			schreibeEinstellung(__EINST_LANG__, alternateLang, EinstellungsDateiname);
+		}
 	}
 
 

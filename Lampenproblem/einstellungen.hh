@@ -69,3 +69,11 @@ void schreibeEinstellung(const std::string& schluessel, const std::string& wert,
     // Aktualisierte Map in die Datei schreiben
     schreibeEinstellungenInDatei(dateiName);
 }
+
+// Funktion, um zu prüfen, ob eine bestimmte Einstellung existiert
+bool einstellungExistiert(const std::string& schluessel) {
+    std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
+
+    // Verwende die Methode `find`, um nach dem Schlüssel zu suchen
+    return Einstellungen.find(schluessel) != Einstellungen.end();
+}
