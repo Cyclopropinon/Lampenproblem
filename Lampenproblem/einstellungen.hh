@@ -8,16 +8,19 @@
 #include <string>
 
 #include "globalVars.hh"
+#include "logfile.hh"
 
 // Funktion zum Überprüfen, ob eine Datei existiert
 bool dateiExistiert(const std::string& dateiName)
 {
+	_PRINTINPUT_5_("Funktionsaufruf: dateiExistiert")
     return std::filesystem::exists(dateiName); // C++17 Funktion zum Überprüfen der Existenz
 }
 
 // Funktion zum Erstellen einer neuen Datei
 void erstelleLeereDatei(const std::string& dateiName)
 {
+ 	_PRINTINPUT_5_("Funktionsaufruf: erstelleLeereDatei")
     std::ofstream datei(dateiName); // Erstellt eine leere Datei
     if (datei.is_open())
     {
@@ -30,12 +33,14 @@ void erstelleLeereDatei(const std::string& dateiName)
 
 void touchDatei(const std::string& dateiName)
 {
+	_PRINTINPUT_4_("Funktionsaufruf: touchDatei")
     if (!dateiExistiert(dateiName)) erstelleLeereDatei(dateiName);
 }
 
 // Funktion zum Schreiben aller Einstellungen in eine .ini-Datei
 void schreibeEinstellungenInDatei(const std::string& dateiName, bool MutexAktiv)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: schreibeEinstellungenInDatei")
     if (!MutexAktiv) std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
     touchDatei(dateiName);
     std::ofstream datei(dateiName);
@@ -55,6 +60,7 @@ void schreibeEinstellungenInDatei(const std::string& dateiName, bool MutexAktiv)
 // Funktion zum Lesen aller Einstellungen aus einer .ini-Datei
 void leseEinstellungenAusDatei(const std::string& dateiName)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: leseEinstellungenAusDatei")
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
     touchDatei(dateiName);
     std::ifstream datei(dateiName);
@@ -82,6 +88,7 @@ void leseEinstellungenAusDatei(const std::string& dateiName)
 // Funktion zum Lesen einer einzelnen Einstellung
 std::string leseEinstellung(const std::string& schluessel, const std::string& defaultWert)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: leseEinstellung")
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
 
     auto it = Einstellungen.find(schluessel);
@@ -98,6 +105,7 @@ std::string leseEinstellung(const std::string& schluessel, const std::string& de
 // Funktion zum Schreiben einer einzelnen Einstellung
 void schreibeEinstellung(const std::string& schluessel, const std::string& wert, const std::string& dateiName)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: schreibeEinstellung")
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
 
     // Einstellung in die Map einfügen oder aktualisieren
@@ -110,6 +118,7 @@ void schreibeEinstellung(const std::string& schluessel, const std::string& wert,
 // Funktion, um zu prüfen, ob eine bestimmte Einstellung existiert
 bool einstellungExistiert(const std::string& schluessel)
 {
+	_PRINTINPUT_3_("Funktionsaufruf: einstellungExistiert")
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
 
     // Verwende die Methode `find`, um nach dem Schlüssel zu suchen
