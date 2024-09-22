@@ -1,10 +1,12 @@
 #pragma once
 
-#include <iostream>
 #include <fstream>
-#include <string>
+#include <iostream>
 #include <map>
 #include <mutex>
+#include <string>
+
+#include "globalVars.hh"
 
 // Funktion zum Schreiben aller Einstellungen in eine .ini-Datei
 void schreibeEinstellungenInDatei(const std::string& dateiName) {

@@ -61,6 +61,7 @@
 #include <gmpxx.h>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <math.h>
 #include <mutex>
 #include <sstream>
@@ -99,6 +100,9 @@
 
 // für die Logdatei
 #include "logfile.hh"
+
+// für die Einstellungen
+#include "einstellungen.hh"
 
 using namespace std;
 using namespace chrono;

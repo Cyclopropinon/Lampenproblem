@@ -5,13 +5,17 @@
 #ifdef _WIN32 // Windows
 	#define lock_output
 	#define lock_cout
+	#define lock_log
+	#define lock_einst
 #else
 	std::mutex output_mutex;					// Mutex für den Dateizugriff
 	std::mutex cout_mutex;						// Mutex für den Zugriff auf std::cout
 	std::mutex log_mutex;						// Mutex für den Zugriff auf die Logdatei
+	std::mutex einst_mutex;						// Mutex für den Zugriff auf die Einstellungen
 	#define lock_output	std::lock_guard<std::mutex> lock(output_mutex)
 	#define lock_cout	std::lock_guard<std::mutex> lock(cout_mutex)
 	#define lock_log	std::lock_guard<std::mutex> lock(log_mutex)
+	#define lock_einst	std::lock_guard<std::mutex> lock(einst_mutex)
 #endif
 constexpr auto			Vsize = strlen(_V);		// String-Länge der Programmversion als eine globale Konstante
 std::chrono::_V2::system_clock::time_point StartTimeGlobal;
@@ -46,6 +50,9 @@ std::atomic<bool>		EingabeAktiviert = false;
 std::string				gotoZeileDrunter = "\n";
 
 bool					ttyGlobal;
+
+// Globale Einstellungen
+std::map<std::string, std::string> Einstellungen;
 
 // Unicode-Zeichen für abgerundete Ecken
 cchar_t ls, rs, ts, bs, tl, tr, bl, br;
