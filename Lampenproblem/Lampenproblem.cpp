@@ -104,6 +104,9 @@
 // für die Einstellungen
 #include "einstellungen.hh"
 
+// für die Zusammenfassungen
+#include "zusammenfassung.hh"
+
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;
@@ -439,6 +442,8 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 			"Schritte: " + std::to_string(mpz_sizeinbase(Schritte.get_mpz_t(), 265)) + " Bytes\n"
 			"Laufzeit: " + strLaufzeit + '\n';
 		saveVar(Zusammenfassung);
+
+		ZAZ(globSession, "./Zusammenfassung.txt");
 	}
 }
 
@@ -3795,7 +3800,7 @@ int main(int argc, const char** argv)
 
 		while (true)
 		{
-			string Session;
+			string Session; // global: globSession
 			string filename;
 			fstream output_fstream;
 
@@ -4668,6 +4673,7 @@ int main(int argc, const char** argv)
 					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4735,6 +4741,7 @@ int main(int argc, const char** argv)
 				case 17:
 					cout << "Zwischenstand laden: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 					cout << "Ergebnis speichern unter: ";
 					cin >> filename;			_PRINTVAR_4_(filename)
 
@@ -4780,6 +4787,7 @@ int main(int argc, const char** argv)
 					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4864,6 +4872,7 @@ int main(int argc, const char** argv)
 					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -4997,6 +5006,7 @@ int main(int argc, const char** argv)
 					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -5133,6 +5143,7 @@ int main(int argc, const char** argv)
 					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
@@ -5270,6 +5281,7 @@ int main(int argc, const char** argv)
 					cin >> filename;			_PRINTVAR_4_(filename)
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 
 					berechnungsStartHR = std::chrono::high_resolution_clock::now();
 					StartTimeGlobal = berechnungsStartHR;
@@ -5409,6 +5421,7 @@ int main(int argc, const char** argv)
 						cin >> filename;			_PRINTVAR_4_(filename)
 						cout << "Zwischenstand speichern unter: ";
 						cin >> Session;				_PRINTVAR_4_(Session)
+						globSession = Session;
 
 						berechnungsStartHR = std::chrono::high_resolution_clock::now();
 						StartTimeGlobal = berechnungsStartHR;
@@ -5549,6 +5562,7 @@ int main(int argc, const char** argv)
 
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 
 					FileUnopenable = false;
 					do {
@@ -5705,6 +5719,7 @@ int main(int argc, const char** argv)
 
 					cout << "Zwischenstand speichern unter: ";
 					cin >> Session;				_PRINTVAR_4_(Session)
+					globSession = Session;
 
 					FileUnopenable = false;
 					do {

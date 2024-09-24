@@ -1,12 +1,17 @@
+#pragma once
+
 #include <iostream>
 #include <filesystem>
 #include <fstream>
 #include <string>
 
-namespace fs = std::filesystem;
-
-void concatenateFiles(const std::string& directoryPath, const std::string& outputFilePath)
+// Zusammenfassung aller Zussammenfassungen
+void ZAZ(const std::string& directoryPath, const std::string& outputFilePath)
 {
+    namespace fs = std::filesystem;
+
+    fs::remove(outputFilePath);
+
     std::ofstream outputFile(outputFilePath, std::ios::out | std::ios::app);
 
     if (!outputFile.is_open())
@@ -25,7 +30,7 @@ void concatenateFiles(const std::string& directoryPath, const std::string& outpu
 
             if (inputFile.is_open())
             {
-                std::cout << "Hänge Datei an: " << summaryFilePath << std::endl;
+                //std::cout << "Hänge Datei an: " << summaryFilePath << std::endl;
 
                 // Inhalte in die Ausgabe-Datei schreiben
                 outputFile << inputFile.rdbuf();  // Dateiinhalt lesen und anhängen
@@ -38,9 +43,10 @@ void concatenateFiles(const std::string& directoryPath, const std::string& outpu
     }
 
     outputFile.close();
-    std::cout << "Zusammengeführte Dateien in " << outputFilePath << " geschrieben.\n";
+    //std::cout << "Zusammengeführte Dateien in " << outputFilePath << " geschrieben.\n";
 }
 
+/*
 int main()
 {
     std::string directoryPath = "./abcd";
@@ -50,3 +56,4 @@ int main()
 
     return 0;
 }
+*/
