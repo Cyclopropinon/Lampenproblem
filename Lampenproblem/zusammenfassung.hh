@@ -8,6 +8,7 @@
 // Zusammenfassung aller Zussammenfassungen
 void ZAZ(const std::string& directoryPath, const std::string& outputFilePath)
 {
+	_PRINTINPUT_4_("Funktionsaufruf: ZAZ")
     namespace fs = std::filesystem;
 
     fs::remove(outputFilePath);
@@ -16,11 +17,11 @@ void ZAZ(const std::string& directoryPath, const std::string& outputFilePath)
 
     if (!outputFile.is_open())
     {
-        std::cerr << "Konnte die Datei " << outputFilePath << " nicht öffnen.\n";
+	    _PRINTINPUT_2_("Konnte Datei \"" << outputFilePath << "\" nicht öffnen!")
         return;
     }
 
-    // Durchlaufe alle Unterverzeichnisse von "./abcd/"
+    // Durchlaufe alle Unterverzeichnisse von directoryPath
     for (const auto& dirEntry : fs::directory_iterator(directoryPath))
     {
         if (fs::is_directory(dirEntry))
@@ -30,30 +31,18 @@ void ZAZ(const std::string& directoryPath, const std::string& outputFilePath)
 
             if (inputFile.is_open())
             {
-                //std::cout << "Hänge Datei an: " << summaryFilePath << std::endl;
+	            _PRINTINPUT_5_("Hänge Datei an: " << summaryFilePath)
 
                 // Inhalte in die Ausgabe-Datei schreiben
                 outputFile << inputFile.rdbuf();  // Dateiinhalt lesen und anhängen
                 outputFile << "\n";  // Füge einen Zeilenumbruch hinzu, um Dateien zu trennen
                 inputFile.close();
             } else {
-                std::cerr << "Konnte die Datei " << summaryFilePath << " nicht öffnen.\n";
+	            _PRINTINPUT_2_("Konnte Datei \"" << summaryFilePath << "\" nicht öffnen!")
             }
         }
     }
 
     outputFile.close();
-    //std::cout << "Zusammengeführte Dateien in " << outputFilePath << " geschrieben.\n";
+	_PRINTINPUT_5_("Zusammengeführte Dateien in " << outputFilePath << " geschrieben.\n");
 }
-
-/*
-int main()
-{
-    std::string directoryPath = "./abcd";
-    std::string outputFilePath = "./Zusammenfassung.txt";
-
-    concatenateFiles(directoryPath, outputFilePath);
-
-    return 0;
-}
-*/
