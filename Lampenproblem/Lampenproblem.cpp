@@ -426,6 +426,10 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 		saveVar(cPrint);
 		saveVar(dPrint);
 		saveVar(Laufzeit);
+
+		std::string Zusammenfassung =
+			toStrVar(n) + '\n';
+		saveVar(Zusammenfassung);
 	}
 }
 
@@ -3788,22 +3792,22 @@ int main(int argc, const char** argv)
 
 			try
 			{
-				const std::string menu = std::string("Programm von Lorenz Taschner & Lars Krabbenhöft\n")
-					+ "Lampen prüfen bis (n,k)\n"
-					+ "Welche Prüfmethode?\n"
-					+ "0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n"
-					+ "3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n"
-					+ "6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n"
-					+ "9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n"
-					+ "12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n"
-					+ "15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n"
-					+ "17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n"
-					+ "19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
-					+ "21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
-					+ "23 = optimierte & erweiterte Simulation mit FLINT\t\t24 = optimierte & erweiterte Simulation mit GMPLIB V7\n"
-					+ "25 = optimierte & erweiterte Simulation mit GMPLIB V8 (Jetzt mit Nachrichtenfenster!)\n"
-					+ "\n-1 = Benchmark für die Schritte\t-2 = Verbose simulation\n\n"
-					+ '\n';
+				const std::string menu = "Programm von Lorenz Taschner & Lars Krabbenhöft\n"
+					"Lampen prüfen bis (n,k)\n"
+					"Welche Prüfmethode?\n"
+					"0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n"
+					"3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n"
+					"6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n"
+					"9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n"
+					"12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n"
+					"15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n"
+					"17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n"
+					"19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
+					"21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
+					"23 = optimierte & erweiterte Simulation mit FLINT\t\t24 = optimierte & erweiterte Simulation mit GMPLIB V7\n"
+					"25 = optimierte & erweiterte Simulation mit GMPLIB V8 (Jetzt mit Nachrichtenfenster!)\n"
+					"\n-1 = Benchmark für die Schritte\t-2 = Verbose simulation\n\n"
+					"\n";
 				cout << menu;
 				cin >> prüfart;					_PRINTVAR_2_(prüfart)
 
