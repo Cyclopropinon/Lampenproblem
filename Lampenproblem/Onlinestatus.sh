@@ -32,15 +32,6 @@ echo "http://$LOCAL_IP:$PORT"
 echo "Bzw über folgenden Kommando:"
 echo "links2 http://$LOCAL_IP:$PORT"
 
-# Lausche auf Port 1729 und antworte mit dem Inhalt der Textdatei
-while true; do
-  echo -e "Listening on port $PORT. Press [CTRL+C] to stop."
-  # Warte auf eine Verbindung und antworte mit dem Inhalt der Datei
-  cat << EOF | nc -l -p $PORT -q 1
-HTTP/1.1 200 OK
-Content-Type: text/plain
-Content-Length: $(wc -c < "$file")
-
-$(cat "$file")
-EOF
+while true; do 
+  echo -e "HTTP/1.1 200 OK\n\n $(cat $file)" | nc -l -p $PORT -q 1
 done
