@@ -14,7 +14,8 @@
 
 #define saveVar(var) saveVariable(ordner + "/" + #var, var);            _PRINTINPUT_5_("Funktionsaufruf: saveVariable: " << ordner + "/" + #var)
 #define readVar(var) var = readVariable(ordner + "/" + #var, var);      _PRINTINPUT_5_("Funktionsaufruf: readVariable: " << ordner + "/" + #var)
-#define toStrVar(var) (#var " = " + std::to_string(var))                _PRINTINPUT_5_("Funktionsaufruf: toStrVar: " + #var)
+
+#define toStrVar(var) (std::string(#var) + " = " + std::to_string(var))
 
 //#define saveVar(var) saveVariable(std::string(#var), var)
 //#define readVar(var) var = readVariable(std::string(#var), var)

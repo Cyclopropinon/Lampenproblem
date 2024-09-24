@@ -120,6 +120,15 @@ struct Zeitpacket
 			    		}
 			    			//sprintf(buffer, "%llu,%09llus = %llu / %llu dPrint", total_seconds, remaining_ns, duration.count(), dPrint);
 
+// wie dt(), aber mit Laufzeit
+#define rdt(Laufzeit, out)	{\
+                			char buffer[50];\
+			    			uint64_t total_seconds = Laufzeit.count() / 1'000'000'000;\
+			    			uint64_t remaining_ns = Laufzeit.count() % 1'000'000'000;\
+			    			sprintf(buffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);\
+			    			out = buffer;\
+			    		}
+
 // crash by dereferencing null pointer.
 void crash()
 {

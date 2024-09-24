@@ -427,8 +427,16 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 		saveVar(dPrint);
 		saveVar(Laufzeit);
 
+		std::string strLaufzeit;
+		rdt(Laufzeit, strLaufzeit);
 		std::string Zusammenfassung =
-			toStrVar(n) + '\n';
+			toStrVar(n) + '\n' +
+			toStrVar(anz) + '\n' +
+			toStrVar(Lampejetzt) + '\n' +
+			toStrVar(print) + '\n' +
+			toStrVar(cPrint) + '\n' +
+			toStrVar(dPrint) + "\n"
+			"Laufzeit: " + strLaufzeit + '\n';
 		saveVar(Zusammenfassung);
 	}
 }
