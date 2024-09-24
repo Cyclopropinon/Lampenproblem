@@ -35,6 +35,7 @@ Lampenproblem/testumgebung/n*
 Lampenproblem/testumgebung/m*
 
 Lampenproblem/testumgebung/Lampenproblem
+Lampenproblem/testumgebung/Onlinestatus.sh
 
 # Logdateien
 *.LPlog
