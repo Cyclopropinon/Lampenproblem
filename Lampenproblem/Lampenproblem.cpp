@@ -435,7 +435,8 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 			toStrVar(Lampejetzt) + '\n' +
 			toStrVar(print) + '\n' +
 			toStrVar(cPrint) + '\n' +
-			toStrVar(dPrint) + "\n"
+			toStrVar(dPrint) + '\n' +
+			toStrVar(mpz_sizeinbase(Schritte.get_mpz_t(), 265)) + " Bytes\n"
 			"Laufzeit: " + strLaufzeit + '\n';
 		saveVar(Zusammenfassung);
 	}
