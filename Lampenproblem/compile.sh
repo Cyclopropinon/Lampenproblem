@@ -10,4 +10,4 @@ g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lflint -lncursesw -DNCU
 #cp -v Lampenproblem ./IDA/
 strip Lampenproblem || echo 'the "strip" command is not installed lmao'
 cp -v Lampenproblem ./testumgebung/
-cp -v onlinestatus.sh ./testumgebung/
+cp -uv Onlinestatus.sh ./testumgebung/

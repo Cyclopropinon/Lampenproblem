@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.27"
+#define _V "0.1.28"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
