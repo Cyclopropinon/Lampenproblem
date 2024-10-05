@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.28"
+#define _V "0.1.29"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -3105,8 +3105,10 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 					wattron(outputWin, COLOR_PAIR(4));  // Gelb auf Schwarz
 					mvwprintw(outputWin, 2, 2, "Zeit: %s      ", durHR.c_str());
 					wattron(outputWin, A_DIM);          // Halbdurchsichtig
-					if(tty) mvwprintw(outputWin, 2, 30, "dt: %s    ", CP_HR.c_str());				// tty unterstützt nicht so viele unicode zeichen
-					else    mvwprintw(outputWin, 2, 30, "Δt: %s    ", CP_HR.c_str());
+					if(tty && increasedBackupFrequency)	mvwprintw(outputWin, 2, 30, "dt (IBF): %s    ", CP_HR.c_str());			// IBF (increasedBackupFrequency) Indikator
+					else if(tty)						mvwprintw(outputWin, 2, 30, "dt: %s    ", CP_HR.c_str());				// tty unterstützt nicht so viele unicode zeichen
+					else if(increasedBackupFrequency)	mvwprintw(outputWin, 2, 30, "Δt (IBF): %s    ", CP_HR.c_str());
+					else    							mvwprintw(outputWin, 2, 30, "Δt: %s    ", CP_HR.c_str());
 					// if(tty) mvwprintw(outputWin, 2, 30, "dn: %llu dt: %s", dPrint, CP_HR.c_str());	// tty unterstützt nicht so viele unicode zeichen
 					// else    mvwprintw(outputWin, 2, 30, "Δn: %llu Δt: %s", dPrint, CP_HR.c_str());
 					wattron(outputWin, A_ITALIC);       // Kursiv
