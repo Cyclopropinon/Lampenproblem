@@ -75,6 +75,8 @@ Ein paar Screenshots:
 * add a notify-window for system messages
 * Settings file
 * Emergency-save when power failure
+* Ability to pause & resume using keyboard
+* timing calculations so it fits better with dynamic electric pricing
 ### Formalisierung
 * Formalisiere die Vermutung von Krabbenhöft-Taschner
 * Beweise/Wiederlege die beiden Vermutungen LOL
