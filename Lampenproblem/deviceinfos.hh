@@ -2,5 +2,5 @@
 
 #include "ctdi.hh"
 
-constexpr auto CompileDeviceInfo = "Architecture: " __ARCHITEKTUR__;
+constexpr auto Kompilierungsdetails = "Architektur: " __ARCHITEKTUR__;
 
