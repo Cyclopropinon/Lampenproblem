@@ -84,6 +84,9 @@
 // für globale Variablen
 #include "globalVars.hh"
 
+// für die Gerätedetails
+#include "deviceinfos.hh"
+
 // Für CPU-Profiler
 #include "cpu.h"
 
