@@ -2,5 +2,8 @@
 
 #include "ctdi.hh"
 
-constexpr auto Kompilierungsdetails = "Architektur: " __ARCHITEKTUR__;
+constexpr auto Kompilierungsdetails = 
+         "Datum: "          __DATE__
+    "\n" "Uhrzeit: "        __TIME__
+    "\n" "Architektur: "    __ARCHITEKTUR__;
 
