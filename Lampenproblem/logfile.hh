@@ -53,7 +53,7 @@
         \
         LOGFILE.open(filename);                                                                     /*/ File to write logs into*/\
         LOGFILE << "Logfile of Lampenproblem, version: " << _V\
-          << "\nKompilierungsdetails:\n" Kompilierungsdetails\
+          << "\nKompilierungsdetails:\n" << Kompilierungsdetails\
           << "\nDateiname: \"" << filename << "\"; loglevel: \"" << LOGLEVEL << "\"; run: " << std::put_time(std::localtime(&t), "%Y-%m-%d %T") << "." << std::setfill('0') << std::setw(3) << '\n';\
         std::cout << "Logfile: " << filename << std::endl;\
         \

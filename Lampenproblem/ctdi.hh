@@ -2,9 +2,17 @@
 
 // ctdi = Compile Time Device Infos
 
-// Source: https://stackoverflow.com/a/66249936
-// Modified for convenience
-// Get current architecture, detectx nearly every architecture. Coded by Freak
+#if __has_include(<boost/predef.h>)
+    #include "sysdetect.h"
+#else
+
+    #define __OS__ "keine Ahnung"
+    #define __PLATTFORM__ "keine Ahnung"
+    #define __KOMPILER__ "keine Ahnung"
+
+    // Source: https://stackoverflow.com/a/66249936
+    // Modified for convenience
+    // Get current architecture, detectx nearly every architecture. Coded by Freak
     #if defined(__x86_64__) || defined(_M_X64)
         #define __ARCHITEKTUR__ "x86_64"
     #elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
@@ -16,7 +24,7 @@
     #elif defined(__ARM_ARCH_4T__) || defined(__TARGET_ARM_4T)
         #define __ARCHITEKTUR__ "ARM4T"
     #elif defined(__ARM_ARCH_5_) || defined(__ARM_ARCH_5E_)
-        #define __ARCHITEKTUR__ "ARM5
+        #define __ARCHITEKTUR__ "ARM5"
     #elif defined(__ARM_ARCH_6T2_) || defined(__ARM_ARCH_6T2_)
         #define __ARCHITEKTUR__ "ARM6T2"
     #elif defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__)
@@ -48,4 +56,6 @@
     #else
         #define __ARCHITEKTUR__ "UNKNOWN"
     #endif
+
+#endif //__has_include(<boost/predef.h>)
 
