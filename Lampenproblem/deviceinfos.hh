@@ -13,8 +13,8 @@
 
 #include "tostr.hh"
 
-static constexpr const char * av = numeric_string<__KOMPILER_V__>::get ();
-static constexpr const char * av = numeric_string<__ARCHITEKTUR_V__>::get ();
+static constexpr const char * av = to_string<__KOMPILER_V__>;
+static constexpr const char * av = to_string<__ARCHITEKTUR_V__>;
 
 constexpr auto Kompilierungsdetails = 
          "Datum:          " __DATE__

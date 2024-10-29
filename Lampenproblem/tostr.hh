@@ -1,81 +1,84 @@
-/* IMPLEMENTATION */
+/**
+ * to_string.hpp - Provides compile-time integer-to-string conversion.
+ * Written by Clyne Sullivan.
+ * https://github.com/tcsullivan/constexpr-to-string
+ */
 
-/* calculate absolute value */
-constexpr int abs_val (int x)
-    { return x < 0 ? -x : x; }
+#ifndef TCSULLIVAN_TO_STRING_HPP_
+#define TCSULLIVAN_TO_STRING_HPP_
 
-/* calculate number of digits needed, including minus sign */
-constexpr int num_digits (int x)
-    { return x < 0 ? 1 + num_digits (-x) : x < 10 ? 1 : 1 + num_digits (x / 10); }
+#include <cstdint>
+#include <type_traits>
 
-/* metaprogramming string type: each different string is a unique type */
-template<char... args>
-struct metastring {
-    const char data[sizeof... (args)] = {args...};
+namespace constexpr_to_string {
+
+constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+/**
+ * @struct to_string_t
+ * @brief Provides the ability to convert any integral to a string at compile-time.
+ * @tparam N Number to convert
+ * @tparam base Desired base, can be from 2 to 36
+ */
+template<std::intmax_t N, int base, typename char_type,
+    std::enable_if_t<(base > 1 && base < sizeof(digits)), int> = 0>
+class to_string_t {
+
+    constexpr static auto buflen() noexcept {
+        unsigned int len = N > 0 ? 1 : 2;
+        for (auto n = N; n; len++, n /= base);
+        return len;
+    }
+
+    char_type buf[buflen()] = {};
+
+ public:
+    /**
+     * Constructs the object, filling `buf` with the string representation of N.
+     */
+    constexpr to_string_t() noexcept {
+        auto ptr = end();
+        *--ptr = '\0';
+
+        if (N != 0) {
+            for (auto n = N; n; n /= base)
+                *--ptr = digits[(N < 0 ? -1 : 1) * (n % base)];
+            if (N < 0)
+                *--ptr = '-';
+        } else {
+            buf[0] = '0';
+        }
+    }
+
+    // Support implicit casting to `char *` or `const char *`.
+    constexpr operator char_type *() noexcept { return buf; }
+    constexpr operator const char_type *() const noexcept { return buf; }
+
+    constexpr auto size() const noexcept { return sizeof(buf) / sizeof(buf[0]); }
+
+    // Element access
+    constexpr auto data() noexcept { return buf; }
+    constexpr const auto data() const noexcept { return buf; }
+    constexpr auto& operator[](unsigned int i) noexcept { return buf[i]; }
+    constexpr const auto& operator[](unsigned int i) const noexcept { return buf[i]; }
+    constexpr auto& front() noexcept { return buf[0]; }
+    constexpr const auto& front() const noexcept { return buf[0]; }
+    constexpr auto& back() noexcept { return buf[size() - 1]; }
+    constexpr const auto& back() const noexcept { return buf[size() - 1]; }
+
+    // Iterators
+    constexpr auto begin() noexcept { return buf; }
+    constexpr const auto begin() const noexcept { return buf; }
+    constexpr auto end() noexcept { return buf + size(); }
+    constexpr const auto end() const noexcept { return buf + size(); }
 };
 
-/* recursive number-printing template, general case (for three or more digits) */
-template<int size, int x, char... args>
-struct numeric_builder {
-    typedef typename numeric_builder<size - 1, x / 10, '0' + abs_val (x) % 10, args...>::type type;
-};
+} // namespace constexpr_to_string
 
-/* special case for two digits; minus sign is handled here */
-template<int x, char... args>
-struct numeric_builder<2, x, args...> {
-    typedef metastring<x < 0 ? '-' : '0' + x / 10, '0' + abs_val (x) % 10, args...> type;
-};
+/**
+ * Simplifies use of `to_string_t` from `to_string_t<N>()` to `to_string<N>`.
+ */
+template<std::intmax_t N, int base = 10, typename char_type = char>
+constexpr constexpr_to_string::to_string_t<N, base, char_type> to_string;
 
-/* special case for one digit (positive numbers only) */
-template<int x, char... args>
-struct numeric_builder<1, x, args...> {
-    typedef metastring<'0' + x, args...> type;
-};
-
-/* convenience wrapper for numeric_builder */
-template<int x>
-class numeric_string
-{
-private:
-    /* generate a unique string type representing this number */
-    typedef typename numeric_builder<num_digits (x), x, '\0'>::type type;
-
-    /* declare a static string of that type (instantiated later at file scope) */
-    static constexpr type value {};
-
-public:
-    /* returns a pointer to the instantiated string */
-    static constexpr const char * get ()
-        { return value.data; }
-};
-
-/* instantiate numeric_string::value as needed for different numbers */
-template<int x>
-constexpr typename numeric_string<x>::type numeric_string<x>::value;
-
-/* SAMPLE USAGE * /
-
-#include <stdio.h>
-
-/* exponentiate a number, just for fun * /
-static constexpr int exponent (int x, int e)
-    { return e ? x * exponent (x, e - 1) : 1; }
-
-
-/* test a few sample numbers * /
-static constexpr const char * five = numeric_string<5>::get ();
-static constexpr const char * one_ten = numeric_string<110>::get ();
-static constexpr const char * minus_thirty = numeric_string<-30>::get ();
-
-/* works for any constant integer, including constexpr calculations * /
-static constexpr const char * eight_cubed = numeric_string<exponent (8, 3)>::get ();
-
-int main (void)
-{
-    printf ("five = %s\n", five);
-    printf ("one ten = %s\n", one_ten);
-    printf ("minus thirty = %s\n", minus_thirty);
-    printf ("eight cubed = %s\n", eight_cubed);
-
-    return 0;
-}*/
+#endif // TCSULLIVAN_TO_STRING_HPP_
