@@ -54,7 +54,7 @@
 #elif BOOST_OS_BSD_OPEN
     #define __OS__ "OpenBSD"
 #else
-    #define __OS__ "Unknown OS"
+    #define __OS__ "Unbekanntes Betriebssystem"
 #endif
 
 // Platform Detection
@@ -87,7 +87,7 @@
 #elif BOOST_PLAT_WINDOWS_UWP
     #define __PLATTFORM__ "Windows UWP"
 #else
-    #define __PLATTFORM__ "Unknown Platform"
+    #define __PLATTFORM__ "Unbekannte Plattform"
 #endif
 
 // Compiler Detection and Version
@@ -182,11 +182,11 @@
     #define __KOMPILER__ "Watcom"
     #define __KOMPILER_V__ BOOST_COMP_WATCOM_DETECTION
 #else
-    #define __KOMPILER__ "Unknown Compiler"
+    #define __KOMPILER__ "Unbekannter Kompiler"
     #define __KOMPILER_V__ 0
 #endif
 
-
+/*
 // Compiler Detection and Version List
 #define ADD_COMPILER(name, version) name " " STR(version)
 
@@ -225,7 +225,7 @@
     COMPILER_IF(BOOST_COMP_MSVC, "MSVC", BOOST_COMP_MSVC_DETECTION) \
     COMPILER_IF(BOOST_COMP_WATCOM, "Watcom", BOOST_COMP_WATCOM_DETECTION) \
     ""
-
+*/
 
 // Architecture Detection and Version
 #if BOOST_ARCH_ALPHA
@@ -298,7 +298,7 @@
     #define __ARCHITEKTUR__ "x86_64"
     #define __ARCHITEKTUR_V__ BOOST_ARCH_X86_64
 #else
-    #define __ARCHITEKTUR__ "Unknown Architecture"
+    #define __ARCHITEKTUR__ "Unbekannte Architektur"
     #define __ARCHITEKTUR_V__ 0
 #endif
 

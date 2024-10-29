@@ -79,6 +79,6 @@ class to_string_t {
  * Simplifies use of `to_string_t` from `to_string_t<N>()` to `to_string<N>`.
  */
 template<std::intmax_t N, int base = 10, typename char_type = char>
-constexpr constexpr_to_string::to_string_t<N, base, char_type> to_string;
+constexpr constexpr_to_string::to_string_t<N, base, char_type> cts;
 
 #endif // TCSULLIVAN_TO_STRING_HPP_

@@ -52,9 +52,9 @@
         auto t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());\
         \
         LOGFILE.open(filename);                                                                     /*/ File to write logs into*/\
-        LOGFILE << "Logfile of Lampenproblem, version: " << _V\
+        LOGFILE << "Logdatei vom Lampenproblem, Version: " << _V\
           << "\nKompilierungsdetails:\n" << Kompilierungsdetails\
-          << "\nDateiname: \"" << filename << "\"; loglevel: \"" << LOGLEVEL << "\"; run: " << std::put_time(std::localtime(&t), "%Y-%m-%d %T") << "." << std::setfill('0') << std::setw(3) << '\n';\
+          << "\nDateiname: \t\"" << filename << "\"\nLoglevel: \t" << LOGLEVEL << "\nStartzeit: \t" << std::put_time(std::localtime(&t), "%Y-%m-%d %T") << "." << std::setfill('0') << std::setw(3) << "\n\n";\
         std::cout << "Logfile: " << filename << std::endl;\
         \
         _PRINTINPUT_1_("#Arguments: " << argc)\
