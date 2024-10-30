@@ -77,6 +77,7 @@ Ein paar Screenshots:
 * Emergency-save when power failure
 * Ability to pause & resume using keyboard
 * timing calculations so it fits better with dynamic electric pricing
+* use beep for notifications (PR found, error, etc...)
 ### Formalisierung
 * Formalisiere die Vermutung von Krabbenhöft-Taschner
 * Beweise/Wiederlege die beiden Vermutungen LOL
