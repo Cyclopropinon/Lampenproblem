@@ -5908,6 +5908,10 @@ int main(int argc, const char** argv)
 									it->wait();
 									futures.erase(it);
 								}
+
+								// DIGGA ALS OB DIESE EINE ZEILE DAFÜR GESORGT HAT, DASS ES JETZT GLATT LÄUFT!!!! AAAARGH
+								// (Davor ist der ganze scheiß in Dauerschleife gelaufen und hat einen ganzen CPU-Kern beansprucht!)
+								std::this_thread::sleep_for(std::chrono::milliseconds(100));
 							}
 
 							finishedThreads = 0;
