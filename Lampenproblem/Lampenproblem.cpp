@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.30"
+#define _V "0.1.31"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -237,6 +237,8 @@ void input_listener() {
 	EingabeAktiviert = true;
     while (ch = getch())// != 'q') {
     {
+		_PRINTINPUT_1_("Nutzereigabe: " << ch)
+
         if (ch == 82) // 82 = R (Groß)
         { // 18 ist der ASCII-Code für Strg+R
             refreshScreen();
@@ -255,13 +257,13 @@ void input_listener() {
 
 			wrefresh(NachrichtenFenster);
         } else if (ch == 'Q') // 81 = Q (Groß)
-        {
+        { // Eigentlich nur für Debug-Zwecke
 			signalHandler(2);
         }
 
 		if (!EingabeAktiviert) return;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(SleepTimer_ms));
     }
     // Beende ncurses-Modus wenn 'q' gedrückt wird
     endwin();
@@ -3180,7 +3182,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 					// Warten, bis `Pausiert` auf false gesetzt wird
 					while (Pausiert.load(std::memory_order_relaxed))
 					{
-						std::this_thread::sleep_for(std::chrono::milliseconds(2500)); // Kurze Pause, um CPU-Auslastung zu minimieren
+						std::this_thread::sleep_for(std::chrono::milliseconds(SleepTimer_ms)); // Kurze Pause, um CPU-Auslastung zu minimieren
 					}
 
 					{
@@ -3192,6 +3194,12 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 						wattroff(outputWin, A_ITALIC);
 						wrefresh(outputWin);
 					}
+
+					berechnungsEndeHR = std::chrono::high_resolution_clock::now();
+				} else {
+					lock_cout;
+					mvwprintw(outputWin, 1, 100, "         ");
+					wrefresh(outputWin);
 				}
 			}
 		}
@@ -3794,6 +3802,8 @@ int main(int argc, const char** argv)
 	setcchar(&tr, L"╮", 0, 0, NULL);
 	setcchar(&bl, L"╰", 0, 0, NULL);
 	setcchar(&br, L"╯", 0, 0, NULL);
+
+	SleepTimer_ms = leseZahlAusEinstellung("SleepTimer_ms", SleepTimer_ms, EinstellungsDateiname);
 
 
 	cout << "Version " << _V << " Compiled on: " << __DATE__ << ' ' << __TIME__ << "\nTerminal Typ: " << termType << '\n'
@@ -5911,7 +5921,7 @@ int main(int argc, const char** argv)
 
 								// DIGGA ALS OB DIESE EINE ZEILE DAFÜR GESORGT HAT, DASS ES JETZT GLATT LÄUFT!!!! AAAARGH
 								// (Davor ist der ganze scheiß in Dauerschleife gelaufen und hat einen ganzen CPU-Kern beansprucht!)
-								std::this_thread::sleep_for(std::chrono::milliseconds(100));
+								std::this_thread::sleep_for(std::chrono::milliseconds(SleepTimer_ms));
 							}
 
 							finishedThreads = 0;

@@ -18,7 +18,9 @@
 	#define lock_einst	std::lock_guard<std::mutex> lock(einst_mutex)
 #endif
 constexpr auto			Vsize = strlen(_V);		// String-Länge der Programmversion als eine globale Konstante
-std::chrono::_V2::system_clock::time_point StartTimeGlobal;
+//std::chrono::_V2::system_clock::time_point StartTimeGlobal;
+auto		 			StartTimeGlobal = std::chrono::high_resolution_clock::now();
+std::atomic<uint64_t>	SleepTimer_ms = 200;
 std::atomic<int>		UserInterrupt = 0;		// Wenn es einen Interrupt gab, dann setze Wert auf den Interrupt-Wert, sonst 0
 std::atomic<uint64_t>	AnzInterrupts = 0;		// Anzahl Interrupts
 constexpr auto			MaxInterrupts = 256;	// Maximale Anzahl an Interrupts, bevor das Programm sich selbst beendet.

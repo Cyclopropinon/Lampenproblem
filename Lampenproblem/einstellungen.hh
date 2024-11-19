@@ -88,7 +88,7 @@ void leseEinstellungenAusDatei(const std::string& dateiName)
 // Funktion zum Lesen einer einzelnen Einstellung
 std::string leseEinstellung(const std::string& schluessel, const std::string& defaultWert, const std::string& dateiName)
 {
-	_PRINTINPUT_3_("Funktionsaufruf: leseEinstellung")
+	_PRINTINPUT_3_("Funktionsaufruf: leseEinstellung\tSchlüssel: " << schluessel)
     std::lock_guard<std::mutex> lock(einst_mutex); // Mutex lock
 
     auto it = Einstellungen.find(schluessel);
@@ -106,7 +106,7 @@ std::string leseEinstellung(const std::string& schluessel, const std::string& de
 // Funktion zum Lesen einer einzelnen Einstellung
 int leseZahlAusEinstellung(const std::string& schluessel, const int& defaultWert, const std::string& dateiName)
 {
-	_PRINTINPUT_3_("Funktionsaufruf: leseZahlAusEinstellung")
+	_PRINTINPUT_3_("Funktionsaufruf: leseZahlAusEinstellung\tSchlüssel: " << schluessel)
     std::string Zahl = leseEinstellung(schluessel, std::to_string(defaultWert), dateiName);
     try
     {
@@ -132,7 +132,7 @@ int leseZahlAusEinstellung(const std::string& schluessel, const int& defaultWert
 // Funktion zum Lesen einer einzelnen Einstellung
 uint64_t leseZahlAusEinstellung(const std::string& schluessel, const uint64_t& defaultWert, const std::string& dateiName)
 {
-	_PRINTINPUT_3_("Funktionsaufruf: leseZahlAusEinstellung")
+	_PRINTINPUT_3_("Funktionsaufruf: leseZahlAusEinstellung\tSchlüssel: " << schluessel)
     std::string Zahl = leseEinstellung(schluessel, std::to_string(defaultWert), dateiName);
     try
     {
