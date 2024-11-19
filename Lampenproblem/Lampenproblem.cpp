@@ -3162,12 +3162,31 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 				// Falls pausiert wurde
 				if(Pausiert)
 				{
+					{
+						lock_cout;
+						wattron(outputWin, A_DIM);          // Halbdurchsichtig
+						wattron(outputWin, A_ITALIC);       // Kursiv
+						mvwprintw(outputWin, 1, 100, "Pausiert!");
+						wattroff(outputWin, A_DIM);
+						wattroff(outputWin, A_ITALIC);
+						wrefresh(outputWin);
+					}
+					
 					// Warten, bis `Pausiert` auf false gesetzt wird
 					while (Pausiert.load(std::memory_order_relaxed))
 					{
-						std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Kurze Pause, um CPU-Auslastung zu minimieren
+						std::this_thread::sleep_for(std::chrono::milliseconds(2500)); // Kurze Pause, um CPU-Auslastung zu minimieren
 					}
 
+					{
+						lock_cout;
+						wattron(outputWin, A_DIM);          // Halbdurchsichtig
+						wattron(outputWin, A_ITALIC);       // Kursiv
+						mvwprintw(outputWin, 1, 100, "nich mehr");
+						wattroff(outputWin, A_DIM);
+						wattroff(outputWin, A_ITALIC);
+						wrefresh(outputWin);
+					}
 				}
 			}
 		}
