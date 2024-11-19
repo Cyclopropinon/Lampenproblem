@@ -238,6 +238,20 @@ void input_listener() {
         if (ch == 82) // 82 = R (Groß)
         { // 18 ist der ASCII-Code für Strg+R
             refreshScreen();
+        } else if (ch == 'P') // 80 = P (Groß)
+        {
+            Pausiert = !Pausiert;
+			lock_cout;
+			wattron(NachrichtenFenster, COLOR_PAIR(1));
+			if(Pausiert)
+			{
+				mvwprintw(NachrichtenFenster, 2, 2, "Pausierung veranlasst");
+			} else {
+				mvwprintw(NachrichtenFenster, 2, 2, "Pausierung aufgehoben");
+			}
+			wattroff(NachrichtenFenster, COLOR_PAIR(1));
+
+			wrefresh(NachrichtenFenster);
         }
 
 		if (!EingabeAktiviert) return;
