@@ -229,6 +229,8 @@ bool isTTY(std::string TERM)
 	return false;
 }
 
+void signalHandler(int signum);
+
 // Funktion zur Überwachung der Nutzereingabe
 void input_listener() {
     int ch;
@@ -252,6 +254,9 @@ void input_listener() {
 			wattroff(NachrichtenFenster, COLOR_PAIR(1));
 
 			wrefresh(NachrichtenFenster);
+        } else if (ch == 'Q') // 81 = Q (Groß)
+        {
+			signalHandler(2);
         }
 
 		if (!EingabeAktiviert) return;
