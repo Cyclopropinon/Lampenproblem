@@ -3144,6 +3144,17 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 					wrefresh(titelWin);
 					wrefresh(outputWin);
 				}
+
+				// Falls pausiert wurde
+				if(Pausiert)
+				{
+					// Warten, bis `Pausiert` auf false gesetzt wird
+					while (Pausiert.load(std::memory_order_relaxed))
+					{
+						std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Kurze Pause, um CPU-Auslastung zu minimieren
+					}
+
+				}
 			}
 		}
 	}

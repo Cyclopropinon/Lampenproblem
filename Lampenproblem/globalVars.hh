@@ -46,6 +46,7 @@ std::atomic<bool>		redrawInProgress = false;
 std::atomic<bool>		redrawAgain = false;
 std::atomic<bool>		NachrichtenAktiviert = false;
 std::atomic<bool>		EingabeAktiviert = false;
+std::atomic<bool>		Pausiert = false;
 
 std::string				gotoZeileDrunter = "\n";
 
