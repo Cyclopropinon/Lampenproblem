@@ -44,5 +44,5 @@ void ZAZ(const std::string& directoryPath, const std::string& outputFilePath)
     }
 
     outputFile.close();
-	_PRINTINPUT_5_("Zusammengeführte Dateien in " << outputFilePath << " geschrieben.\n");
+	_PRINTINPUT_5_("Zusammengeführte Dateien in " << outputFilePath << " geschrieben.");
 }

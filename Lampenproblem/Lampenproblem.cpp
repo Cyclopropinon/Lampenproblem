@@ -245,6 +245,8 @@ void input_listener() {
         } else if (ch == 'P') // 80 = P (Groß)
         {
             Pausiert = !Pausiert;
+			_PRINTINPUT_4_("Pausierung (de)aktiviert");
+
 			lock_cout;
 			wattron(NachrichtenFenster, COLOR_PAIR(1));
 			if(Pausiert)
@@ -3169,6 +3171,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 				// Falls pausiert wurde
 				if(Pausiert)
 				{
+					_PRINTINPUT_4_("Pausierung für n=" << n)
+
 					{
 						lock_cout;
 						wattron(outputWin, A_DIM);          // Halbdurchsichtig
@@ -3184,6 +3188,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 					{
 						std::this_thread::sleep_for(std::chrono::milliseconds(SleepTimer_ms)); // Kurze Pause, um CPU-Auslastung zu minimieren
 					}
+
+					_PRINTINPUT_4_("Entpausierung für n=" << n)
 
 					{
 						lock_cout;
