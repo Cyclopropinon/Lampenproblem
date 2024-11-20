@@ -7,10 +7,9 @@
 
 void EinzelkernBenchmarkingGMPlibV1()
 {
-	_PRINTINPUT_3_("Funktionsaufruf: EinzelkernBenchmarkingGMPlibV1")
+	_PRINTINPUT_3_("Funktionsaufruf: EinzelkernBenchmarkingGMPlibV1")/*
 vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
 {
-	_PRINTINPUT_3_("Funktionsaufruf: LampenSimulierenGMPLIBv8")
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
     vector<mpz_class> PositiveRunden;
@@ -46,45 +45,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
     vector<bool> AlleLampenAn(n, true);
     vector<bool> AlleLampenAus(n, false);
 
-    PositiveRunden.reserve(anz);
-    if (einsenAnzeigen)
-    {
-        PositiveRunden.push_back(1);
-    }
 
-	start_color();  // Aktiviert die Farbunterstützung
-	init_pair(0, COLOR_WHITE, COLOR_BLACK);
-	init_pair(1, COLOR_RED, COLOR_BLACK);
-	init_pair(2, COLOR_CYAN, COLOR_BLACK);
-	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
-	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(5, COLOR_GREEN, COLOR_BLACK);
-	init_pair(6, COLOR_BLUE, COLOR_BLACK);
-
-    Lampen[0] = false;
-
-	// 1. Stufe
-    while (AnzRunden <= n_gmplib)
-    {
-        Schritte += AnzRunden;
-        if (AnzRunden < 1 + Schritte / n_gmplib)
-        {
-            if (Lampen == AlleLampenAn || Lampen == AlleLampenAus)
-            {
-                PositiveRunden.push_back(AnzRunden);
-				AnzPR = PositiveRunden.size();
-				_PRINTINPUT_1_("!!!WICHTIG!!! PR gefunden (n,k): (" << n << ", " << AnzRunden << ") WIE IST DAS MÖGLICH?????\nBITTE OBIGES SOFORT MELDEN!!!")
-            }
-
-            AnzRunden = 1 + Schritte / n_gmplib;
-        }
-        Lampejetzt = mpz_fdiv_ui(Schritte.get_mpz_t(), n);
-        Lampen[Lampejetzt] = !Lampen[Lampejetzt];
-
-        print++;
-	}
-
-	// 2. Stufe
     while (AnzPR < anz)
     {
         Schritte += AnzRunden;
@@ -132,7 +93,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 
     return PositiveRunden;
 }
-
+*/
 }
 
 void InteraktivBenchmarkingGMPlibV1()
