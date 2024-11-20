@@ -128,7 +128,7 @@ void InteraktivBenchmarkingGMPlibV1()
 				char Puffer[50];
 				uint64_t total_seconds = Ergebnis / 1'000'000'000;
 				uint64_t remaining_ns = Ergebnis % 1'000'000'000;
-				sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);
+				sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 " s", total_seconds, remaining_ns);
 				Gesamtzeit = Puffer;
 
 				// Die Länge des Strings auf 20 auffüllen
@@ -141,20 +141,34 @@ void InteraktivBenchmarkingGMPlibV1()
 				char Puffer[50];
 				uint64_t total_seconds = Zwischenergebnis / 1'000'000'000;
 				uint64_t remaining_ns = Zwischenergebnis % 1'000'000'000;
-				sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);
+				sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 " s", total_seconds, remaining_ns);
+				ZpI = Puffer;
 
 				// Die Länge des Strings auf 20 auffüllen
 				ZpI.insert(ZpI.begin(), Stringlänge - ZpI.length(), ' ');
 			}
 
-			Iks = 32768'000'000'000 / Ergebnis;
+			{
+				auto Zwischenergebnis = 32768'000'000'000 / Ergebnis;
+				Iks = Zwischenergebnis;
+				Iks += " Iks";
+
+				// Die Länge des Strings auf 20 auffüllen
+				Iks.insert(Iks.begin(), (Stringlänge + 2) - Iks.length(), ' ');
+			}
 
 			cout << "Einzelkernergebnis:"
 			   "\n" "  Gesamtzeit:     " << Gesamtzeit <<
 			   "\n" "  Zeit/Iteration: " << ZpI <<
 			   "\n"
-			   "\n" "  Einzelkernwert: " << Iks << " Iks" // Iks = Iterationen je 1000s (kilosekunde; ks)
+			   "\n" "  Einzelkernwert: " << Iks <<								// Iks = Iterationen je 1000s (kilosekunde; ks)
 			   "\n";
+
+			_PRINTINPUT_4_("Einzelkernergebnis (detailliert):")
+			_PRINTINPUT_4_("  Gesamtzeit:     " << Gesamtzeit)
+			_PRINTINPUT_4_("  Zeit/Iteration: " << ZpI)
+			_PRINTINPUT_4_("  Einzelkernwert: " << Iks)
+			_PRINTINPUT_4_("")
 		}
 	}
 }
