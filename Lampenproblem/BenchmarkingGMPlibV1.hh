@@ -5,11 +5,20 @@
 
 #include "BenchmarkingGMPlibV1-data.h"
 
-void EinzelkernBenchmarkingGMPlibV1()
+int EinzelkernBenchmarkingGMPlibV1()
 {
-	_PRINTINPUT_3_("Funktionsaufruf: EinzelkernBenchmarkingGMPlibV1")/*
-vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, bool einsenAnzeigen, string Session, WINDOW* outputWin, WINDOW* titelWin, int timerOrtx, int timerOrty, const bool& tty)
-{
+	_PRINTINPUT_3_("Funktionsaufruf: EinzelkernBenchmarkingGMPlibV1")
+
+	unsigned long long n
+	uint64_t anz
+	bool einsenAnzeigen
+	string Session
+	WINDOW* outputWin
+	WINDOW* titelWin
+	int timerOrtx
+	int timerOrty
+	const bool& tty
+
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
     vector<mpz_class> PositiveRunden;
@@ -40,6 +49,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 
 		// for debugging
 		increasedBackupFrequency = DefaultIncreasedBackupFrequency;
+	} else {
+		return -2;
 	}
 
     vector<bool> AlleLampenAn(n, true);
@@ -82,18 +93,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 			}
 		}
 	}
-
-	dPrint = print - cPrint;
-	cPrint = print;
-
-	berechnungsZwCP_HR = berechnungsEndeHR;
-	zdt(berechnungsStartHR, durHR);
-	// dt(berechnungsZwCP_HR, CP_HR);
-	zPdt(berechnungsZwCP_HR, CPdHR);
-
-    return PositiveRunden;
-}
-*/
+/**/
 }
 
 void InteraktivBenchmarkingGMPlibV1()
