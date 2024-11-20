@@ -3981,6 +3981,7 @@ int main(int argc, const char** argv)
 					break;
 				case -2:
 					InteraktivBenchmarkingGMPlibV1();
+					break;
 				case -3:
 					#ifndef _DISABLELIBFLINTXX_
 						cout << "n eingeben: ";
