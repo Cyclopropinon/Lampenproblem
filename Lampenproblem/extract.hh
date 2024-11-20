@@ -2,11 +2,13 @@
 
 #ifndef _DISABLELIBARCHIVE_
 
+#include "logfile.hh"
+
 #include <archive.h>
 #include <archive_entry.h>
 #include <cstring>
+#include <mutex>
 #include <string>
-//#include "data_tar.h" // Eingebettetes Archiv
 
 void extract_tar(const unsigned char *tar_data, size_t tar_size, const char *output_dir)
 {
@@ -24,6 +26,7 @@ void extract_tar(const unsigned char *tar_data, size_t tar_size, const char *out
     if (archive_read_open_memory(a, tar_data, tar_size) != ARCHIVE_OK)
     {
         fprintf(stderr, "Could not open tar archive: %s\n", archive_error_string(a));
+        _PRINTINPUT_2_("Could not open tar archive: " << archive_error_string(a))
         return;
     }
 
