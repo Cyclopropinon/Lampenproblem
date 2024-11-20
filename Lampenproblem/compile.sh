@@ -7,16 +7,17 @@ xxd -i BenchmarkingGMPlibV1.tar BenchmarkingGMPlibV1-data.h || echo 'the "xxd" c
 #g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lncurses -O2 -march=native
 #g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lncursesw -DNCURSES_WIDECHAR=1 -O2 -march=native
 #g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lflint -lflintxx -lncursesw -DNCURSES_WIDECHAR=1 -O2 -march=native
-g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -larchive -lflint -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++-14 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++-12 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++ -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lflint -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++-14 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++-12 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
-  || g++ -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native
+
+     /usr/bin/time -v g++-13 -o Lampenproblem Lampenproblem.cpp      -lgmp -lgmpxx -lflint             -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -D_DISABLELIBFLINT_ -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++-14 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -D_DISABLELIBFLINT_ -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++-12 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -D_DISABLELIBFLINT_ -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++    -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -D_DISABLELIBFLINT_ -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -lflint                       -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++-13 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -D_DISABLELIBFLINT_           -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++-14 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -D_DISABLELIBFLINT_           -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++-12 -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -D_DISABLELIBFLINT_           -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
+  || /usr/bin/time -v g++    -o Lampenproblem Lampenproblem.cpp -lgmp -lgmpxx -D_DISABLELIBFLINT_           -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native
 
 rm BenchmarkingGMPlibV1-data.h
 cp BenchmarkingGMPlibV1-data.h.bagup BenchmarkingGMPlibV1-data.h

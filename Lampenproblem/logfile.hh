@@ -82,6 +82,24 @@
                     #define _PRINTWAYPOINT_5_ _PRINTWAYPOINT_lv(5)
                     #define _PRINTINPUT_5_(x) _PRINTINPUT_lv(x,5)
                     #define _PRINTVAR_5_(x)   _PRINTINPUT_lv(#x << " = " << x,5)
+                    #if LOGLEVEL >= 6
+                        #define _PRINTWAYPOINT_6_ _PRINTWAYPOINT_lv(6)
+                        #define _PRINTINPUT_6_(x) _PRINTINPUT_lv(x,6)
+                        #define _PRINTVAR_6_(x)   _PRINTINPUT_lv(#x << " = " << x,6)
+                        #if LOGLEVEL >= 7
+                            #define _PRINTWAYPOINT_7_ _PRINTWAYPOINT_lv(7)
+                            #define _PRINTINPUT_7_(x) _PRINTINPUT_lv(x,7)
+                            #define _PRINTVAR_7_(x)   _PRINTINPUT_lv(#x << " = " << x,7)
+                        #else // LOGLEVEL = 6
+                            #define _PRINTWAYPOINT_7_
+                            #define _PRINTINPUT_7_(x)
+                            #define _PRINTVAR_7_(x)   
+                        #endif
+                    #else // LOGLEVEL = 5
+                        #define _PRINTWAYPOINT_6_
+                        #define _PRINTINPUT_6_(x)
+                        #define _PRINTVAR_6_(x)   
+                    #endif
                 #else // LOGLEVEL = 4
                     #define _PRINTWAYPOINT_5_
                     #define _PRINTINPUT_5_(x)

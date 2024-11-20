@@ -9,17 +9,18 @@
 
 void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, std::vector<bool>& Lampen, std::vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit);
 
-int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session)
+int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session, unsigned long long n)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: EinzelkernBenchmarkingGMPlibV1")
 
 	using namespace std;
 
-	unsigned long long n;
 	uint64_t anz;
 	bool einsenAnzeigen;
 	int timerOrtx;
 	int timerOrty;
+
+	_PRINTINPUT_5_("Debug")
 
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
@@ -28,6 +29,9 @@ int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session)
     mpz_init_set_ui(tmp_n_gmplib, n);
     mpz_class Schritte(tmp_n_gmplib);
     const mpz_class n_gmplib(tmp_n_gmplib);
+
+	_PRINTINPUT_6_("Debug")
+
     unsigned long long Lampejetzt;
     unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
     unsigned long long cPrint = 0;		// Checkpoint für print
@@ -36,12 +40,17 @@ int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session)
     auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
     auto berechnungsEndeHR = berechnungsStartHR;
     auto berechnungsZwCP_HR = berechnungsStartHR;
+
+	_PRINTINPUT_6_("Debug")
+
 	std::chrono::nanoseconds Laufzeit;
 	std::chrono::nanoseconds ZeitAuserhalbDieserSession(0);
     string durHR;
     string CP_HR;
     string CPdHR;
 	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
+
+	_PRINTINPUT_5_("Debug")
 
 	if (std::filesystem::exists(Session))
 	{
@@ -51,10 +60,14 @@ int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session)
 		return -2;
 	}
 
+	_PRINTINPUT_5_("Debug")
+
     vector<bool> AlleLampenAn(n, true);
     vector<bool> AlleLampenAus(n, false);
 	
 	berechnungsStartHR = std::chrono::high_resolution_clock::now();
+
+	_PRINTINPUT_5_("Debug")
 
     while (AnzPR < anz)
     {
@@ -119,7 +132,7 @@ void InteraktivBenchmarkingGMPlibV1()
 	cin >> eb;
 	if(eb == 'y' || eb == 'j')
 	{
-		auto Ergebnis = EinzelkernBenchmarkingGMPlibV1(Session + "/31");
+		auto Ergebnis = EinzelkernBenchmarkingGMPlibV1(Session + "/31", 31);
 		_PRINTINPUT_4_("EinzelkernBenchmarkingGMPlibV1-Ergebnis: " << Ergebnis)
 
 		if (Ergebnis > 0)
@@ -154,9 +167,9 @@ void InteraktivBenchmarkingGMPlibV1()
 			}
 
 			{
-				auto Zwischenergebnis = 32768'000'000'000 / Ergebnis;
+				auto Zwischenergebnis = 32768'000'000'000'000 / Ergebnis;		_PRINTVAR_5_(Zwischenergebnis)
 				Iks = Zwischenergebnis;
-				Iks += " Iks";
+				Iks += " Iks";													_PRINTVAR_5_(Iks)
 
 				// Die Länge des Strings auf 20 auffüllen
 				Iks.insert(Iks.begin(), (Stringlänge + 2) - Iks.length(), ' ');
