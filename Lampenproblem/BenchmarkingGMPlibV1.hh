@@ -162,13 +162,16 @@ void InteraktivBenchmarkingGMPlibV1()
 			   "\n" "  Zeit/Iteration: " << ZpI <<
 			   "\n"
 			   "\n" "  Einzelkernwert: " << Iks <<								// Iks = Iterationen je 1000s (kilosekunde; ks)
-			   "\n";
+			   "\n" << endl;
 
 			_PRINTINPUT_4_("Einzelkernergebnis (detailliert):")
 			_PRINTINPUT_4_("  Gesamtzeit:     " << Gesamtzeit)
 			_PRINTINPUT_4_("  Zeit/Iteration: " << ZpI)
 			_PRINTINPUT_4_("  Einzelkernwert: " << Iks)
 			_PRINTINPUT_4_("")
+		} else {
+			cout << "Etwas ist Schiefgelaufen :("
+			      "\nFehlercode: " << Ergebnis << endl;
 		}
 	}
 }
