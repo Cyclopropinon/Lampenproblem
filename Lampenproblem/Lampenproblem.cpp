@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.32"
+#define _V "0.1.33"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -3034,6 +3034,8 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
     string CPdHR;
 	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
 
+    Lampen[0] = false;
+
 	if (std::filesystem::exists(Session))
 	{
 		// Lade die Vorherige Session falls eine existiert
@@ -3075,8 +3077,6 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, A_BOLD);
 		wrefresh(outputWin);
 	}
-
-    Lampen[0] = false;
 
 	// 1. Stufe
     while (AnzRunden <= n_gmplib)
