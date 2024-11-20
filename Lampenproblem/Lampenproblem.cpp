@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.31"
+#define _V "0.1.32"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -3027,6 +3027,9 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 		// Lade die Vorherige Session falls eine existiert
 		CheckpointLSGv6(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, ZeitAuserhalbDieserSession);
 		//berechnungsStartHR -= Laufzeit;
+
+		// for debugging
+		increasedBackupFrequency = DefaultIncreasedBackupFrequency;
 	}
 
     vector<bool> AlleLampenAn(n, true);

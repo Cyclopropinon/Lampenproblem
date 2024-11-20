@@ -54,6 +54,9 @@ std::string				gotoZeileDrunter = "\n";
 
 bool					ttyGlobal;
 
+// debug value, normally false
+bool					DefaultIncreasedBackupFrequency = true;
+
 // Globale Einstellungen
 std::string globSession = "";
 std::map<std::string, std::string> Einstellungen;
