@@ -110,6 +110,9 @@
 // für die Zusammenfassungen
 #include "zusammenfassung.hh"
 
+// für Benchmarking
+#include "BenchmarkingGMPlibV1.hh"
+
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;
@@ -3967,6 +3970,8 @@ int main(int argc, const char** argv)
 					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
 					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
+				case -2:
+					InteraktivBenchmarkingGMPlibV1();
 				case -3:
 					#ifndef _DISABLELIBFLINTXX_
 						cout << "n eingeben: ";
