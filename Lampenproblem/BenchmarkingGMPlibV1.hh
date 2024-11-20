@@ -1,9 +1,13 @@
 #pragma once
 
+#include <vector>
+
 #include "extract.hh"
 #include "zwischenVar.h"
 
 #include "BenchmarkingGMPlibV1-data.h"
+
+void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, std::vector<bool>& Lampen, std::vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit);
 
 int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session)
 {
@@ -85,6 +89,7 @@ void InteraktivBenchmarkingGMPlibV1()
 	_PRINTINPUT_3_("Funktionsaufruf: InteraktivBenchmarkingGMPlibV1")
 
 	namespace fs = std::filesystem;
+	using std::cin, std::cout, std::cerr, std::endl, std::string;
 
 	// Benötigte Daten extrahieren
 	const char *Basisordner = "/tmp/Lampenproblem";
