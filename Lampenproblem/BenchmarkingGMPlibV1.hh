@@ -105,4 +105,56 @@ void InteraktivBenchmarkingGMPlibV1()
 		fs::remove_all(Session);
 	}
 	extract_tar(BenchmarkingGMPlibV1_tar, BenchmarkingGMPlibV1_tar_len, Basisordner);
+
+	// Start der interaktion
+
+	char eb;
+
+	cout << "Einzelkern Benchmarking? (y/n) ";
+	cin >> eb;
+	if(eb == 'y' || eb == 'j')
+	{
+		auto Ergebnis = EinzelkernBenchmarkingGMPlibV1(Session + "/31");
+		_PRINTINPUT_4_("EinzelkernBenchmarkingGMPlibV1-Ergebnis: " << Ergebnis)
+
+		if (Ergebnis > 0)
+		{
+			size_t Stringlänge = 20;
+			string Gesamtzeit;
+			string ZpI;
+			string Iks;
+			
+			{
+				char Puffer[50];
+				uint64_t total_seconds = Ergebnis / 1'000'000'000;
+				uint64_t remaining_ns = Ergebnis % 1'000'000'000;
+				sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);
+				Gesamtzeit = Puffer;
+
+				// Die Länge des Strings auf 20 auffüllen
+				Gesamtzeit.insert(Gesamtzeit.begin(), Stringlänge - Gesamtzeit.length(), ' ');
+			}
+
+			{
+				auto Zwischenergebnis = Ergebnis / 32768;
+
+				char Puffer[50];
+				uint64_t total_seconds = Zwischenergebnis / 1'000'000'000;
+				uint64_t remaining_ns = Zwischenergebnis % 1'000'000'000;
+				sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 "s", total_seconds, remaining_ns);
+
+				// Die Länge des Strings auf 20 auffüllen
+				ZpI.insert(ZpI.begin(), Stringlänge - ZpI.length(), ' ');
+			}
+
+			Iks = 32768'000'000'000 / Ergebnis;
+
+			cout << "Einzelkernergebnis:"
+			   "\n" "  Gesamtzeit:     " << Gesamtzeit <<
+			   "\n" "  Zeit/Iteration: " << ZpI <<
+			   "\n"
+			   "\n" "  Einzelkernwert: " << Iks << " Iks" // Iks = Iterationen je 1000s (kilosekunde; ks)
+			   "\n";
+		}
+	}
 }
