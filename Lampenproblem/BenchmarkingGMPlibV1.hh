@@ -5,19 +5,17 @@
 
 #include "BenchmarkingGMPlibV1-data.h"
 
-int EinzelkernBenchmarkingGMPlibV1()
+int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session)
 {
 	_PRINTINPUT_3_("Funktionsaufruf: EinzelkernBenchmarkingGMPlibV1")
 
-	unsigned long long n
-	uint64_t anz
-	bool einsenAnzeigen
-	string Session
-	WINDOW* outputWin
-	WINDOW* titelWin
-	int timerOrtx
-	int timerOrty
-	const bool& tty
+	using namespace std;
+
+	unsigned long long n;
+	uint64_t anz;
+	bool einsenAnzeigen;
+	int timerOrtx;
+	int timerOrty;
 
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
@@ -45,17 +43,14 @@ int EinzelkernBenchmarkingGMPlibV1()
 	{
 		// Lade die Vorherige Session falls eine existiert
 		CheckpointLSGv6(Session, true, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, ZeitAuserhalbDieserSession);
-		//berechnungsStartHR -= Laufzeit;
-
-		// for debugging
-		increasedBackupFrequency = DefaultIncreasedBackupFrequency;
 	} else {
 		return -2;
 	}
 
     vector<bool> AlleLampenAn(n, true);
     vector<bool> AlleLampenAus(n, false);
-
+	
+	berechnungsStartHR = std::chrono::high_resolution_clock::now();
 
     while (AnzPR < anz)
     {
@@ -76,21 +71,10 @@ int EinzelkernBenchmarkingGMPlibV1()
 
 		if(print % 32768 == 0)
 		{
-			if (increasedBackupFrequency || print % 1048576 == 0)
-			{
-				dPrint = print - cPrint;
-				cPrint = print;
-				Laufzeit = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsStartHR) + ZeitAuserhalbDieserSession;
-				if(!increasedBackupFrequency) increasedBackupFrequency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - berechnungsEndeHR).count() >= 7200'000'000'000; // wenn die Zwischenzeit länger als 2 Stunden sind
-				CheckpointLSGv6(Session, false, n, anz, einsenAnzeigen, AnzRunden, Lampen, PositiveRunden, Schritte, Lampejetzt, print, cPrint, dPrint, Laufzeit);
-				berechnungsZwCP_HR = berechnungsEndeHR;
-				zdt(berechnungsStartHR, durHR);
-				zdt(berechnungsZwCP_HR, CP_HR);
-				zPdt(berechnungsZwCP_HR, CPdHR);
-
-				// Redirect output to the ncurses window
-				
-			}
+			berechnungsEndeHR = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(berechnungsEndeHR - berechnungsStartHR) + ZeitAuserhalbDieserSession;
+			int64_t total_ns = duration.count();
+			return total_ns;
 		}
 	}
 /**/
