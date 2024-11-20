@@ -73,7 +73,6 @@ Ein paar Screenshots:
 ## TODO
 * make it an option to fit onto a mobile screen
 * add a notify-window for system messages
-* Settings file
 * Emergency-save when power failure
 * timing calculations so it fits better with dynamic electric pricing
 * use beep for notifications (PR found, error, etc...)
@@ -81,5 +80,8 @@ Ein paar Screenshots:
 * Formalisiere die Vermutung von Krabbenhöft-Taschner
 * Beweise/Wiederlege die beiden Vermutungen LOL
 * Setzte mögliche Unterziele für die Beweise
+## IN PROGRESS
+* Benchmarking
 ## DONE
-* Ability to pause & resume using keyboard -> Type 'P'
+* Seit `V0.1.27`: Einstellungsdatei
+* Seit `V0.1.31`: Möglichkeit zu Pausieren & Fortsetzen mit der Tastatur (Eingabe: "P")

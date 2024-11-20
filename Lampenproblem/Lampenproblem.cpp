@@ -3687,9 +3687,9 @@ vector<fmpzxx> LampenSimulierenFLINTv2(unsigned long long n, uint64_t anz, bool 
 }
 
 // @return Anzahl der bits die es geprüft hat
-uint64_t Benchmarking(std::string Logdatei, unsigned long long n, uint64_t Start, uint64_t batchSize)
+uint64_t BenchmarkingFlint(std::string Logdatei, unsigned long long n, uint64_t Start, uint64_t batchSize)
 {
-	_PRINTINPUT_3_("Funktionsaufruf: Benchmarking")
+	_PRINTINPUT_3_("Funktionsaufruf: BenchmarkingFlint")
 	const fmpzxx n_flintlib(n);
 	fmpz_init_set_ui(global_puffer_fmpz_t5, n);
 	string durHR;
@@ -3881,20 +3881,22 @@ int main(int argc, const char** argv)
 			{
 				const std::string menu = "Programm von Lorenz Taschner & Lars Krabbenhöft\n"
 					"Lampen prüfen bis (n,k)\n"
-					"Welche Prüfmethode?\n"
-					"0  = Beenden\t\t\t1  = Simulation\t\t\t\t\t2  = einzelne Lampen Testen\n"
-					"3  = optimierte Version Nr.1\t4  = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1\n"
-					"6  = optimierte Version Nr.3\t7  = optimierte & erweiterte Simulation Nr.2\t8  = optimierte Version Nr.4\n"
-					"9  = optimierte Version Nr.5\t10 = optimierte Version Nr.6\t\t\t11 = optimierte & erweiterte Simulation Nr.3\n"
-					"12 = optimierte Version Nr.6.2\t13 = optimierte & erweiterte Simulation Nr.4\t14 = optimierte & erweiterte Simulation Nr.5\n"
-					"15 = optimierte & erweiterte Simulation mit GMPLIB\t\t16 = optimierte & erweiterte Simulation mit GMPLIB V2\n"
-					"17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden\t18 = 16, aber multithreaded\n"
-					"19 = 16, aber + ncurses & async\t20 = optimierte & erweiterte Simulation mit GMPLIB V5\n"
-					"21 = 20, aber rückwärts\t\t22 = optimierte & erweiterte Simulation mit GMPLIB V6\n"
-					"23 = optimierte & erweiterte Simulation mit FLINT\t\t24 = optimierte & erweiterte Simulation mit GMPLIB V7\n"
-					"25 = optimierte & erweiterte Simulation mit GMPLIB V8 (Jetzt mit Nachrichtenfenster!)\n"
-					"\n-1 = Benchmark für die Schritte\t-2 = Verbose simulation\n\n"
-					"\n";
+					"\n" "Welche Prüfmethode?"
+					"\n" "0  = Beenden                    1  = Simulation                                 2  = einzelne Lampen Testen"
+					"\n" "3  = optimierte Version Nr.1    4  = optimierte Version Nr.2                    5  = optimierte & erweiterte Simulation Nr.1"
+					"\n" "6  = optimierte Version Nr.3    7  = optimierte & erweiterte Simulation Nr.2    8  = optimierte Version Nr.4"
+					"\n" "9  = optimierte Version Nr.5    10 = optimierte Version Nr.6                    11 = optimierte & erweiterte Simulation Nr.3"
+					"\n" "12 = optimierte Version Nr.6.2  13 = optimierte & erweiterte Simulation Nr.4    14 = optimierte & erweiterte Simulation Nr.5"
+					"\n" "15 = optimierte & erweiterte Simulation mit GMPLIB                              16 = optimierte & erweiterte Simulation mit GMPLIB V2"
+					"\n" "17 = optimierte & erweiterte Simulation mit GMPLIB V2 - Zwischenstand laden     18 = 16, aber multithreaded"
+					"\n" "19 = 16, aber + ncurses & async                                                 20 = optimierte & erweiterte Simulation mit GMPLIB V5"
+					"\n" "21 = 20, aber rückwärts                                                         22 = optimierte & erweiterte Simulation mit GMPLIB V6"
+					"\n" "23 = optimierte & erweiterte Simulation mit FLINT                               24 = optimierte & erweiterte Simulation mit GMPLIB V7"
+					"\n" "25 = optimierte & erweiterte Simulation mit GMPLIB V8 (Jetzt mit Nachrichtenfenster!)"
+					"\n"
+					"\n" "-1 = Verbose simulation         -2 = GMPlib Benchmark V1                        -3 = Benchmark für die Schritte in FLINTlib"
+					//"\n" "-4 = optimierte Version Nr.2\t\t\t5  = optimierte & erweiterte Simulation Nr.1"
+					"\n\n";
 				cout << menu;
 				cin >> prüfart;					_PRINTVAR_2_(prüfart)
 
@@ -3943,7 +3945,7 @@ int main(int argc, const char** argv)
 					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
 					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
-				case -2:
+				case -1:
 					cout << "min n eingeben: ";
 					cin >> minN;				_PRINTVAR_4_(minN)
 					cout << "max n eingeben: ";
@@ -3965,7 +3967,7 @@ int main(int argc, const char** argv)
 					Dauer = duration<double>{ berechnungsEnde - berechnungsStart }.count();		_PRINTVAR_2_(Dauer)
 					cout << "Laufzeit: " << Dauer << "s\n\n";
 					break;
-				case -1:
+				case -3:
 					#ifndef _DISABLELIBFLINTXX_
 						cout << "n eingeben: ";
 						cin >> minN;				_PRINTVAR_4_(minN)
@@ -3978,7 +3980,7 @@ int main(int argc, const char** argv)
 
 						berechnungsStart = steady_clock::now();
 
-						anz = Benchmarking(filename, minN, mkb, anz);
+						anz = BenchmarkingFlint(filename, minN, mkb, anz);
 
 						berechnungsEnde = steady_clock::now();
 						cout << "Gesamtzahl an geprüften Bits: " << anz << '\n';					_PRINTVAR_4_(anz)
