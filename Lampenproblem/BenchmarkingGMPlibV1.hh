@@ -168,7 +168,7 @@ void InteraktivBenchmarkingGMPlibV1()
 
 			{
 				auto Zwischenergebnis = 32768'000'000'000'000 / Ergebnis;		_PRINTVAR_5_(Zwischenergebnis)
-				Iks = Zwischenergebnis;
+				Iks = std::to_string(Zwischenergebnis);
 				Iks += " Iks";													_PRINTVAR_5_(Iks)
 
 				// Die Länge des Strings auf 20 auffüllen
