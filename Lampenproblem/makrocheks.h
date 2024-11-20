@@ -14,3 +14,8 @@
     #line 35 "Lampenproblem.cpp"
     #warning "[FLINTxx](https://github.com/flintlib/flintxx) not found! Compiling without FLINTxx..."
 #endif
+
+#ifdef _DISABLELIBARCHIVE_
+    #line 52 "Lampenproblem.cpp"
+    #warning "[libarchive](https://libarchive.org/) not found! Compiling without libarchive..."
+#endif

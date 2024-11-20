@@ -48,6 +48,15 @@
 	#endif
 #endif
 
+// check if libarchive is installed correctly (libarchive-dev)
+#ifndef _DISABLELIBARCHIVE_
+	#if __has_include(<archive.h>)
+		#include <archive.h>
+	#else 
+		#define _DISABLELIBARCHIVE_
+	#endif
+#endif
+
 #include <algorithm>
 #include <chrono>
 #include <cinttypes>
