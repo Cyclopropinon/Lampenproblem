@@ -65,6 +65,6 @@ void extract_tar(const unsigned char *tar_data, size_t tar_size, const char *out
 
     void extract_tar(const unsigned char *tar_data, size_t tar_size, const char *output_dir)
     {
-        throw std::exception("Compiled without libarchive!");
+        throw std::runtime_error("Compiled without libarchive!");
     }
 #endif
