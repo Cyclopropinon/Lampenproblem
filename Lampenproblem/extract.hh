@@ -7,6 +7,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <cstring>
+#include <exception>
 #include <mutex>
 #include <string>
 
