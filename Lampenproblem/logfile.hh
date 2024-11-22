@@ -59,6 +59,7 @@
           << "\nKompilierungsdetails:\n" << Kompilierungsdetails\
           << "\nProgrammname:     \"" << exeName <<\
            "\"\nBibliotheken:     \n" << lddSelf \
+          << "\nCPU:              \"" << getCpuName \
           << "\nLogdatei:         \"" << filename << \
            "\"\nLoglevel:         " << LOGLEVEL << \
              "\nStartzeit:        " << std::put_time(std::localtime(&t), "%Y-%m-%d %T") << "." << std::setfill('0') << std::setw(3) << "\n\n";\

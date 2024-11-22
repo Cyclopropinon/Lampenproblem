@@ -1,12 +1,17 @@
 #pragma once
 
-#include <iostream>
-#include <cstdio>
-#include <string>
-#include <memory>
 #include <array>
-#include <unistd.h>
+#include <cstdio>
+#include <fstream>
+#include <iostream>
 #include <limits.h>
+#include <memory>
+#include <string>
+#include <unistd.h>
+
+#ifdef _WIN32
+    #include <intrin.h>  // For __cpuid on Windows
+#endif
 
 std::string getExecutablePath()
 {
@@ -40,4 +45,42 @@ std::string getLddOutput(const std::string& executable)
     }
     
     return result;
+}
+
+// get CPU name
+std::string getCpuName()
+{
+    #ifdef _WIN32
+        // Windows-specific code (using CPUID instruction)
+        std::array<int, 4> cpui;
+        char cpuName[49] = { 0 };
+
+        // Call __cpuid with EAX=0x80000002, 0x80000003, and 0x80000004
+        __cpuid(cpui.data(), 0x80000002);
+        memcpy(cpuName, cpui.data(), sizeof(cpui));
+        __cpuid(cpui.data(), 0x80000003);
+        memcpy(cpuName + 16, cpui.data(), sizeof(cpui));
+        __cpuid(cpui.data(), 0x80000004);
+        memcpy(cpuName + 32, cpui.data(), sizeof(cpui));
+
+        return std::string(cpuName);
+
+    #elif __linux__
+        // Linux-specific code (read from /proc/cpuinfo)
+        std::ifstream cpuInfoFile("/proc/cpuinfo");
+        std::string line;
+        std::string key = "model name";
+        while (std::getline(cpuInfoFile, line))
+        {
+            if (line.substr(0, key.size()) == key)
+            {
+                // Extract the value after ": "
+                return line.substr(line.find(": ") + 2);
+            }
+        }
+        return "Unknown CPU";
+
+    #else
+        return "Unsupported platform";  // Handle other platforms
+    #endif
 }
