@@ -11,6 +11,8 @@
 
 #ifdef _WIN32
     #include <intrin.h>  // For __cpuid on Windows
+#elif defined(__APPLE__)
+    #include <sys/sysctl.h>
 #endif
 
 std::string getExecutablePath()
@@ -79,6 +81,13 @@ std::string getCpuName()
             }
         }
         return "Unknown CPU";
+
+    #elif defined(__APPLE__)
+        // macOS-specific code using sysctl
+        char cpu_brand[128];
+        size_t size = sizeof(cpu_brand);
+        sysctlbyname("machdep.cpu.brand_string", &cpu_brand, &size, nullptr, 0);
+        return std::string(cpu_brand);
 
     #else
         return "Unsupported platform";  // Handle other platforms
