@@ -125,6 +125,9 @@
 // für Benchmarking
 #include "BenchmarkingGMPlibV1.hh"
 
+// um die Benchmarking Ergebnisse zu speichern
+#include "Benchmarkergebnisse.hh"
+
 using namespace std;
 using namespace chrono;
 using namespace chrono_literals;
