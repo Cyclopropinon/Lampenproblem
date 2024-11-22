@@ -15,8 +15,10 @@ xxd -i BenchmarkingGMPlibV1.tar BenchmarkingGMPlibV1-data.h || echo 'the "xxd" c
   || /usr/bin/time -v g++-12 -o Lampenproblem Lampenproblem.cpp -I/usr/local/include -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lgmp -lgmpxx -D_DISABLELIBFLINT_           -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
   || /usr/bin/time -v g++    -o Lampenproblem Lampenproblem.cpp -I/usr/local/include -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lgmp -lgmpxx -D_DISABLELIBFLINT_           -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native
 
-rm BenchmarkingGMPlibV1-data.h
-cp BenchmarkingGMPlibV1-data.h.bagup BenchmarkingGMPlibV1-data.h
+rm -v BenchmarkingGMPlibV1-data.h
+cp -v BenchmarkingGMPlibV1-data.h.bagup BenchmarkingGMPlibV1-data.h
+
+ldd Lampenproblem
 
 #cp -v Lampenproblem ./IDA/
 

@@ -96,6 +96,9 @@
 // für die Gerätedetails
 #include "deviceinfos.hh"
 
+// für die Prozessdetails
+#include "selfinfo.hh"
+
 // Für CPU-Profiler
 #include "cpu.h"
 
