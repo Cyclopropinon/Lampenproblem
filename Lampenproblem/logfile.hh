@@ -2,6 +2,7 @@
 
 #include "globalVars.hh"
 #include "deviceinfos.hh"
+#include "selfinfo.hh"
 
 // Legt den default Loglevel fest, falls nicht vom Compiler angegeben
 #ifndef LOGLEVEL
@@ -51,10 +52,16 @@
         \
         auto t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());\
         \
+        std::string exeName = getExecutablePath();                                                  /*/ Hole den Pfad des eigenen Programms*/\
+        std::string lddSelf = getLddOutput(exeName);                                                /*/ Führe ldd auf diesem Pfad aus*/\
         LOGFILE.open(filename);                                                                     /*/ File to write logs into*/\
         LOGFILE << "Logdatei vom Lampenproblem, Version: " << _V\
           << "\nKompilierungsdetails:\n" << Kompilierungsdetails\
-          << "\nDateiname: \t\"" << filename << "\"\nLoglevel: \t" << LOGLEVEL << "\nStartzeit: \t" << std::put_time(std::localtime(&t), "%Y-%m-%d %T") << "." << std::setfill('0') << std::setw(3) << "\n\n";\
+          << "\nProgrammname:     \"" << exeName <<\
+           "\"\nBibliotheken:     \n" << lddSelf \
+          << "\nLogdatei:         \"" << filename << \
+           "\"\nLoglevel:         " << LOGLEVEL << \
+             "\nStartzeit:        " << std::put_time(std::localtime(&t), "%Y-%m-%d %T") << "." << std::setfill('0') << std::setw(3) << "\n\n";\
         std::cout << "Logfile: " << filename << std::endl;\
         \
         _PRINTINPUT_1_("#Arguments: " << argc)\
