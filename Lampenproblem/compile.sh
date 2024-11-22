@@ -2,7 +2,7 @@
 
 chmod +x compile.sh
 
-xxd -i BenchmarkingGMPlibV1.tar BenchmarkingGMPlibV1-data.h || echo 'the "xxd" command is not installed lmao'
+bash betterxxd.sh BenchmarkingGMPlibV1.tar BenchmarkingGMPlibV1-data.h || exit 2
 
      /usr/bin/time -v g++-13 -o Lampenproblem Lampenproblem.cpp -I/usr/local/include -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lgmp -lgmpxx -lflint             -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \
   || /usr/bin/time -v g++-13 -o Lampenproblem Lampenproblem.cpp -I/usr/local/include -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lgmp -lgmpxx -D_DISABLELIBFLINT_ -larchive -lncursesw -DNCURSES_WIDECHAR=1 -g -O2 -march=native \

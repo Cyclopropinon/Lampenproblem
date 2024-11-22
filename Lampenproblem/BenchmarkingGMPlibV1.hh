@@ -5,6 +5,8 @@
 #include "extract.hh"
 #include "zwischenVar.h"
 
+#include "Benchmarkergebnisse.hh"
+
 #include "BenchmarkingGMPlibV1-data.h"
 
 void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned long long& n_ULL, uint64_t& anz, bool& einsenAnzeigen, mpz_class& AnzRunden, std::vector<bool>& Lampen, std::vector<mpz_class>& PositiveRunden, mpz_class& Schritte, unsigned long long& Lampejetzt_ULL, unsigned long long& print_ULL, unsigned long long& cPrint_ULL, unsigned long long& dPrint_ULL, std::chrono::nanoseconds Laufzeit);
@@ -187,6 +189,14 @@ void InteraktivBenchmarkingGMPlibV1()
 			_PRINTINPUT_4_("  Zeit/Iteration: " << ZpI)
 			_PRINTINPUT_4_("  Einzelkernwert: " << Iks)
 			_PRINTINPUT_4_("")
+
+			{
+				std::string Historie = BenchmarkErgebnisOrdner + "IBGV1EK.csv";
+
+				// Überprüfen, ob die Datei existiert, und ggf. initialisieren
+				if (!fileExists(Historie)) initialisireCSV(Historie); // Initialisiere die Datei mit den Spaltenüberschriften
+				writeBenchmarkDataToCSV(Historie, Ergebnis);
+			}
 		} else {
 			cout << "Etwas ist Schiefgelaufen :("
 			      "\nFehlercode: " << Ergebnis << endl;
