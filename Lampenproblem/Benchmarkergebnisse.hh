@@ -13,6 +13,7 @@
 // Funktion zum Erstellen des Datums und Uhrzeit im Format YYYY-MM-DD HH:MM:SS
 std::string get_current_datetime()
 {
+	_PRINTINPUT_5_("Funktionsaufruf: get_current_datetime")
     auto now = std::chrono::system_clock::now();
     auto now_time_t = std::chrono::system_clock::to_time_t(now);
     
@@ -25,12 +26,14 @@ std::string get_current_datetime()
 // Funktion zum Überprüfen, ob die Datei existiert
 bool fileExists(const std::string& filename)
 {
+	_PRINTINPUT_6_("Funktionsaufruf: initialisireCSV")
     return std::filesystem::exists(filename); // Existenz der Datei prüfen
 }
 
 // Funktion zum Initialisieren der Datei mit den Spaltenüberschriften, falls sie nicht existiert
 void initialisireCSV(const std::string& filename)
 {
+	_PRINTINPUT_4_("Funktionsaufruf: initialisireCSV")
     std::ofstream outFile(filename, std::ios_base::app); // Datei im Anhängemodus öffnen
     if (outFile.is_open())
     {
@@ -41,12 +44,14 @@ void initialisireCSV(const std::string& filename)
         outFile.close();
     } else {
         std::cerr << "Fehler beim Erstellen oder Öffnen der Datei!" << std::endl;
+        _PRINTINPUT_2_("Fehler beim Erstellen der Datei: " << filename)
     }
 }
 
 // Funktion zum Schreiben der Benchmark-Daten in eine CSV-Datei
 void writeBenchmarkDataToCSV(const std::string& filename, uint64_t score)
 {
+	_PRINTINPUT_4_("Funktionsaufruf: writeBenchmarkDataToCSV")
     std::ofstream outFile;
     outFile.open(filename, std::ios_base::app); // Öffnen im Anhängemodus
     if (outFile.is_open())

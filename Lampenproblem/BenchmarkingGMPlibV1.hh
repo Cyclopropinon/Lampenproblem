@@ -191,7 +191,8 @@ void InteraktivBenchmarkingGMPlibV1()
 			_PRINTINPUT_4_("")
 
 			{
-				std::string Historie = BenchmarkErgebnisOrdner + "IBGV1EK.csv";
+				erstelleVerzeichnis(BenchmarkErgebnisOrdner);
+				std::string Historie = BenchmarkErgebnisOrdner + std::string("/IBGV1EK.csv");
 
 				// Überprüfen, ob die Datei existiert, und ggf. initialisieren
 				if (!fileExists(Historie)) initialisireCSV(Historie); // Initialisiere die Datei mit den Spaltenüberschriften
