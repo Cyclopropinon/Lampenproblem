@@ -39,7 +39,7 @@ void initialisireCSV(const std::string& filename)
     {
         if (outFile.tellp() == 0) // Wenn die Datei leer ist (noch keine Daten)
         {
-            outFile << "Datum,Version,Rohscore\n"; // Überschriften schreiben
+            outFile << "Datum, Version, Rohscore\n"; // Überschriften schreiben
         }
         outFile.close();
     } else {
