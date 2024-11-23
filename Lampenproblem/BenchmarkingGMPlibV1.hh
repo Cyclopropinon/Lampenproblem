@@ -130,9 +130,9 @@ void InteraktivBenchmarkingGMPlibV1()
 
 	char eb;
 
-	cout << "Einzelkern Benchmarking? (y/n) ";
+	cout << "Einzelkern/Doppelkern Benchmarking? (e/d/n) ";
 	cin >> eb;
-	if(eb == 'y' || eb == 'j')
+	if(eb == 'y' || eb == 'j' || eb == 'e')
 	{
 		auto Ergebnis = EinzelkernBenchmarkingGMPlibV1(Session + "/31", 31);
 		_PRINTINPUT_4_("EinzelkernBenchmarkingGMPlibV1-Ergebnis: " << Ergebnis)
@@ -202,5 +202,83 @@ void InteraktivBenchmarkingGMPlibV1()
 			cout << "Etwas ist Schiefgelaufen :("
 			      "\nFehlercode: " << Ergebnis << endl;
 		}
+	} else 	if(eb == 'd' || eb == '2') {
+		// `std::async` verwenden, um die Funktionen parallel auszuführen
+		auto future1 = std::async(std::launch::async, EinzelkernBenchmarkingGMPlibV1, Session + "/31", 31);
+		auto future2 = std::async(std::launch::async, EinzelkernBenchmarkingGMPlibV1, Session + "/32", 32);
+
+		// Ergebnisse abrufen (blockiert, bis die Berechnungen abgeschlossen sind)
+		int64_t Ergebnis1 = future1.get();
+		int64_t Ergebnis2 = future2.get();
+
+		_PRINTINPUT_4_("DoppelkernBenchmarkingGMPlibV1-Ergebnis: " << Ergebnis1 << '\t' << Ergebnis2)
+
+		if (Ergebnis > 0)
+		{
+			size_t Stringlänge = 20;
+			string Gesamtzeit;
+			string ZpI;
+			string Iks;
+			
+			{
+				char Puffer[50];
+				uint64_t total_seconds = Ergebnis / 1'000'000'000;
+				uint64_t remaining_ns = Ergebnis % 1'000'000'000;
+				sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 " s", total_seconds, remaining_ns);
+				Gesamtzeit = Puffer;
+
+				// Die Länge des Strings auf 20 auffüllen
+				Gesamtzeit.insert(Gesamtzeit.begin(), Stringlänge - Gesamtzeit.length(), ' ');
+			}
+
+			{
+				auto Zwischenergebnis = Ergebnis / 32768;
+
+				char Puffer[50];
+				uint64_t total_seconds = Zwischenergebnis / 1'000'000'000;
+				uint64_t remaining_ns = Zwischenergebnis % 1'000'000'000;
+				sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 " s", total_seconds, remaining_ns);
+				ZpI = Puffer;
+
+				// Die Länge des Strings auf 20 auffüllen
+				ZpI.insert(ZpI.begin(), Stringlänge - ZpI.length(), ' ');
+			}
+
+			{
+				auto Zwischenergebnis = 32768'000'000'000'000 / Ergebnis;		_PRINTVAR_5_(Zwischenergebnis)
+				Iks = std::to_string(Zwischenergebnis);
+				Iks += " Iks";													_PRINTVAR_5_(Iks)
+
+				// Die Länge des Strings auf 20 auffüllen
+				Iks.insert(Iks.begin(), (Stringlänge + 2) - Iks.length(), ' ');
+			}
+
+			cout << "Einzelkernergebnis:"
+			   "\n" "  Gesamtzeit:     " << Gesamtzeit <<
+			   "\n" "  Zeit/Iteration: " << ZpI <<
+			   "\n"
+			   "\n" "  Einzelkernwert: " << Iks <<								// Iks = Iterationen je 1000s (kilosekunde; ks)
+			   "\n" << endl;
+
+			_PRINTINPUT_4_("Einzelkernergebnis (detailliert):")
+			_PRINTINPUT_4_("  Gesamtzeit:     " << Gesamtzeit)
+			_PRINTINPUT_4_("  Zeit/Iteration: " << ZpI)
+			_PRINTINPUT_4_("  Einzelkernwert: " << Iks)
+			_PRINTINPUT_4_("")
+
+			{
+				erstelleVerzeichnis(BenchmarkErgebnisOrdner);
+				std::string Historie = BenchmarkErgebnisOrdner + std::string("/IBGV1EK.csv");
+
+				// Überprüfen, ob die Datei existiert, und ggf. initialisieren
+				if (!fileExists(Historie)) initialisireCSV(Historie); // Initialisiere die Datei mit den Spaltenüberschriften
+				writeBenchmarkDataToCSV(Historie, Ergebnis);
+			}
+		} else {
+			cout << "Etwas ist Schiefgelaufen :("
+			      "\nFehlercode: " << Ergebnis << endl;
+		}
+	} else {
+		cout << "Abbruch." << endl;
 	}
 }
