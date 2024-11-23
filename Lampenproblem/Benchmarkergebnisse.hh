@@ -31,7 +31,7 @@ bool fileExists(const std::string& filename)
 }
 
 // Funktion zum Initialisieren der Datei mit den Spaltenüberschriften, falls sie nicht existiert
-void initialisireCSV(const std::string& filename)
+void initialisireCSV(const std::string& filename, unsigned int anzWerte)
 {
 	_PRINTINPUT_4_("Funktionsaufruf: initialisireCSV")
     std::ofstream outFile(filename, std::ios_base::app); // Datei im Anhängemodus öffnen
@@ -39,7 +39,12 @@ void initialisireCSV(const std::string& filename)
     {
         if (outFile.tellp() == 0) // Wenn die Datei leer ist (noch keine Daten)
         {
-            outFile << "Datum, Version, Rohscore\n"; // Überschriften schreiben
+            outFile << "Datum, Version"; // Überschriften schreiben
+            for (unsigned int i = 1; i <= anzWerte; i++)
+            {
+                outFile << ", Rohscore" << i;
+            }
+            outFile << "\n";
         }
         outFile.close();
     } else {
@@ -58,6 +63,23 @@ void writeBenchmarkDataToCSV(const std::string& filename, uint64_t score)
     {
         std::string timestamp = get_current_datetime();
         outFile << timestamp << ", " << _V << ", " << score << "\n"; // CSV-Format: Datum, Version, Score
+        outFile.close();
+    } else {
+        std::cerr << "Fehler beim Öffnen der Datei!" << std::endl;
+        _PRINTINPUT_2_("Fehler beim Öffnen der Datei: " << filename)
+    }
+}
+
+// Funktion zum Schreiben der Benchmark-Daten in eine CSV-Datei, diesmal mit 2 Werten
+void writeBenchmarkDataToCSV(const std::string& filename, uint64_t score1, uint64_t score2)
+{
+	_PRINTINPUT_4_("Funktionsaufruf: writeBenchmarkDataToCSV")
+    std::ofstream outFile;
+    outFile.open(filename, std::ios_base::app); // Öffnen im Anhängemodus
+    if (outFile.is_open())
+    {
+        std::string timestamp = get_current_datetime();
+        outFile << timestamp << ", " << _V << ", " << score1 << ", " << score2 << "\n"; // CSV-Format: Datum, Version, Score
         outFile.close();
     } else {
         std::cerr << "Fehler beim Öffnen der Datei!" << std::endl;

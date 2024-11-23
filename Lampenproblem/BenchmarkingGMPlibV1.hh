@@ -195,7 +195,7 @@ void InteraktivBenchmarkingGMPlibV1()
 				std::string Historie = BenchmarkErgebnisOrdner + std::string("/IBGV1EK.csv");
 
 				// Überprüfen, ob die Datei existiert, und ggf. initialisieren
-				if (!fileExists(Historie)) initialisireCSV(Historie); // Initialisiere die Datei mit den Spaltenüberschriften
+				if (!fileExists(Historie)) initialisireCSV(Historie, 1); // Initialisiere die Datei mit den Spaltenüberschriften
 				writeBenchmarkDataToCSV(Historie, Ergebnis);
 			}
 		} else {
@@ -271,19 +271,19 @@ void InteraktivBenchmarkingGMPlibV1()
 				_PRINTINPUT_4_("  Zeit/Iteration: " << ZpI)
 				_PRINTINPUT_4_("  Einzelkernwert: " << Iks)
 				_PRINTINPUT_4_("")
-
-				{
-					erstelleVerzeichnis(BenchmarkErgebnisOrdner);
-					std::string Historie = BenchmarkErgebnisOrdner + std::string("/IBGV1EK.csv");
-
-					// Überprüfen, ob die Datei existiert, und ggf. initialisieren
-					if (!fileExists(Historie)) initialisireCSV(Historie); // Initialisiere die Datei mit den Spaltenüberschriften
-					writeBenchmarkDataToCSV(Historie, Ergebnis);
-				}
 			} else {
 				cout << "Kern " << i << ": Etwas ist Schiefgelaufen :("
 					"\nFehlercode: " << Ergebnis << endl;
 			}
+		}
+
+		{
+			erstelleVerzeichnis(BenchmarkErgebnisOrdner);
+			std::string Historie = BenchmarkErgebnisOrdner + std::string("/IBGV1DK.csv");
+
+			// Überprüfen, ob die Datei existiert, und ggf. initialisieren
+			if (!fileExists(Historie)) initialisireCSV(Historie, 2); // Initialisiere die Datei mit den Spaltenüberschriften
+			writeBenchmarkDataToCSV(Historie, Ergebnis1, Ergebnis2);
 		}
 	} else {
 		cout << "Abbruch." << endl;
