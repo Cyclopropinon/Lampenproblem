@@ -117,7 +117,7 @@ void InteraktivBenchmarkingGMPlibV1()
 	char eb;
 
 	cout << "Einzelkern/Doppelkern Benchmarking? (e/d/n) ";
-	cin >> eb;
+	cin >> eb;																	_PRINTVAR_4_(eb)
 	if(eb == 'y' || eb == 'j' || eb == 'e')
 	{
 		auto Ergebnis = EinzelkernBenchmarkingGMPlibV1(Session + "/31", 31);

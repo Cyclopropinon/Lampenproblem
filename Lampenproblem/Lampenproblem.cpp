@@ -6050,15 +6050,14 @@ int main(int argc, const char** argv)
 
 		try
 		{
-			const std::string menu = std::string("Programm von Lorenz Taschner & Lars Krabbenhöft\n")
-				+ "Lampen prüfen bis (n,k)\n"
-				+ "Welche Prüfmethode?\n"
-				+ "0  = Beenden\n"
-				+ "1 = Für eine große Lampenanzahl\n"
-				+ "2 = Für eine große Rundenanzahl\n"
-				+ "3 = wenn du deinen PC sprengen willst (ca. 2^(2^17) Runden)"
-				+ '\n';
-			cout << menu;
+			cout << "Programm von Lorenz Taschner & Lars Krabbenhöft"
+			   "\n" "Lampen prüfen bis (n,k)"
+			   "\n" "Welche Prüfmethode?"
+			   "\n" "0  = Beenden                            1  = Für eine große Lampenanzahl        2  = Für eine große Rundenanzahl"
+			   "\n" "3  = PC sprengen (ca. 2^(2¹⁷) Runden)"
+			   "\n" 
+			   "\n" "-1 = GMPlib Benchmark V1"
+			   "\n";
 			cin >> prüfart;
 
 			unsigned long long testLampen;
@@ -6069,6 +6068,9 @@ int main(int argc, const char** argv)
 			{
 			case 0:
 				return 0;
+				break;
+			case -1:
+				InteraktivBenchmarkingGMPlibV1();
 				break;
 			case 1:
 				cout << "min n eingeben: ";
