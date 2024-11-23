@@ -81,8 +81,8 @@ Ein paar Screenshots:
 * Beweise/Wiederlege die beiden Vermutungen LOL
 * Setzte mögliche Unterziele für die Beweise
 ## IN PROGRESS
-* Mekrkern-Benchmarking
 ## DONE
 * Seit `V0.1.27`: Einstellungsdatei
 * Seit `V0.1.31`: Möglichkeit zu Pausieren & Fortsetzen mit der Tastatur (Eingabe: "P")
 * Seit `V0.1.34`: Einzelkern-Benchmarking
+* Seit `V0.1.36`: Doppelkern-Benchmarking

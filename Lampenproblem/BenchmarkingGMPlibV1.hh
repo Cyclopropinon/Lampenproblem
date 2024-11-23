@@ -21,9 +21,6 @@ int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session, unsigned long long n
 	bool einsenAnzeigen;
 	int timerOrtx;
 	int timerOrty;
-
-	_PRINTINPUT_5_("Debug")
-
     mpz_class AnzRunden = 2;
     vector<bool> Lampen(n, true);
     vector<mpz_class> PositiveRunden;
@@ -31,8 +28,6 @@ int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session, unsigned long long n
     mpz_init_set_ui(tmp_n_gmplib, n);
     mpz_class Schritte(tmp_n_gmplib);
     const mpz_class n_gmplib(tmp_n_gmplib);
-
-	_PRINTINPUT_6_("Debug")
 
     unsigned long long Lampejetzt;
     unsigned long long print = 0;		// Anz bereits durchgeführter Iterationen
@@ -42,17 +37,12 @@ int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session, unsigned long long n
     auto berechnungsStartHR = std::chrono::high_resolution_clock::now();
     auto berechnungsEndeHR = berechnungsStartHR;
     auto berechnungsZwCP_HR = berechnungsStartHR;
-
-	_PRINTINPUT_6_("Debug")
-
 	std::chrono::nanoseconds Laufzeit;
 	std::chrono::nanoseconds ZeitAuserhalbDieserSession(0);
     string durHR;
     string CP_HR;
     string CPdHR;
 	uint64_t AnzPR = 0;		// = PositiveRunden.size(), aber ist effizienter
-
-	_PRINTINPUT_5_("Debug")
 
 	if (std::filesystem::exists(Session))
 	{
@@ -62,14 +52,10 @@ int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session, unsigned long long n
 		return -2;
 	}
 
-	_PRINTINPUT_5_("Debug")
-
     vector<bool> AlleLampenAn(n, true);
     vector<bool> AlleLampenAus(n, false);
 	
 	berechnungsStartHR = std::chrono::high_resolution_clock::now();
-
-	_PRINTINPUT_5_("Debug")
 
     while (AnzPR < anz)
     {
@@ -210,6 +196,9 @@ void InteraktivBenchmarkingGMPlibV1()
 		// Ergebnisse abrufen (blockiert, bis die Berechnungen abgeschlossen sind)
 		int64_t Ergebnis1 = future1.get();
 		int64_t Ergebnis2 = future2.get();
+		uint64_t IksMin_int;
+		uint64_t IksMax_int = 0;
+		uint64_t dIks_int;
 
 		_PRINTINPUT_4_("DoppelkernBenchmarkingGMPlibV1-Ergebnis: " << Ergebnis1 << '\t' << Ergebnis2)
 
@@ -252,6 +241,7 @@ void InteraktivBenchmarkingGMPlibV1()
 
 				{
 					auto Zwischenergebnis = 32768'000'000'000'000 / Ergebnis;		_PRINTVAR_5_(Zwischenergebnis)
+					IksMax_int += Zwischenergebnis;
 					Iks = std::to_string(Zwischenergebnis);
 					Iks += " Iks";													_PRINTVAR_5_(Iks)
 
@@ -285,6 +275,84 @@ void InteraktivBenchmarkingGMPlibV1()
 			if (!fileExists(Historie)) initialisireCSV(Historie, 2); // Initialisiere die Datei mit den Spaltenüberschriften
 			writeBenchmarkDataToCSV(Historie, Ergebnis1, Ergebnis2);
 		}
+
+		size_t Stringlänge = 20;
+		string Gesamtzeit;
+		string ZpI;
+		string IksMin;
+		string IksMax;
+		string dIks;
+
+		auto maxErg = Ergebnis1 < Ergebnis2 ? Ergebnis1 : Ergebnis2;
+		
+		{
+			char Puffer[50];
+			uint64_t total_seconds = maxErg / 1'000'000'000;
+			uint64_t remaining_ns = maxErg % 1'000'000'000;
+			sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 " s", total_seconds, remaining_ns);
+			Gesamtzeit = Puffer;
+
+			// Die Länge des Strings auf 20 auffüllen
+			Gesamtzeit.insert(Gesamtzeit.begin(), Stringlänge - Gesamtzeit.length(), ' ');
+		}
+
+		{
+			auto Zwischenergebnis = maxErg / 32768;
+
+			char Puffer[50];
+			uint64_t total_seconds = Zwischenergebnis / 1'000'000'000;
+			uint64_t remaining_ns = Zwischenergebnis % 1'000'000'000;
+			sprintf(Puffer, "%" PRIu64 ",%09" PRIu64 " s", total_seconds, remaining_ns);
+			ZpI = Puffer;
+
+			// Die Länge des Strings auf 20 auffüllen
+			ZpI.insert(ZpI.begin(), Stringlänge - ZpI.length(), ' ');
+		}
+
+		{
+			IksMin_int = 32768'000'000'000'000 / maxErg;						_PRINTVAR_5_(IksMin_int)
+			IksMin = std::to_string(IksMin_int);
+			IksMin += " Iks";													_PRINTVAR_5_(IksMin)
+
+			// Die Länge des Strings auf 20 auffüllen
+			IksMin.insert(IksMin.begin(), (Stringlänge + 2) - IksMin.length(), ' ');
+		}
+
+		{
+			IksMax_int;															_PRINTVAR_5_(IksMax_int)
+			IksMax = std::to_string(IksMax_int);
+			IksMax += " Iks";													_PRINTVAR_5_(IksMax)
+
+			// Die Länge des Strings auf 20 auffüllen
+			IksMax.insert(IksMax.begin(), (Stringlänge + 2) - IksMax.length(), ' ');
+		}
+
+		{
+			dIks_int = IksMax_int - IksMin_int;									_PRINTVAR_5_(dIks_int)
+			dIks = std::to_string(dIks_int);
+			dIks += " Iks";														_PRINTVAR_5_(dIks)
+
+			// Die Länge des Strings auf 20 auffüllen
+			dIks.insert(dIks.begin(), (Stringlänge + 2) - dIks.length(), ' ');
+		}
+
+
+		cout << "Doppelkernergebnis:"
+		"\n" "  Gesamtzeit:     " << Gesamtzeit <<
+		"\n" "  Zeit/Iteration: " << ZpI <<
+		"\n"
+		"\n" "  Minimalwert:    " << IksMin <<
+		"\n" "  Maximalwert:    " << IksMax <<
+		"\n" "  Unsicherheit:   " << dIks <<
+		"\n" << endl;
+
+		_PRINTINPUT_4_("Doppelkernergebnis (detailliert):")
+		_PRINTINPUT_4_("  Gesamtzeit:     " << Gesamtzeit)
+		_PRINTINPUT_4_("  Zeit/Iteration: " << ZpI)
+		_PRINTINPUT_4_("  Minimalwert:    " << IksMin)
+		_PRINTINPUT_4_("  Maximalwert:    " << IksMax)
+		_PRINTINPUT_4_("  Unsicherheit:   " << dIks)
+		_PRINTINPUT_4_("")
 	} else {
 		cout << "Abbruch." << endl;
 	}
