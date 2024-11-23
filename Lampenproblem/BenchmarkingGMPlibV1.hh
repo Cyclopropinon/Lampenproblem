@@ -283,7 +283,7 @@ void InteraktivBenchmarkingGMPlibV1()
 		string IksMax;
 		string dIks;
 
-		auto maxErg = Ergebnis1 < Ergebnis2 ? Ergebnis1 : Ergebnis2;
+		auto maxErg = Ergebnis1 > Ergebnis2 ? Ergebnis1 : Ergebnis2;
 		
 		{
 			char Puffer[50];
@@ -297,7 +297,7 @@ void InteraktivBenchmarkingGMPlibV1()
 		}
 
 		{
-			auto Zwischenergebnis = maxErg / 32768;
+			auto Zwischenergebnis = maxErg / (2 * 32768);
 
 			char Puffer[50];
 			uint64_t total_seconds = Zwischenergebnis / 1'000'000'000;
@@ -310,7 +310,8 @@ void InteraktivBenchmarkingGMPlibV1()
 		}
 
 		{
-			IksMin_int = 32768'000'000'000'000 / maxErg;						_PRINTVAR_5_(IksMin_int)
+			constexpr uint64_t val = 32768UL * 1'000 * 1'000'000'000 * 2;
+			IksMin_int = val / maxErg;						_PRINTVAR_5_(IksMin_int)
 			IksMin = std::to_string(IksMin_int);
 			IksMin += " Iks";													_PRINTVAR_5_(IksMin)
 
