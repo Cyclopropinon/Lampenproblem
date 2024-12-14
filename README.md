@@ -88,3 +88,14 @@ Ein paar Screenshots:
 * Seit `V0.1.31`: Möglichkeit zu Pausieren & Fortsetzen mit der Tastatur (Eingabe: "P")
 * Seit `V0.1.34`: Einzelkern-Benchmarking
 * Seit `V0.1.36`: Doppelkern-Benchmarking
+
+## Star History
+
+<a href="https://star-history.com/#Cyclopropinon/Lampenproblem&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Cyclopropinon/Lampenproblem&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Cyclopropinon/Lampenproblem&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Cyclopropinon/Lampenproblem&type=Date" />
+ </picture>
+</a>
+
