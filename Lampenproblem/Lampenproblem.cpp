@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.36"
+#define _V "0.1.37"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -3768,6 +3768,21 @@ uint64_t BenchmarkingFlint(std::string Logdatei, unsigned long long n, uint64_t 
 
 #endif // !ifndef _DISABLELIBFLINTXX_
 
+// was gemacht werden soll, falls argumente angegeben wurden
+int argLaunch(int argc, const char** argv)
+{	_PRINTINPUT_2_("Funktionsaufruf: argLaunch")
+	try
+	{
+		// Argumente in Stringform
+		std::vector<std::string> args(argv, argv + argc);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';	_PRINTERROR_
+		return -1;
+	}
+}
+
 int main(int argc, const char** argv)
 {
 	Starttime = std::chrono::steady_clock::now();
@@ -3779,6 +3794,16 @@ int main(int argc, const char** argv)
 	}
 
 	_LOGFILEINIT_();
+
+	if(argc > 1)
+	{
+		int ret = argLaunch(argc, argv);
+		if (ret != contRetVal) return ret;
+		else
+		{
+			// mach etwas, oder auch nicht
+		}
+	}
 
 	ostringstream						Dateiausgabe;
 

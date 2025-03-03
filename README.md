@@ -74,6 +74,7 @@ Ein paar Screenshots:
 
 ## Kompilierung
 Kurzversion: `make all`
+
 Ausführlich:
 ```
 git clone https://github.com/Cyclopropinon/Lampenproblem.git

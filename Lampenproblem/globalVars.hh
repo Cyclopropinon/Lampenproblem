@@ -65,5 +65,8 @@ constexpr auto			__EINST_LANG__ = "Lang";
 constexpr auto			__EINST_OFFS__ = "Zeilenoffset";
 constexpr auto			BenchmarkErgebnisOrdner = "Benchergs";
 
+// Rückgabewert, bei dem weitergemacht wird
+constexpr int			contRetVal = 0xBADEAFFE;
+
 // Unicode-Zeichen für abgerundete Ecken
 cchar_t ls, rs, ts, bs, tl, tr, bl, br;

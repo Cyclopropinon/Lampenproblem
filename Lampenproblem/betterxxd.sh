@@ -18,4 +18,5 @@ temp_file=$(mktemp) # Temporäre Datei erstellen
 tr -d '\n' < "$oup" > "$temp_file"
 sed -i -e 's/, /,/g' "$temp_file"
 sed -i -e 's/, /,/g' "$temp_file"
+#sed -i    's/,0x//g' "$temp_file"
 mv "$temp_file" "$oup"
