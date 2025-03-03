@@ -35,7 +35,7 @@ BG_TAR_OBJ := $(BG_TAR_SRC:.c=.o)
 BG_TAR_HEADER := BenchmarkingGMPlibV1-data.h
 BG_TAR_SOURCE := BenchmarkingGMPlibV1.tar
 
-all: check-deps run-betterxxd build restore-data install
+all: check-deps run-betterxxd restore-data build install
 
 # Prüfe Abhängigkeiten (Bibliotheken)
 check-deps:
@@ -43,15 +43,11 @@ check-deps:
 	@if [ "$(CHECK_FLINT)" = "no" ]; then echo "FLINT library not found, disabling support."; fi
 	@if [ "$(CHECK_ARCHIVE)" = "no" ]; then echo "Archive library not found, compiling without -larchive."; fi
 
-# Erstelle BG_tar.cpp, falls BenchmarkingGMPlibV1.tar neuer ist
-$(BG_TAR_SRC): $(BG_TAR_SOURCE)
+# Erstelle BG_tar.c, falls BenchmarkingGMPlibV1.tar neuer ist
+$(BG_TAR_OBJ) $(BG_TAR_SRC): $(BG_TAR_SOURCE)
 	@echo "Generating $(BG_TAR_SRC) from $(BG_TAR_SOURCE)..."
 	bash betterxxd.sh $(BG_TAR_SOURCE) $(BG_TAR_SRC)
-# Erstelle BG_tar.cpp, falls BenchmarkingGMPlibV1.tar neuer ist
 	echo '#include "$(BG_TAR_HEADER)"' | cat - $(BG_TAR_SRC) > temp && mv temp $(BG_TAR_SRC)
-
-# Erstelle Objektdatei für BG_tar
-$(BG_TAR_OBJ): $(BG_TAR_SRC)
 	$(TIME) $(GCC) $(TARFLAGS) -c $(BG_TAR_SRC) -o $(BG_TAR_OBJ)
 
 # Erstelle Hauptprogramm
