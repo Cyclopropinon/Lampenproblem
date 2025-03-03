@@ -54,4 +54,7 @@ install:
 strip:
 	strip $(TARGET) || echo 'the "strip" command is not installed lmao'
 
+compress:
+	upx --best --lzma $(TARGET) || echo 'UPX compression failed'
+
 .PHONY: all check-deps build run-betterxxd clean restore-data install strip Lampenproblem.cpp
