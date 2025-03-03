@@ -3772,9 +3772,35 @@ uint64_t BenchmarkingFlint(std::string Logdatei, unsigned long long n, uint64_t 
 int argLaunch(int argc, const char** argv)
 {	_PRINTINPUT_2_("Funktionsaufruf: argLaunch")
 	try
-	{
-		// Argumente in Stringform
-		std::vector<std::string> args(argv, argv + argc);
+	{	_PRINTVAR_4_(argc);
+		std::string args;
+		for (int i = 0; i < argc; ++i)
+		{
+			if (i > 0) args += " "; // Leerzeichen zwischen den Argumenten hinzufügen
+			args += argv[i];
+		}
+		_PRINTVAR_4_(args);
+
+		if(argc == 2)
+		{
+			if(strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+				cout << "<hier kommt die Hilfenachricht hin>" << endl;
+				return 0;
+			}
+			else if(strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+				cout << _V << endl;
+				return 0;
+			}
+		} else {
+			// Argumente in Stringform
+			std::vector<std::string> argvs(argv, argv + argc);
+
+			// mach etwas
+		}
+
+		_PRINTINPUT_3_("Ungültige Argumente")
+		cerr << "Ungültige Argumente\n";
+		return -2;
 	}
 	catch(const std::exception& e)
 	{
