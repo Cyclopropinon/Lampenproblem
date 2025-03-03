@@ -72,6 +72,17 @@ Ein paar Screenshots:
 ![grafik](./readme/Screenshot%20from%202024-11-23%2014-10-27.png)
 ![grafik](./readme/Screenshot%20from%202024-11-23%2014-10-08.png)
 
+## Kompilierung
+Kurzversion: `make all`
+Ausführlich:
+```
+git clone https://github.com/Cyclopropinon/Lampenproblem.git
+cd Lampenproblem
+make all
+cd testumgebung
+./Lampenproblem
+```
+
 ## TODO
 * make it an option to fit onto a mobile screen
 * add a notify-window for system messages
@@ -88,6 +99,7 @@ Ein paar Screenshots:
 * Seit `V0.1.31`: Möglichkeit zu Pausieren & Fortsetzen mit der Tastatur (Eingabe: "P")
 * Seit `V0.1.34`: Einzelkern-Benchmarking
 * Seit `V0.1.36`: Doppelkern-Benchmarking
+* Seit `V0.1.37`: Kompilierung mithilfe einer Makefile
 
 ## Star History
 
