@@ -647,7 +647,7 @@ void AutoBenchmarkingGMPlibV1()
 		std::string Historie = BenchmarkErgebnisOrdner + std::string("/ABGV1.csv");
 
 		// Überprüfen, ob die Datei existiert, und ggf. initialisieren
-		if (!fileExists(Historie)) initialisireCSV(Historie, 2); // Initialisiere die Datei mit den Spaltenüberschriften
+		if (!fileExists(Historie)) initialisireCSV(Historie, 3); // Initialisiere die Datei mit den Spaltenüberschriften
 		writeBenchmarkDataToCSV(Historie, E0, E1, E2);
 	}
 }

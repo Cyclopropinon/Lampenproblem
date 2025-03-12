@@ -7,4 +7,4 @@ clear
 time make all
 cd testumgebung
 ./Lampenproblem -B
-cat Benchergs/ABGV1.csv
+cat Benchergs/*

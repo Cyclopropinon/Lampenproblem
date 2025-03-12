@@ -74,4 +74,7 @@ strip:
 compress:
 	upx --best --lzma $(TARGET) || echo 'UPX compression failed'
 
+# Meistens wurde ein header von Lampenproblem.cpp verändert / hinzugefügt / ...
 .PHONY: Lampenproblem.cpp all check-deps build run-betterxxd clean restore-data install strip compress
+
+#.PHONY: all check-deps build run-betterxxd clean restore-data install strip compress
