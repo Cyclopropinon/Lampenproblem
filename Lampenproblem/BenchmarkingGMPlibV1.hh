@@ -361,10 +361,10 @@ void InteraktivBenchmarkingGMPlibV1()
 
 void AutoBenchmarkingGMPlibV1()
 {
-	_PRINTINPUT_3_("Funktionsaufruf: InteraktivBenchmarkingGMPlibV1")
+	_PRINTINPUT_3_("Funktionsaufruf: AutoBenchmarkingGMPlibV1")
 
 	namespace fs = std::filesystem;
-	using std::cin, std::cout, std::cerr, std::endl, std::string;
+	using std::cout, std::cerr, std::endl, std::string;
 
 	// Benötigte Daten extrahieren
 	const char *Basisordner = "/tmp/Lampenproblem";
@@ -388,11 +388,13 @@ void AutoBenchmarkingGMPlibV1()
 
 	// Start der interaktion
 
-	char eb;
-
-	cout << "Einzelkern/Doppelkern Benchmarking? (e/d/n) ";
-	cin >> eb;																	_PRINTVAR_4_(eb)
-	if(eb == 'y' || eb == 'j' || eb == 'e')
+	// beide Tests hintereinander
+	// 
+	// char eb;
+	// 
+	// cout << "Einzelkern/Doppelkern Benchmarking? (e/d/n) ";
+	// cin >> eb;																	_PRINTVAR_4_(eb)
+	// if(eb == 'y' || eb == 'j' || eb == 'e')
 	{
 		auto Ergebnis = EinzelkernBenchmarkingGMPlibV1(Session + "/31", 31);
 		_PRINTINPUT_4_("EinzelkernBenchmarkingGMPlibV1-Ergebnis: " << Ergebnis)
@@ -459,10 +461,12 @@ void AutoBenchmarkingGMPlibV1()
 				writeBenchmarkDataToCSV(Historie, Ergebnis);
 			}
 		} else {
-			cout << "Etwas ist Schiefgelaufen :("
+			cerr << "Etwas ist Schiefgelaufen :("
 			      "\nFehlercode: " << Ergebnis << endl;
 		}
-	} else 	if(eb == 'd' || eb == '2') {
+	} /*else 	if(eb == 'd' || eb == '2')*/ {				// beide hintereinander
+		_PRINTWAYPOINT_4_
+		
 		// `std::async` verwenden, um die Funktionen parallel auszuführen
 		auto future1 = std::async(std::launch::async, EinzelkernBenchmarkingGMPlibV1, Session + "/31", 31);
 		auto future2 = std::async(std::launch::async, EinzelkernBenchmarkingGMPlibV1, Session + "/32", 32);
@@ -628,7 +632,7 @@ void AutoBenchmarkingGMPlibV1()
 		_PRINTINPUT_4_("  Maximalwert:    " << IksMax)
 		_PRINTINPUT_4_("  Unsicherheit:   " << dIks)
 		_PRINTINPUT_4_("")
-	} else {
-		cout << "Abbruch." << endl;
+	// } else {
+	// 	cout << "Abbruch." << endl;
 	}
 }
