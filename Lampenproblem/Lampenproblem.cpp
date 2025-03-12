@@ -3796,6 +3796,7 @@ int argLaunch(int argc, const char** argv)
 				return 0;
 			}
 			else if(strcmp(argv[1], "-B") == 0 || strcmp(argv[1], "--Benchmark") == 0) {
+				cout << "Automatischer Benchmark gestartet..." << endl;
 				AutoBenchmarkingGMPlibV1();
 				return 0;
 			}

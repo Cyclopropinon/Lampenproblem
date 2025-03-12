@@ -101,6 +101,7 @@ cd testumgebung
 * Seit `V0.1.34`: Einzelkern-Benchmarking
 * Seit `V0.1.36`: Doppelkern-Benchmarking
 * Seit `V0.1.37`: Kompilierung mithilfe einer Makefile
+* Seit `V0.1.38`: automatisiertes Benchmarking
 
 ## Star History
 

@@ -26,7 +26,7 @@ std::string get_current_datetime()
 // Funktion zum Überprüfen, ob die Datei existiert
 bool fileExists(const std::string& filename)
 {
-	_PRINTINPUT_6_("Funktionsaufruf: initialisireCSV")
+	_PRINTINPUT_6_("Funktionsaufruf: fileExists")
     return std::filesystem::exists(filename); // Existenz der Datei prüfen
 }
 
