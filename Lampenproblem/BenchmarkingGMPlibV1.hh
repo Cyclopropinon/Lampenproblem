@@ -388,6 +388,9 @@ void AutoBenchmarkingGMPlibV1()
 
 	// Start der interaktion
 
+	// Ergebnisse
+	int64_t E0, E1, E2;
+
 	// beide Tests hintereinander
 	// 
 	// char eb;
@@ -459,6 +462,7 @@ void AutoBenchmarkingGMPlibV1()
 				// Überprüfen, ob die Datei existiert, und ggf. initialisieren
 				if (!fileExists(Historie)) initialisireCSV(Historie, 1); // Initialisiere die Datei mit den Spaltenüberschriften
 				writeBenchmarkDataToCSV(Historie, Ergebnis);
+				E0 = Ergebnis;
 			}
 		} else {
 			cerr << "Etwas ist Schiefgelaufen :("
@@ -466,7 +470,7 @@ void AutoBenchmarkingGMPlibV1()
 		}
 	} /*else 	if(eb == 'd' || eb == '2')*/ {				// beide hintereinander
 		_PRINTWAYPOINT_4_
-		
+
 		// `std::async` verwenden, um die Funktionen parallel auszuführen
 		auto future1 = std::async(std::launch::async, EinzelkernBenchmarkingGMPlibV1, Session + "/31", 31);
 		auto future2 = std::async(std::launch::async, EinzelkernBenchmarkingGMPlibV1, Session + "/32", 32);
@@ -552,6 +556,8 @@ void AutoBenchmarkingGMPlibV1()
 			// Überprüfen, ob die Datei existiert, und ggf. initialisieren
 			if (!fileExists(Historie)) initialisireCSV(Historie, 2); // Initialisiere die Datei mit den Spaltenüberschriften
 			writeBenchmarkDataToCSV(Historie, Ergebnis1, Ergebnis2);
+			E1 = Ergebnis1;
+			E2 = Ergebnis2;
 		}
 
 		size_t Stringlänge = 20;
@@ -634,5 +640,14 @@ void AutoBenchmarkingGMPlibV1()
 		_PRINTINPUT_4_("")
 	// } else {
 	// 	cout << "Abbruch." << endl;
+	}
+
+	{
+		erstelleVerzeichnis(BenchmarkErgebnisOrdner);
+		std::string Historie = BenchmarkErgebnisOrdner + std::string("/ABGV1.csv");
+
+		// Überprüfen, ob die Datei existiert, und ggf. initialisieren
+		if (!fileExists(Historie)) initialisireCSV(Historie, 2); // Initialisiere die Datei mit den Spaltenüberschriften
+		writeBenchmarkDataToCSV(Historie, E0, E1, E2);
 	}
 }

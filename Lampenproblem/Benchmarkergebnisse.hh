@@ -86,3 +86,20 @@ void writeBenchmarkDataToCSV(const std::string& filename, uint64_t score1, uint6
         _PRINTINPUT_2_("Fehler beim Öffnen der Datei: " << filename)
     }
 }
+
+// Funktion zum Schreiben der Benchmark-Daten in eine CSV-Datei, diesmal mit 3 Werten
+void writeBenchmarkDataToCSV(const std::string& filename, uint64_t score1, uint64_t score2, uint64_t score3)
+{
+	_PRINTINPUT_4_("Funktionsaufruf: writeBenchmarkDataToCSV")
+    std::ofstream outFile;
+    outFile.open(filename, std::ios_base::app); // Öffnen im Anhängemodus
+    if (outFile.is_open())
+    {
+        std::string timestamp = get_current_datetime();
+        outFile << timestamp << ", " << _V << ", " << score1 << ", " << score2 << ", " << score3 << "\n"; // CSV-Format: Datum, Version, Score
+        outFile.close();
+    } else {
+        std::cerr << "Fehler beim Öffnen der Datei!" << std::endl;
+        _PRINTINPUT_2_("Fehler beim Öffnen der Datei: " << filename)
+    }
+}
