@@ -324,6 +324,10 @@ void signalHandler(int signum)
 	{
 		// do something!
 	}
+	if (signum == SIGCHLD) // = 17; irgendwas mit Kindern
+	{
+		// mach was!
+	}
 	if (signum == SIGWINCH) // = 28; soll jedes mal passend den Bildschirm aktualisieren
 	{
 		//refreshScreen();
@@ -3789,6 +3793,10 @@ int argLaunch(int argc, const char** argv)
 			}
 			else if(strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
 				cout << _V << endl;
+				return 0;
+			}
+			else if(strcmp(argv[1], "-B") == 0 || strcmp(argv[1], "--Benchmark") == 0) {
+				AutoBenchmarkingGMPlibV1();
 				return 0;
 			}
 		} else {
