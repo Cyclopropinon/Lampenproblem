@@ -84,6 +84,15 @@ cd testumgebung
 ./Lampenproblem
 ```
 
+## Programmoptionen
+```
+-h Hilfe
+-v Version
+-B automatisiertes Benchmarking
+-I interaktives Benchmarking
+```
+
+
 ## TODO
 * make it an option to fit onto a mobile screen
 * add a notify-window for system messages
