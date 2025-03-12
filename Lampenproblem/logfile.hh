@@ -98,41 +98,50 @@
                             #define _PRINTWAYPOINT_7_ _PRINTWAYPOINT_lv(7)
                             #define _PRINTINPUT_7_(x) _PRINTINPUT_lv(x,7)
                             #define _PRINTVAR_7_(x)   _PRINTINPUT_lv(#x << " = " << x,7)
-                        #else // LOGLEVEL = 6
-                            #define _PRINTWAYPOINT_7_
-                            #define _PRINTINPUT_7_(x)
-                            #define _PRINTVAR_7_(x)   
                         #endif
-                    #else // LOGLEVEL = 5
-                        #define _PRINTWAYPOINT_6_
-                        #define _PRINTINPUT_6_(x)
-                        #define _PRINTVAR_6_(x)   
                     #endif
-                #else // LOGLEVEL = 4
-                    #define _PRINTWAYPOINT_5_
-                    #define _PRINTINPUT_5_(x)
-                    #define _PRINTVAR_5_(x)   
                 #endif
-            #else // LOGLEVEL = 3
+            #endif
+       #endif
+    #endif
+#endif
+
+
+#if LOGLEVEL < 7
+    #define _PRINTWAYPOINT_7_
+    #define _PRINTINPUT_7_(x)
+    #define _PRINTVAR_7_(x)   
+    #if LOGLEVEL < 6
+        #define _PRINTWAYPOINT_6_
+        #define _PRINTINPUT_6_(x)
+        #define _PRINTVAR_6_(x)   
+        #if LOGLEVEL < 5
+            #define _PRINTWAYPOINT_5_
+            #define _PRINTINPUT_5_(x)
+            #define _PRINTVAR_5_(x)   
+            #if LOGLEVEL < 4
                 #define _PRINTWAYPOINT_4_
                 #define _PRINTINPUT_4_(x)
                 #define _PRINTVAR_4_(x)   
+                #if LOGLEVEL < 3
+                    #define _PRINTWAYPOINT_3_
+                    #define _PRINTINPUT_3_(x)
+                    #define _PRINTVAR_3_(x)   
+                    #if LOGLEVEL < 2
+                        #define _PRINTWAYPOINT_2_
+                        #define _PRINTERROR_
+                        #define _PRINTINPUT_2_(x)
+                        #define _PRINTVAR_2_(x)   
+                        #if LOGLEVEL < 1
+                            #define _LOGFILEINIT_()
+                            #define _PRINTWAYPOINT_1_
+                            #define _PRINTFATALERROR_
+                            #define _PRINTINPUT_1_(x)
+                            #define _PRINTVAR_1_(x)   
+                        #endif
+                    #endif
+                #endif
             #endif
-        #else // LOGLEVEL = 2
-            #define _PRINTWAYPOINT_3_
-            #define _PRINTINPUT_3_(x)
-            #define _PRINTVAR_3_(x)   
        #endif
-    #else // LOGLEVEL = 1
-        #define _PRINTWAYPOINT_2_
-        #define _PRINTERROR_
-        #define _PRINTINPUT_2_(x)
-        #define _PRINTVAR_2_(x)   
     #endif
-#else // LOGLEVEL = 0
-    #define _LOGFILEINIT_()
-    #define _PRINTWAYPOINT_1_
-    #define _PRINTFATALERROR_
-    #define _PRINTINPUT_1_(x)
-    #define _PRINTVAR_1_(x)   
 #endif
