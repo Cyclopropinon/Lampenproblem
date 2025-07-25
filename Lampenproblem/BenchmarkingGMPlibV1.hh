@@ -65,7 +65,7 @@ int64_t EinzelkernBenchmarkingGMPlibV1(std::string Session, unsigned long long n
 		{
 			PositiveRunden.push_back(AnzRunden);
 			AnzPR = PositiveRunden.size();
-			_PRINTINPUT_4_("PR gefunden für n = " << n << "; Größe: " << mpz_sizeinbase(AnzRunden.get_mpz_t(), 265) << " Bytes")
+			_PRINTINPUT_1_("WIE??? PR gefunden für n = " << n << "; Größe: " << mpz_sizeinbase(AnzRunden.get_mpz_t(), 265) << " Bytes")
 		}
 
 		Lampejetzt = mpz_tdiv_q_ui(AnzRunden.get_mpz_t(), Schritte.get_mpz_t(), n);

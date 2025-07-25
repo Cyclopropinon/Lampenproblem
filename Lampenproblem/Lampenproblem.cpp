@@ -8,7 +8,7 @@
 //
 
 // Programmversion:
-#define _V "0.1.38"
+#define _V "0.1.39"
 
 // Uncomment to enable big ints
 //#define _ENABLEBIGINTS_
@@ -3118,7 +3118,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv8(unsigned long long n, uint64_t anz, b
 		{
 			PositiveRunden.push_back(AnzRunden);
 			AnzPR = PositiveRunden.size();
-			_PRINTINPUT_4_("PR gefunden für n = " << n << "; Größe: " << mpz_sizeinbase(AnzRunden.get_mpz_t(), 265) << " Bytes")
+			_PRINTINPUT_2_("PR gefunden für n = " << n << "; Größe: " << mpz_sizeinbase(AnzRunden.get_mpz_t(), 265) << " Bytes")
 		}
 
 		Lampejetzt = mpz_tdiv_q_ui(AnzRunden.get_mpz_t(), Schritte.get_mpz_t(), n);
