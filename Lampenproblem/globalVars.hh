@@ -70,3 +70,6 @@ constexpr int			contRetVal = 0xBADEAFFE;
 
 // Unicode-Zeichen für abgerundete Ecken
 cchar_t ls, rs, ts, bs, tl, tr, bl, br;
+
+//new makro for size of mpz in bytes. since mpz_sizeinbase only supports up to 62 we use the fact that 16^2=256
+#define lp_mpz_bytesize(x) (mpz_sizeinbase(x.get_mpz_t(), 16) / 2)
