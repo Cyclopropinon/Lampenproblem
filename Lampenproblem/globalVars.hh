@@ -1,6 +1,6 @@
 #pragma once
 
-// This Files only Purpose id to contain the global Variables.
+// This Files only Purpose is to contain the global Variables.
 
 #ifdef _WIN32 // Windows
 	#define lock_output
@@ -63,6 +63,8 @@ std::map<std::string, std::string> Einstellungen;
 constexpr auto			EinstellungsDateiname = "Einstellungen.ini";
 constexpr auto			__EINST_LANG__ = "Lang";
 constexpr auto			__EINST_OFFS__ = "Zeilenoffset";
+constexpr auto			__EINST_BEEP_FREQ_PR__ = "BeepFreqPR";
+constexpr auto			__EINST_BEEP_FREQ_FEHLER__ = "BeepFreqFehler";
 constexpr auto			BenchmarkErgebnisOrdner = "Benchergs";
 
 // Rückgabewert, bei dem weitergemacht wird
@@ -73,3 +75,5 @@ cchar_t ls, rs, ts, bs, tl, tr, bl, br;
 
 //new makro for size of mpz in bytes. since mpz_sizeinbase only supports up to 62 we use the fact that 16^2=256
 #define lp_mpz_bytesize(x) (mpz_sizeinbase(x.get_mpz_t(), 16) / 2)
+
+// Beep frequenzen

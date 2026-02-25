@@ -145,7 +145,33 @@ uint64_t leseZahlAusEinstellung(const std::string& schluessel, const uint64_t& d
     } catch (const std::out_of_range& e)
     {
         _PRINTERROR_
-        std::cerr << "Input (" << Zahl << ") is out of range for an int" << std::endl;
+        std::cerr << "Input (" << Zahl << ") is out of range for an uint64_t" << std::endl;
+    } catch (const std::exception& e)
+    {
+        _PRINTERROR_
+		std::cerr << "\aFehler:\n" << e.what() << std::endl;
+    }
+    
+    return defaultWert;
+}
+
+// Funktion zum Lesen einer einzelnen Einstellung
+uint32_t leseZahlAusEinstellung(const std::string& schluessel, const uint32_t& defaultWert, const std::string& dateiName)
+{
+	_PRINTINPUT_3_("Funktionsaufruf: leseZahlAusEinstellung\tSchlüssel: " << schluessel)
+    std::string Zahl = leseEinstellung(schluessel, std::to_string(defaultWert), dateiName);
+    try
+    {
+        uint32_t num = std::stoul(Zahl);
+        return num;
+    } catch (const std::invalid_argument& e)
+    {
+        _PRINTERROR_
+        std::cerr << "Invalid Setting " << schluessel << ": \"" << Zahl << "\" is not a number" << std::endl;
+    } catch (const std::out_of_range& e)
+    {
+        _PRINTERROR_
+        std::cerr << "Input (" << Zahl << ") is out of range for an uint32_t" << std::endl;
     } catch (const std::exception& e)
     {
         _PRINTERROR_
