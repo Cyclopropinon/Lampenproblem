@@ -8,7 +8,7 @@
 // Zusammenfassung aller Zussammenfassungen
 void ZAZ(const std::string& directoryPath, const std::string& outputFilePath)
 {
-	_PRINTINPUT_4_("Funktionsaufruf: ZAZ")
+	_PRINTINPUT_4_("Funktionsaufruf: ZAZ: \"" << directoryPath << '\"')
     namespace fs = std::filesystem;
 
     fs::remove(outputFilePath);
