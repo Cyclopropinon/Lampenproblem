@@ -63,6 +63,7 @@ std::map<std::string, std::string> Einstellungen;
 constexpr auto			EinstellungsDateiname = "Einstellungen.ini";
 constexpr auto			__EINST_LANG__ = "Lang";
 constexpr auto			__EINST_OFFS__ = "Zeilenoffset";
+constexpr auto			__EINST_NO_BEEP__ = "NoBeep";
 constexpr auto			__EINST_BEEP_FREQ_PR__ = "BeepFreqPR";
 constexpr auto			__EINST_BEEP_FREQ_FEHLER__ = "BeepFreqFehler";
 constexpr auto			BenchmarkErgebnisOrdner = "Benchergs";

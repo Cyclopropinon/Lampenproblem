@@ -181,6 +181,59 @@ uint32_t leseZahlAusEinstellung(const std::string& schluessel, const uint32_t& d
     return defaultWert;
 }
 
+// Funktion zum Lesen einer einzelnen Einstellung
+bool leseBoolAusEinstellung(const std::string& schluessel, const bool& defaultWert, const std::string& dateiName)
+{
+	_PRINTINPUT_3_("Funktionsaufruf: leseBoolAusEinstellung\tSchlüssel: " << schluessel)
+
+    std::string Wert = leseEinstellung(schluessel, defaultWert ? "1" : "0", dateiName);
+
+    try
+    {
+        // Normalisieren (kleinschreiben)
+        std::string norm;
+        norm.reserve(Wert.size());
+        for (char c : Wert)
+            norm += static_cast<char>(std::tolower(c));
+
+        // Wahr-Werte
+        if (norm == "1"     or
+            norm == "y"     or
+            norm == "yes"   or
+            norm == "true"  or
+            norm == "j"     or
+            norm == "ja"    or
+            norm == "wahr")
+        {
+            return true;
+        }
+
+        // Falsch-Werte
+        if (norm == "0"      or
+            norm == "n"      or
+            norm == "no"     or
+            norm == "false"  or
+            norm == "nein"   or
+            norm == "falsch")
+        {
+            return false;
+        }
+
+        // Ungültiger Wert
+        // TODO _PRINTERROR_
+        std::cerr << "Invalid Setting " << schluessel
+                  << ": \"" << Wert
+                  << "\" is not a valid boolean value" << std::endl;
+
+    } catch (const std::exception& e)
+    {
+        _PRINTERROR_
+		std::cerr << "\aFehler:\n" << e.what() << std::endl;
+    }
+
+    return defaultWert;
+}
+
 // Funktion zum Schreiben einer einzelnen Einstellung
 void schreibeEinstellung(const std::string& schluessel, const std::string& wert, const std::string& dateiName)
 {
