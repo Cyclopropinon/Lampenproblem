@@ -98,12 +98,12 @@ cd testumgebung
 * add a notify-window for system messages
 * Emergency-save when power failure
 * timing calculations so it fits better with dynamic electric pricing
-* use beep for notifications (PR found, error, etc...)
 ### Formalisierung
 * Formalisiere die Vermutung von Krabbenhöft-Taschner
 * Beweise/Wiederlege die beiden Vermutungen LOL
 * Setzte mögliche Unterziele für die Beweise
 ## IN PROGRESS
+* use beep for notifications (PR found, error, etc...)
 ## DONE
 * Seit `V0.1.27`: Einstellungsdatei
 * Seit `V0.1.31`: Möglichkeit zu Pausieren & Fortsetzen mit der Tastatur (Eingabe: "P")
