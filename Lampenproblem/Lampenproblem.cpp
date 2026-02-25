@@ -487,7 +487,7 @@ void CheckpointLSGv6(const std::string& ordner, const bool retrieve, unsigned lo
 			toStrVar(print) + '\n' +
 			toStrVar(cPrint) + '\n' +
 			toStrVar(dPrint) + "\n"
-			"Schritte: " + std::to_string(mpz_sizeinbase(Schritte.get_mpz_t(), 265)) + " Bytes\n"
+			"Schritte: " + std::to_string(lp_mpz_bytesize(Schritte)) + " Bytes\n"
 			"Laufzeit: " + strLaufzeit + '\n';
 		saveVar(Zusammenfassung);
 
@@ -2192,7 +2192,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv2(unsigned long long n, uint64_t anz, b
 			dt(berechnungsStartHR, durHR);
 			dt(berechnungsZwCP_HR, CP_HR);
 			ddt(berechnungsZwCP_HR, CPdHR);
-			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "  \033[3;93mdt/dn: " << CPdHR << "\033[0m             \r" << flush;
+			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << lp_mpz_bytesize(Schritte) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "  \033[3;93mdt/dn: " << CPdHR << "\033[0m             \r" << flush;
 		}
     }
 	cout << endl;
@@ -2264,7 +2264,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv3(string Session)
 			dt(berechnungsStartHR, durHR);
 			dt(berechnungsZwCP_HR, CP_HR);
 			ddt(berechnungsZwCP_HR, CPdHR);
-			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << mpz_sizeinbase(Schritte.get_mpz_t(), 265) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "  \033[3;93mdt/dn: " << CPdHR << "\033[0m             \r" << flush;
+			cout << "    \r \033[91mRAM: " << giveRAM('k') << "  \033[96mIteration: " << to_string(print) << "  \033[95mSchritte: " << lp_mpz_bytesize(Schritte) << " Bytes  \033[93mZeit: " << durHR << "\033[0m  \033[2;93mΔt: " << CP_HR << "  \033[3;93mdt/dn: " << CPdHR << "\033[0m             \r" << flush;
 		}
     }
 	cout << endl;
@@ -2379,7 +2379,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 				wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 				wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-				mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+				mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", lp_mpz_bytesize(Schritte));
 				wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 				wattroff(outputWin, A_BOLD);
@@ -2418,7 +2418,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv4(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", lp_mpz_bytesize(Schritte));
 		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 		wrefresh(outputWin);
@@ -2537,7 +2537,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 				wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 				wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-				mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+				mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", lp_mpz_bytesize(Schritte));
 				wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 				wattron(titelWin, COLOR_PAIR(6));	// Blau auf Schwarz
@@ -2583,7 +2583,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv5(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", lp_mpz_bytesize(Schritte));
 		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
 		wrefresh(outputWin);
@@ -2728,7 +2728,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 					wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", lp_mpz_bytesize(Schritte));
 					mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
 					wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
@@ -2779,7 +2779,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv6(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", lp_mpz_bytesize(Schritte));
 		mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
 		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
@@ -2892,7 +2892,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 		{
 			PositiveRunden.push_back(AnzRunden);
 			AnzPR = PositiveRunden.size();
-			_PRINTINPUT_4_("PR gefunden für n = " << n << "; Größe: " << mpz_sizeinbase(AnzRunden.get_mpz_t(), 265) << " Bytes")
+			_PRINTINPUT_4_("PR gefunden für n = " << n << "; Größe: " << lp_mpz_bytesize(Schritte) << " Bytes")
 		}
 
 		Lampejetzt = mpz_tdiv_q_ui(AnzRunden.get_mpz_t(), Schritte.get_mpz_t(), n);
@@ -2950,7 +2950,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 					wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 					wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+					mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", lp_mpz_bytesize(Schritte));
 					mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
 					wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
@@ -3001,7 +3001,7 @@ vector<mpz_class> LampenSimulierenGMPLIBv7(unsigned long long n, uint64_t anz, b
 		wattroff(outputWin, COLOR_PAIR(2)); // Farbe deaktivieren
 
 		wattron(outputWin, COLOR_PAIR(3));  // Magenta auf Schwarz
-		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", mpz_sizeinbase(Schritte.get_mpz_t(), 265));
+		mvwprintw(outputWin, 1, 45, "Schritte: %ld Bytes", lp_mpz_bytesize(Schritte));
 		mvwprintw(outputWin, 2, 86, "CPU-Zeit: %s", CPUProfiler::cpuTimeStr().c_str());
 		wattroff(outputWin, COLOR_PAIR(3)); // Farbe deaktivieren
 
