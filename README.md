@@ -102,6 +102,7 @@ cd testumgebung
 * Formalisiere die Vermutung von Krabbenhöft-Taschner
 * Beweise/Wiederlege die beiden Vermutungen LOL
 * Setzte mögliche Unterziele für die Beweise
+* Herausfinden welche Komplexitätsklasse es hat
 ## IN PROGRESS
 * use beep for notifications (PR found, error, etc...)
 ## DONE
