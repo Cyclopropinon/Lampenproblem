@@ -1,9 +1,17 @@
-SHELL := /bin/bash
-TIME  := /usr/bin/time -v
+SHELL ?= /bin/sh
+
+# Verwendung von GNU time bevorzugen
+TIME ?= $(shell \
+    t="$$(which time 2>/dev/null)" && [ -n "$$t" ] && \
+        "$$t" -v true >/dev/null 2>&1 && echo "$$t -v" || \
+    { [ -x /usr/bin/time ] && /usr/bin/time -v true >/dev/null 2>&1 && echo "/usr/bin/time -v"; } || \
+    { time -v true >/dev/null 2>&1 && echo "time -v"; } || \
+    echo "time")
+#TIME ?= ZEIT
 
 # Finde die aktuellste g++-Version
-GXX := $(shell command -v g++-14 || command -v g++-13 || command -v g++-12 || command -v g++)
-GCC := $(shell command -v gcc-14 || command -v gcc-13 || command -v gcc-12 || command -v gcc)
+GXX ?= $(shell command -v g++-14 || command -v g++-13 || command -v g++-12 || command -v g++)
+GCC ?= $(shell command -v gcc-14 || command -v gcc-13 || command -v gcc-12 || command -v gcc)
 
 # Compiler- und Linkerflags
 CXXFLAGS := -I/usr/local/include -g -O2 -march=native -DNCURSES_WIDECHAR=1
