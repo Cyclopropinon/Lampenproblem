@@ -1,5 +1,9 @@
 SHELL ?= /bin/sh
 
+# Extrawurst für NixOS
+# auf NixOS gibt's /etc/NIXOS.
+IS_NIXOS := $(if $(wildcard /etc/NIXOS),yes,no)
+
 # Verwendung von GNU time bevorzugen
 TIME ?= $(shell \
     t="$$(which time 2>/dev/null)" && [ -n "$$t" ] && \
@@ -9,25 +13,53 @@ TIME ?= $(shell \
     echo "time")
 #TIME ?= ZEIT
 
-# Finde die aktuellste g++-Version
-GXX ?= $(shell command -v g++-14 || command -v g++-13 || command -v g++-12 || command -v g++)
-GCC ?= $(shell command -v gcc-14 || command -v gcc-13 || command -v gcc-12 || command -v gcc)
+
+ifeq ($(IS_NIXOS),yes)
+    # bei NixOS einfach den standardmäßigen Compiler nehmen...
+    GXX ?= g++
+    GCC ?= gcc
+else
+    # Finde sonst die aktuellste g++-Version
+    GXX ?= $(shell command -v g++-16 || command -v g++-15 || command -v g++-14 || command -v g++-13 || command -v g++-12 || command -v g++)
+    GCC ?= $(shell command -v gcc-16 || command -v gcc-15 || command -v gcc-14 || command -v gcc-13 || command -v gcc-12 || command -v gcc)
+endif
+
 
 # Compiler- und Linkerflags
-CXXFLAGS := -I/usr/local/include -g -O2 -march=native -DNCURSES_WIDECHAR=1
+ifeq ($(IS_NIXOS),yes)
+    # NixOS macht ja alles zentral und einheitlich, also wird scho passen...
+    CXXFLAGS := -g -O2 -march=native -DNCURSES_WIDECHAR=1
+    LDFLAGS := -lgmp -lgmpxx -lncursesw
+else
+    CXXFLAGS := -I/usr/local/include -g -O2 -march=native -DNCURSES_WIDECHAR=1
+    LDFLAGS := -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lgmp -lgmpxx -lncursesw
+endif
 TARFLAGS := -g -std=c90
-LDFLAGS := -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lgmp -lgmpxx -lncursesw
+
 
 # Prüfe FLINT-Bibliothek
-CHECK_FLINT := $(shell ldconfig -p | grep -q libflint && echo "yes" || echo "no")
+ifeq ($(IS_NIXOS),yes)
+    # Auf NixOS funktioniert ldconfig nicht gescheit, also benutzen wir pkg-config.
+    CHECK_FLINT := $(shell pkg-config --exists flint 2>/dev/null && echo "yes" || echo "no")
+else
+    CHECK_FLINT := $(shell ldconfig -p | grep -q libflint && echo "yes" || echo "no")
+endif
+
 ifeq ($(CHECK_FLINT),yes)
     LDFLAGS += -lflint
 else
     CXXFLAGS += -D_DISABLELIBFLINT_
 endif
 
+
 # Prüfe Archive-Bibliothek
-CHECK_ARCHIVE := $(shell ldconfig -p | grep -q libarchive && echo "yes" || echo "no")
+ifeq ($(IS_NIXOS),yes)
+    # Wie schon gesagt, braucht NixOS ne Extrawurst (s. FLINT)
+    CHECK_ARCHIVE := $(shell pkg-config --exists libarchive 2>/dev/null && echo "yes" || echo "no")
+else
+    CHECK_ARCHIVE := $(shell ldconfig -p | grep -q libarchive && echo "yes" || echo "no")
+endif
+
 ifeq ($(CHECK_ARCHIVE),yes)
     LDFLAGS += -larchive
 else
